@@ -7,7 +7,7 @@ Dashboard for the 2023 vehicle including data from:
 * BajaDAS
 * 2WD/4WD Engagement Switch
 
-# Hardware
+  # Hardware
 
 * ESP32 Microcontroller
 * MCP2515 CAN-BUS Module
@@ -16,7 +16,7 @@ Dashboard for the 2023 vehicle including data from:
 * 5mm LEDs
 * TLC5940 16-Channel LED Drivers
 
-# Key Features
+  # Key Features
 
 1. Real-Time Vehicle Speed Display
 2. Analog Dial and Digital Output of CVT RPM
