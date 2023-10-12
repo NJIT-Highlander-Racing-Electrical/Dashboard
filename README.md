@@ -10,7 +10,7 @@ Dashboard for the 2023 vehicle including data from:
 ## Hardware
 
 * ESP32 Microcontroller
-* MCP2515 CAN-BUS Module
+* TJA1051T CAN Transceiver
 * Seven Segment Displays
 * 1.28" Round LCDs
 * 5mm LEDs
