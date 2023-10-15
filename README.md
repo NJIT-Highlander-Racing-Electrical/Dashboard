@@ -25,3 +25,9 @@ Dashboard for the 2023 vehicle including data from:
 5. LED Indicators for Fuel Level
 6. Status LEDs for CVT Temperature, Data Acquisition, Battery Level, and Power On/off
 7. CAN-BUS Communication with Rest of Vehicle
+
+## Visuals
+
+* Include a "Highlander Racing" boot animation with Baja vehicle similar to this video at 1:20 (https://www.youtube.com/watch?v=Y0BGnHFuYBU&ab_channel=VoltLog)
+* Potential Speedometer/RPM display at 1:57 (https://www.youtube.com/watch?v=Y0BGnHFuYBU&ab_channel=VoltLog)
+
