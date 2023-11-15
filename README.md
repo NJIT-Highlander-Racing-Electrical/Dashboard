@@ -21,11 +21,12 @@ Dashboard for the 2023 vehicle including data from:
 1. Real-Time Vehicle Speed Display
 2. Analog Dial and Digital Output of CVT RPM
 3. Visual Indicator for 2WD/4WD Engagement
-4. Visual Indicator of Semi-Active Status for each Shock
-5. LED Indicators for Fuel Level
-6. Status LEDs for CVT Temperature, Data Acquisition, Battery Level, and Power On/off
-7. CAN-BUS Communication with Rest of Vehicle
-8. Boot screen including Highlander Racing logo and Baja vehicle
+4. Digital CVT Ratio
+5. Current Time (HH:MM:SS)
+6. LED Indicators for Fuel Level
+7. Status LEDs for CVT Temperature, Data Acquisition, Battery Level, and Power On/off
+8. CAN-BUS Communication with Rest of Vehicle
+9. Boot screen including Highlander Racing logo and Baja vehicle
 
 ## Visuals
 
