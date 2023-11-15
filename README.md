@@ -25,6 +25,7 @@ Dashboard for the 2023 vehicle including data from:
 5. LED Indicators for Fuel Level
 6. Status LEDs for CVT Temperature, Data Acquisition, Battery Level, and Power On/off
 7. CAN-BUS Communication with Rest of Vehicle
+8. Boot screen including Highlander Racing logo and Baja vehicle
 
 ## Visuals
 
