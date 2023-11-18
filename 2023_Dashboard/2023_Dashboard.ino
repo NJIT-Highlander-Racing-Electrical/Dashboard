@@ -1,9 +1,22 @@
 #include "SPI.h"
 #include "Adafruit_GFX.h"
 #include "Adafruit_GC9A01A.h"
+
 #define TFT_DC_L 16
 #define TFT_CS_L 17
 Adafruit_GC9A01A tftL(TFT_CS_L, TFT_DC_L);
+
+#include <Fonts/FreeMonoBold18pt7b.h>
+#include <Fonts/FreeMonoBold24pt7b.h>
+
+const int timeX = 30;
+const int timeY = 60;
+const int cvtRatioX = 85;
+const int cvtRatioY = 150;
+const int twoWheelX = 50;
+const int twoWheelY = 220;
+const int fourWheelX = 125;
+const int fourWheelY = 220;
 
 
 
@@ -52,8 +65,13 @@ bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap) 
 
 
 
-int primaryRPM = 0;
+int primaryRPM = 3000;
 int secondaryRPM = 0;
+float cvtMinRatio = 0.9;
+float cvtMaxRatio = 3.9;
+float cvtRatio = 0;
+float lastCvtRatio = 0;
+int lastRPM = 0;
 const int gearboxRatio = 3;
 int wheelSpeed = 0;
 
@@ -69,6 +87,7 @@ const int daqLed = 29;
 const int batteryLed = 30;
 
 bool fourWheelsEngaged = false;
+bool lastFourWheelsState = false;
 
 int frontLeftWheel = 0;
 int frontRightWheel = 0;
@@ -125,11 +144,19 @@ void setup() {
 
 
   tftL.begin();
+  tftL.setFont(&FreeMonoBold18pt7b);
+  tftL.setFont(&FreeMonoBold24pt7b);
+
+
   tftL.fillScreen(GC9A01A_BLACK);
 
   bootScreen();
 
-  drawFourWheels();
+  updateTime();
+  updateCvtRatio();
+  update2wd4wdState();
+
+  //drawFourWheels();
 }
 
 
@@ -139,20 +166,50 @@ void loop() {
 
 
   // Get CANBUS Data
+  
   /*
 *     FUEL GAUGE: 0-9 VALUE
-*     2WD/4WD INPUT
-*
+*     2WD/4WD INPUT FROM DAQ
+*     LOW BAT WARNING FROM DAQ
+*     CVT PRIMARY/SECONDARY RPM FROM CVT
+*     CVT RATIO FROM CVT
+*     CVT OVER TEMP WARNING FROM CVT
+*     
 */
 
-  secondaryRPM = map(analogRead(CVT_TEST_POT),0,4095,cvtMinRPM,cvtMaxRPM);
-  int mappedAngle = map(secondaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
-  plotNeedle(mappedAngle, 5);  // if this doesnt work, add ms delay back to dial plot functoin
+  //
+  cvtRatio = mapfloat(analogRead(CVT_TEST_POT), 0.0, 4095.0, cvtMinRatio, cvtMaxRatio);
+  if (analogRead(CVT_TEST_POT) > 2000) fourWheelsEngaged = true;
+  else fourWheelsEngaged = false;
+  primaryRPM = map(analogRead(CVT_TEST_POT), 0, 4095, cvtMinRPM, cvtMaxRPM);
+  //
+
+  int mappedAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
+  if ((abs(primaryRPM - lastRPM)) > 50) {
+    plotNeedle(mappedAngle, 1);  // if this doesnt work, add ms delay back to dial plot function
+    lastRPM = primaryRPM;
+  }
+
+  if (false) {
+    updateTime();
+  }
+
+  if (abs(cvtRatio - lastCvtRatio) > 0.1) {
+    Serial.println("UPDATING CVT RATIO!");
+    lastCvtRatio = cvtRatio;
+    updateCvtRatio();
+  }
+
+  if (fourWheelsEngaged != lastFourWheelsState) {
+    Serial.println("UPDATING 4WD STATE!");
+    lastFourWheelsState = fourWheelsEngaged;
+    update2wd4wdState();
+  }
 
 
 
-  updateFourWheels();
-/*
+
+  /*
   if (batteryLow) digitalWrite(batteryLed, HIGH);
   else digitalWrite(batteryLed, LOW);
 
@@ -165,7 +222,57 @@ void loop() {
 }
 
 
+void updateTime() {
 
+  tftL.fillRect(timeX, timeY, 240, -(cvtRatioY - timeY), TFT_BLACK);
+  tftL.setFont(&FreeMonoBold18pt7b);
+  tftL.setTextColor(TFT_WHITE);
+  tftL.setCursor(timeX, timeY);  // Adjust coordinates as needed
+  tftL.println("12:34:56");
+}
+
+void updateCvtRatio() {
+
+  //cvtRatio = (primaryRPM / (secondaryRPM + 1));)
+  tftL.fillRect(cvtRatioX, cvtRatioY, 240, -(twoWheelY - cvtRatioY), TFT_BLACK);
+  tftL.setFont(&FreeMonoBold24pt7b);
+  tftL.setTextColor(TFT_WHITE);
+  tftL.setCursor(cvtRatioX, cvtRatioY);  // Adjust coordinates as needed
+  Serial.print("cvtRATIO: ");
+  Serial.println(cvtRatio, 1);
+  tftL.println(cvtRatio, 1);
+}
+
+
+void update2wd4wdState() {
+
+  if (fourWheelsEngaged) {
+
+    tftL.fillRect(twoWheelX, twoWheelY, 240, -50, TFT_BLACK);
+    tftL.setFont(&FreeMonoBold18pt7b);
+    tftL.setTextColor(0x8410);
+    tftL.setCursor(twoWheelX, twoWheelY);  // Adjust coordinates as needed
+    tftL.println("2WD");
+    tftL.setTextColor(TFT_RED);
+    tftL.setCursor(fourWheelX, fourWheelY);  // Adjust coordinates as needed
+    tftL.println("4WD");
+
+  }
+
+  else {
+
+    tftL.fillRect(twoWheelX, twoWheelY, 240, -50, TFT_BLACK);
+    tftL.setFont(&FreeMonoBold18pt7b);
+    tftL.setTextColor(TFT_RED);
+    tftL.setCursor(twoWheelX, twoWheelY);  // Adjust coordinates as needed
+    tftL.println("2WD");
+    tftL.setTextColor(0x8410);
+    tftL.setCursor(fourWheelX, fourWheelY);  // Adjust coordinates as needed
+    tftL.println("4WD");
+  }
+}
+
+/*
 void drawFourWheels() {
 
   tftL.fillRect(54, 27, 30, 55, GC9A01A_RED);
@@ -195,9 +302,8 @@ void updateFourWheels() {
 
   digitalWrite(TFT_CS_L, HIGH);
   digitalWrite(5, HIGH);
-
 }
-
+*/
 
 void bootScreen() {
 }
@@ -264,7 +370,7 @@ void plotNeedle(int16_t angle, uint16_t ms_delay) {
 
     // Update the number at the centre of the dial
     spr.setTextColor(TFT_WHITE, bg_color, true);
-    spr.drawNumber(secondaryRPM, spr_width / 2, spr.fontHeight() / 2);
+    spr.drawNumber(primaryRPM, spr_width / 2, spr.fontHeight() / 2);
     spr.pushSprite(120 - spr_width / 2, 120 - spr.fontHeight() / 2);
 
 
@@ -275,4 +381,9 @@ void plotNeedle(int16_t angle, uint16_t ms_delay) {
 
   digitalWrite(TFT_CS_L, HIGH);
   digitalWrite(5, HIGH);
+}
+
+
+float mapfloat(long x, long in_min, long in_max, long out_min, long out_max) {
+  return (float)(x - in_min) * (out_max - out_min) / (float)(in_max - in_min) + out_min;
 }
