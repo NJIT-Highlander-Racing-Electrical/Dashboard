@@ -82,9 +82,9 @@ const int cvtTempMax = 100;
 bool daqOn = false;
 bool batteryLow = false;
 
-const int cvtLed = 28;
-const int daqLed = 29;
-const int batteryLed = 30;
+const int cvtLed = 32;
+const int daqLed = 33;
+const int batteryLed = 25;
 
 bool fourWheelsEngaged = false;
 bool lastFourWheelsState = false;
@@ -166,7 +166,7 @@ void loop() {
 
 
   // Get CANBUS Data
-  
+
   /*
 *     FUEL GAUGE: 0-9 VALUE
 *     2WD/4WD INPUT FROM DAQ
@@ -178,6 +178,11 @@ void loop() {
 */
 
   //
+
+  daqOn = true;
+  batteryLow = true;
+  cvtTemp = 101;
+
   cvtRatio = mapfloat(analogRead(CVT_TEST_POT), 0.0, 4095.0, cvtMinRatio, cvtMaxRatio);
   if (analogRead(CVT_TEST_POT) > 2000) fourWheelsEngaged = true;
   else fourWheelsEngaged = false;
@@ -195,13 +200,11 @@ void loop() {
   }
 
   if (abs(cvtRatio - lastCvtRatio) > 0.1) {
-    Serial.println("UPDATING CVT RATIO!");
     lastCvtRatio = cvtRatio;
     updateCvtRatio();
   }
 
   if (fourWheelsEngaged != lastFourWheelsState) {
-    Serial.println("UPDATING 4WD STATE!");
     lastFourWheelsState = fourWheelsEngaged;
     update2wd4wdState();
   }
@@ -209,7 +212,7 @@ void loop() {
 
 
 
-  /*
+
   if (batteryLow) digitalWrite(batteryLed, HIGH);
   else digitalWrite(batteryLed, LOW);
 
@@ -218,7 +221,6 @@ void loop() {
 
   if (cvtTemp > cvtTempMax) digitalWrite(cvtLed, HIGH);
   else digitalWrite(cvtLed, LOW);
-*/
 }
 
 
@@ -238,8 +240,6 @@ void updateCvtRatio() {
   tftL.setFont(&FreeMonoBold24pt7b);
   tftL.setTextColor(TFT_WHITE);
   tftL.setCursor(cvtRatioX, cvtRatioY);  // Adjust coordinates as needed
-  Serial.print("cvtRATIO: ");
-  Serial.println(cvtRatio, 1);
   tftL.println(cvtRatio, 1);
 }
 
