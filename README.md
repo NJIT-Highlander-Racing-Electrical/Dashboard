@@ -33,3 +33,10 @@ Dashboard for the 2023 vehicle including data from:
 * Include a "Highlander Racing" boot animation with Baja vehicle similar to this video at 1:20 (https://www.youtube.com/watch?v=Y0BGnHFuYBU&ab_channel=VoltLog)
 * Potential Speedometer/RPM display at 1:57 (https://www.youtube.com/watch?v=Y0BGnHFuYBU&ab_channel=VoltLog)
 
+## Useful Sites
+* TLC5917 Datasheet: https://www.ti.com/lit/ds/symlink/tlc5917.pdf?ts=1710497247983&ref_url=https%253A%252F%252Fgoogle.com
+* 7-Segment Datasheet: http://www.us.kingbright.com/images/catalog/spec/SA10-21SRWA.pdf
+* TLC5917 Library: https://github.com/Andy4495/TLC591x/tree/main
+* Adafruit CAN Pal Guide: https://learn.adafruit.com/adafruit-can-pal/pinouts
+* ESP32 Pinout: https://lastminuteengineers.com/wp-content/uploads/iot/ESP32-Pinout.png
+
