@@ -9,7 +9,7 @@ Dashboard for the 2023 vehicle including data from:
 
 ## Hardware
 
-* ESP32 Microcontroller
+* ESP32 Microcontroller (Select NodeMCU-32S board in Arduino IDE)
 * TJA1051T CAN Transceiver
 * Seven Segment Displays
 * 1.28" Round LCDs
