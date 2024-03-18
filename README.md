@@ -10,6 +10,8 @@ Dashboard for the 2023 vehicle including data from:
 ## Hardware
 
 * ESP32 Microcontroller (Select NodeMCU-32S board in Arduino IDE)
+  * Note: Newer microcontrollers do not play nicely with CAN/TWAI, so any ESP32's with four mounting holes needs the CAN frequency doubled
+  * From this: https://www.eevblog.com/forum/microcontrollers/psa-esp32-can-frequency-assignment-broken-in-chip-revision/
 * TJA1051T CAN Transceiver
 * Seven Segment Displays
 * 1.28" Round LCDs
@@ -30,9 +32,9 @@ Dashboard for the 2023 vehicle including data from:
 
 ## Visuals
 
-* Include a "Highlander Racing" boot animation with Baja vehicle similar to this video at 1:20 (https://www.youtube.com/watch?v=Y0BGnHFuYBU&ab_channel=VoltLog)
-* Potential Speedometer/RPM display at 1:57 (https://www.youtube.com/watch?v=Y0BGnHFuYBU&ab_channel=VoltLog)
-
+* Includes a custom boot animation featuring the Highlander Racing logo and Lightning McQueen's number: 95
+* RPM Visual comes from this repository: https://github.com/VolosR/TDisplayDashboard/tree/main
+ 
 ## Useful Sites
 * TLC5917 Datasheet: https://www.ti.com/lit/ds/symlink/tlc5917.pdf?ts=1710497247983&ref_url=https%253A%252F%252Fgoogle.com
 * 7-Segment Datasheet: http://www.us.kingbright.com/images/catalog/spec/SA10-21SRWA.pdf
