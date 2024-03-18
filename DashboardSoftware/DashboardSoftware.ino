@@ -113,7 +113,7 @@ void setup() {
   Serial.begin(115200);
   //ESP32 MAC can be found using this: https://randomnerdtutorials.com/get-change-esp32-esp8266-mac-address-arduino/#:~:text=Get%20ESP32%20or%20ESP8266%20MAC%20Address
   //This one's is: D4:8A:FC:A8:59:7C
-  //gpio_viewer.connectToWifi("NightHawk-2.4Ghz", "217124616");
+  //gpio_viewer.connectToWifi("SSID", "PASS");
   //gpio_viewer.begin();
 
 
