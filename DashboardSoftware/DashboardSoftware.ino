@@ -11,8 +11,6 @@
 #include "SPI.h"
 #include "Adafruit_GFX.h"
 #include "Adafruit_GC9A01A.h"
-#include "NotoSansBold36.h"
-#include <TFT_eSPI.h>
 #include <TJpg_Decoder.h>
 #include <Fonts/FreeMono12pt7b.h>
 #include <Fonts/FreeMonoBold18pt7b.h>
@@ -23,7 +21,7 @@
 #endif
 TLC591x myLED(3, 32, 33, 25, 26);  // Uncomment if using OE pin
 
-
+#include "rpmGauge.h"
 
 // Setup for left circular display
 #define TFT_DC_L 16
@@ -47,30 +45,15 @@ const int cvtMinRPM = 0;
 const int cvtMaxRPM = 4000;
 const int angleMin = 0;
 const int angleMax = 240;
+int mappedRPMAngle = 0;
 
-#define NEEDLE_LENGTH 45       // Visible length
-#define NEEDLE_WIDTH 11        // Width of needle - make it an odd number
-#define NEEDLE_RADIUS 95       // Radius at tip
-#define NEEDLE_COLOR1 TFT_RED  // Needle periphery colour
-#define NEEDLE_COLOR2 TFT_RED  // Needle centre colour
-#define DIAL_CENTRE_X 120
-#define DIAL_CENTRE_Y 120
 
-#define AA_FONT_LARGE NotoSansBold36
-TFT_eSPI tft = TFT_eSPI();
-TFT_eSprite needle = TFT_eSprite(&tft);  // Sprite object for needle
-TFT_eSprite spr = TFT_eSprite(&tft);     // Sprite for meter reading
-uint16_t* tft_buffer;
-bool buffer_loaded = false;
-uint16_t spr_width = 0;
-uint16_t bg_color = 0;
-
+// Function for boot sequence Highlander Racing Image
 bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap) {
   if (y >= tft.height()) return 0;
   tft.pushImage(x, y, w, h, bitmap);
   return 1;
 }
-
 
 //Defintions for CVT data (CVT RPM Sensor -> Dashboard Displays)
 int primaryRPM = 0;
@@ -113,7 +96,7 @@ void setup() {
   Serial.begin(115200);
   //ESP32 MAC can be found using this: https://randomnerdtutorials.com/get-change-esp32-esp8266-mac-address-arduino/#:~:text=Get%20ESP32%20or%20ESP8266%20MAC%20Address
   //This one's is: D4:8A:FC:A8:59:7C
-  //gpio_viewer.connectToWifi("SSID", "PASS");
+  //gpio_viewer.connectToWifi("SSID", "PASSWORD");
   //gpio_viewer.begin();
 
 
@@ -141,10 +124,7 @@ void setup() {
 
   TJpgDec.setSwapBytes(true);
   TJpgDec.setCallback(tft_output);
-  tft.begin();
-  tft.setRotation(0);
-  tft.fillScreen(TFT_BLACK);
-
+  rpmGaugeSetup();
 
 
   //Left display configurations
@@ -154,8 +134,6 @@ void setup() {
 
   //This should be a few seconds of splash screen displaying Highlander Racing logos/stuff on boot
   bootScreen();
-
-  initializeNeedle();
 
   updateTime();
   updateCvtRatio();
@@ -172,9 +150,6 @@ void loop() {
   // 0.000015782828283 inches in a mile and 60 minutes in one hour
   wheelSpeed = (secondaryRPM / gearboxRatio) * wheelCircumference * 0.00001578282828 * 60;
 
-  //Serial.print("wheelSpeed: ");
-  //Serial.println(wheelSpeed);
-
   // This takes the calculated speed and displays it on the seven segments
   updateSevenSegments(wheelSpeed);
 
@@ -189,11 +164,8 @@ void loop() {
 
 
   //This takes the CVT rpm and plots the dial accordingly
-  int mappedAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
-  if ((abs(primaryRPM - lastRPM)) > 50) {
-    plotNeedle(mappedAngle, 1);
-    lastRPM = primaryRPM;
-  }
+  mappedRPMAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
+  updateRPMGauge(mappedRPMAngle, primaryRPM);
 
   // This updates the time when GPS time is found; always false until GPS is implemented over CAN
   if (false) {
