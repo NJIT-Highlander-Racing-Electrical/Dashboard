@@ -74,22 +74,34 @@ int fuelLevel = 0;
 int cvtTemp = 0;
 const int cvtTempMax = 100;
 bool daqOn = false;
+bool daqError = false;
 bool batteryLow = false;
 
 //Pins for four status LEDs (power status is tied to VCC)
 const int cvtLed = 2;
-const int daqLed = 13;
-const int batteryLed = 15;
+const int daqLed = 15;
+const int batteryLed = 27;
 
 //Pins for three non-green fuel LEDs (brightness was uneven with them on the LED driver :( )
 const int redFuelLED = 12;
-const int yellowFuelLED1 = 14;
-const int yellowFuelLED2 = 27;
+const int yellowFuelLED1 = 13;
+const int yellowFuelLED2 = 14;
 
 //Definitions for 2WD/4WD state
-bool fourWheelsEngaged = false;
+bool fourWheelsState = false;
 bool lastFourWheelsState = false;
+bool fourWheelsUnknown = true;
+bool fourWheelsStartFlag = true;
 
+int canbusDataPeriod = 100;
+unsigned long canbusDataStart = 0;
+
+
+//Definitions for GPS time
+int timeH = 0;
+int timeM = 0;
+int timeS = 0;
+char formattedTime[9];
 
 void setup() {
 
@@ -144,24 +156,27 @@ void setup() {
 
 void loop() {
 
-  updateCanbus();
+  canbusDataStart = millis();
+  while ((millis() - canbusDataStart) < canbusDataPeriod) {
+    updateCanbus();  // dedicate 100ms to just canbus sampling to not miss messages
+    delay(2);
+  }
+
   cvtRatio = (secondaryRPM / (primaryRPM + 1.0));
 
   // 0.000015782828283 inches in a mile and 60 minutes in one hour
   wheelSpeed = (secondaryRPM / gearboxRatio) * wheelCircumference * 0.00001578282828 * 60;
 
   // This takes the calculated speed and displays it on the seven segments
+  Serial.print("WHEEL SPEED: ");
+  Serial.println(wheelSpeed);
   updateSevenSegments(wheelSpeed);
 
 
-
   // THE FOLLOWING LINES ARE JUST TO SIMULATE CAN BUS INPUTS AND CAN BE DELETED AFTER CAN BUS IMPLEMENTATION
-  daqOn = true;
   batteryLow = true;
   fuelLevel = 9;
   // END TEST CODE HERE
-
-
 
   //This takes the CVT rpm and plots the dial accordingly
   mappedRPMAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
@@ -179,17 +194,26 @@ void loop() {
   }
 
   //This updates the 2WD/4WD State on left display
-  if (fourWheelsEngaged != lastFourWheelsState) {
-    lastFourWheelsState = fourWheelsEngaged;
+
+  if (!fourWheelsUnknown && fourWheelsStartFlag) {
+    fourWheelsStartFlag = false;
+    lastFourWheelsState = fourWheelsState;
     update2wd4wdState();
   }
+
+  if (fourWheelsState != lastFourWheelsState) {
+    lastFourWheelsState = fourWheelsState;
+    update2wd4wdState();
+  }
+
 
 
   // These lines toggle the status LEDs
   if (batteryLow) digitalWrite(batteryLed, HIGH);
   else digitalWrite(batteryLed, LOW);
 
-  if (daqOn) digitalWrite(daqLed, HIGH);
+  if (daqOn && !daqError) digitalWrite(daqLed, HIGH);
+  else if (daqError) analogWrite(daqLed, 25);
   else digitalWrite(daqLed, LOW);
 
   if (cvtTemp > cvtTempMax) digitalWrite(cvtLed, HIGH);
@@ -201,17 +225,17 @@ void loop() {
 
 void updateTime() {
 
+  sprintf(formattedTime, "%02d:%02d:%02d", timeH, timeM, timeS);
+
   tftL.fillRect(timeX, timeY, 240, -(cvtRatioTextY - timeY), TFT_BLACK);
   tftL.setFont(&FreeMonoBold18pt7b);
   tftL.setTextColor(TFT_WHITE);
   tftL.setCursor(timeX, timeY);  // Adjust coordinates as needed
-  tftL.println("12:34:56");
+  tftL.println(formattedTime);
 }
 
 void updateCvtRatio() {
 
-  //The following line was added to prevent a divide by zero error, not sure if this will be needed in the final implementation
-  //cvtRatio = (primaryRPM / (secondaryRPM + 1));)
   tftL.fillRect(0, cvtRatioTextY, 240, 100, TFT_BLACK);
   tftL.setTextColor(TFT_WHITE);
   tftL.setCursor(cvtRatioTextX, cvtRatioTextY);  // Adjust coordinates as needed
@@ -225,7 +249,7 @@ void updateCvtRatio() {
 
 void update2wd4wdState() {
 
-  if (fourWheelsEngaged) {
+  if (fourWheelsState && !fourWheelsUnknown) {
 
     tftL.fillRect(twoWheelX, twoWheelY, 240, -50, TFT_BLACK);
     tftL.setFont(&FreeMonoBold24pt7b);
@@ -238,11 +262,23 @@ void update2wd4wdState() {
 
   }
 
-  else {
+  else if (!fourWheelsState && !fourWheelsUnknown) {
 
     tftL.fillRect(twoWheelX, twoWheelY, 240, -50, TFT_BLACK);
     tftL.setFont(&FreeMonoBold24pt7b);
     tftL.setTextColor(TFT_RED);
+    tftL.setCursor(twoWheelX, twoWheelY);  // Adjust coordinates as needed
+    tftL.println("2WD");
+    tftL.setTextColor(0x8410);
+    tftL.setCursor(fourWheelX, fourWheelY);  // Adjust coordinates as needed
+    tftL.println("4WD");
+  }
+
+  else {
+
+    tftL.fillRect(twoWheelX, twoWheelY, 240, -50, TFT_BLACK);
+    tftL.setFont(&FreeMonoBold24pt7b);
+    tftL.setTextColor(0x8410);
     tftL.setCursor(twoWheelX, twoWheelY);  // Adjust coordinates as needed
     tftL.println("2WD");
     tftL.setTextColor(0x8410);

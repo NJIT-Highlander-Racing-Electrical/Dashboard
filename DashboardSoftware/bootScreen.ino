@@ -1,4 +1,4 @@
-// Eventually, this should display the highlander racing logo and the vehicle (the vehicle spinning would be cooler)
+//Boot screen for the vehicle that displays the Highlander Racing logo, Lightning McQueen "95", and a fuel LEDs animation
 #include "Highlander_Racing_Image.h"
 
 void bootScreen() {

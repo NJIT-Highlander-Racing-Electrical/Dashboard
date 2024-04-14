@@ -1,3 +1,7 @@
+//A function that accepts an integer number (less than 99MPH) and configures each individual segment
+//Once the proper segments are set, the displayData is written
+//This also updated the fuel LEDs using the global fuel level variable
+
 void updateSevenSegments(uint8_t number) {
   uint8_t tens = number / 10;   // Extract tens digit
   uint8_t units = number % 10;  // Extract units digit

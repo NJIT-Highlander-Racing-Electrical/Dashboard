@@ -1,3 +1,6 @@
+//RPM dial with digital readout
+//Main graphic adapted from this project: https://www.youtube.com/watch?v=cBtsLxZ13hQ
+
 #include <TFT_eSPI.h>
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite sprite = TFT_eSprite(&tft);
