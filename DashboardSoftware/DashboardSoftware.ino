@@ -2,6 +2,10 @@
 
 #include <CAN.h>
 
+#define DEBUG false
+#define DEBUG_SERIAL \
+  if (DEBUG) Serial
+
 #define TX_GPIO_NUM 21  // Connects to CTX
 #define RX_GPIO_NUM 22  // Connects to CRX
 
@@ -29,16 +33,18 @@ TLC591x myLED(3, 32, 33, 25, 26);  // Uncomment if using OE pin
 Adafruit_GC9A01A tftL(TFT_CS_L, TFT_DC_L);
 
 //X and Y positions on data on left circular display
-const int timeX = 33;
+const int timeHourX = 33;
+const int timeMinuteX = 90;
+const int timeSecondX = 150;
 const int timeY = 60;
 const int cvtRatioTextX = 100;
 const int cvtRatioTextY = 180;
 const int cvtRatioDataX = 80;
 const int cvtRatioDataY = 220;
-const int twoWheelX = 23;
-const int twoWheelY = 130;
-const int fourWheelX = 133;
+const int fourWheelX = 23;
 const int fourWheelY = 130;
+const int twoWheelX = 133;
+const int twoWheelY = 130;
 
 //Parameters to control the RPM dial on right circular display
 const int cvtMinRPM = 0;
@@ -64,7 +70,8 @@ float cvtRatio = 0;
 float lastCvtRatio = 0;
 int lastRPM = 0;
 const float gearboxRatio = 8.25;
-const int wheelCircumference = 100;  //Wheel circumference in inches; distance traveled per revolution; should be 23 inches
+const float wheelCircumference = 23.0;  //Wheel circumference in inches; distance traveled per revolution; should be 23 inches
+float totalMultiplier = 0;
 uint8_t wheelSpeed = 0;
 
 //Number of fuel level LEDs to display (0-9)
@@ -79,8 +86,8 @@ bool batteryLow = false;
 
 //Pins for four status LEDs (power status is tied to VCC)
 const int cvtLed = 2;
-const int daqLed = 15;
-const int batteryLed = 27;
+const int daqLed = 27;
+const int batteryLed = 15;
 
 //Pins for three non-green fuel LEDs (brightness was uneven with them on the LED driver :( )
 const int redFuelLED = 12;
@@ -93,7 +100,7 @@ bool lastFourWheelsState = false;
 bool fourWheelsUnknown = true;
 bool fourWheelsStartFlag = true;
 
-int canbusDataPeriod = 100;
+int canbusDataPeriod = 50;
 unsigned long canbusDataStart = 0;
 
 
@@ -101,11 +108,20 @@ unsigned long canbusDataStart = 0;
 int timeH = 0;
 int timeM = 0;
 int timeS = 0;
-char formattedTime[9];
+
+int lastTimeH = 0;
+int lastTimeM = 0;
+int lastTimeS = 0;
+
+unsigned long lastTimePingM = 0;
+unsigned long lastTimePingS = 0;
+bool hasBeenPinged = false;
+
+//char formattedTime[9];
 
 void setup() {
 
-  Serial.begin(115200);
+  DEBUG_SERIAL.begin(460800);
   //ESP32 MAC can be found using this: https://randomnerdtutorials.com/get-change-esp32-esp8266-mac-address-arduino/#:~:text=Get%20ESP32%20or%20ESP8266%20MAC%20Address
   //This one's is: D4:8A:FC:A8:59:7C
   //gpio_viewer.connectToWifi("SSID", "PASSWORD");
@@ -116,11 +132,11 @@ void setup() {
   CAN.setPins(RX_GPIO_NUM, TX_GPIO_NUM);
 
   if (!CAN.begin(1000E3)) {
-    Serial.println("Starting CAN failed!");
+    DEBUG_SERIAL.println("Starting CAN failed!");
     while (1)
       ;
   } else {
-    Serial.println("CAN Initialized");
+    DEBUG_SERIAL.println("CAN Initialized");
   }
 
   pinMode(cvtLed, OUTPUT);
@@ -130,9 +146,9 @@ void setup() {
   pinMode(yellowFuelLED1, OUTPUT);
   pinMode(yellowFuelLED2, OUTPUT);
 
-  myLED.displayEnable();         // This command has no effect if you aren't using OE pin
-  myLED.displayBrightness(125);  // 0 is max, 255 is min
-  updateSevenSegments(95);       // Part of boot screen sequence
+  myLED.displayEnable();       // This command has no effect if you aren't using OE pin
+  myLED.displayBrightness(0);  // 0 is max, 255 is min
+  updateSevenSegments(95);     // Part of boot screen sequence
 
   TJpgDec.setSwapBytes(true);
   TJpgDec.setCallback(tft_output);
@@ -148,6 +164,7 @@ void setup() {
   bootScreen();
 
   updateTime();
+  totalMultiplier = (1.0 / gearboxRatio) * wheelCircumference * 3.1415926 * 0.00001578282828 * 60.0;  // 00001578282828 is miles in an inch
   updateCvtRatio();
   update2wd4wdState();
 }
@@ -159,33 +176,24 @@ void loop() {
   canbusDataStart = millis();
   while ((millis() - canbusDataStart) < canbusDataPeriod) {
     updateCanbus();  // dedicate 100ms to just canbus sampling to not miss messages
-    delay(2);
+    delay(1);
   }
 
   cvtRatio = (secondaryRPM / (primaryRPM + 1.0));
 
   // 0.000015782828283 inches in a mile and 60 minutes in one hour
-  wheelSpeed = (secondaryRPM / gearboxRatio) * wheelCircumference * 0.00001578282828 * 60;
+  wheelSpeed = (secondaryRPM * totalMultiplier);
 
   // This takes the calculated speed and displays it on the seven segments
-  Serial.print("WHEEL SPEED: ");
-  Serial.println(wheelSpeed);
+  DEBUG_SERIAL.print("WHEEL SPEED: ");
+  DEBUG_SERIAL.println(wheelSpeed);
   updateSevenSegments(wheelSpeed);
-
-
-  // THE FOLLOWING LINES ARE JUST TO SIMULATE CAN BUS INPUTS AND CAN BE DELETED AFTER CAN BUS IMPLEMENTATION
-  batteryLow = true;
-  fuelLevel = 9;
-  // END TEST CODE HERE
 
   //This takes the CVT rpm and plots the dial accordingly
   mappedRPMAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
   updateRPMGauge(mappedRPMAngle, primaryRPM);
 
-  // This updates the time when GPS time is found; always false until GPS is implemented over CAN
-  if (false) {
-    updateTime();
-  }
+  updateTime();
 
   //This updates the digital CVT ratio on left display
   if (abs(cvtRatio - lastCvtRatio) > 0.1) {
@@ -212,31 +220,77 @@ void loop() {
   if (batteryLow) digitalWrite(batteryLed, HIGH);
   else digitalWrite(batteryLed, LOW);
 
-  if (daqOn && !daqError) digitalWrite(daqLed, HIGH);
-  else if (daqError) analogWrite(daqLed, 25);
-  else digitalWrite(daqLed, LOW);
+  if (daqOn && !daqError) {
+    digitalWrite(daqLed, HIGH);
+  } else if (daqError) {
+    analogWrite(daqLed, 25);
+  } else digitalWrite(daqLed, LOW);
 
   if (cvtTemp > cvtTempMax) digitalWrite(cvtLed, HIGH);
   else digitalWrite(cvtLed, LOW);
-
-  delay(5);
 }
 
 
 void updateTime() {
 
-  sprintf(formattedTime, "%02d:%02d:%02d", timeH, timeM, timeS);
 
-  tftL.fillRect(timeX, timeY, 240, -(cvtRatioTextY - timeY), TFT_BLACK);
   tftL.setFont(&FreeMonoBold18pt7b);
   tftL.setTextColor(TFT_WHITE);
-  tftL.setCursor(timeX, timeY);  // Adjust coordinates as needed
-  tftL.println(formattedTime);
+
+  if (timeH != lastTimeH) {
+    hasBeenPinged = true;
+    lastTimeH = timeH;
+    tftL.fillRect(timeHourX, timeY, (timeMinuteX - timeHourX), -(cvtRatioTextY - timeY), TFT_BLACK);
+    tftL.setCursor(timeHourX, timeY);  // Adjust coordinates as needed
+    if (timeH < 10) tftL.print("0");
+    tftL.print(timeH);
+    tftL.print(":");
+  }
+
+  if (timeM != lastTimeM) {
+    lastTimePingM = millis();
+    lastTimeM = timeM;
+    tftL.fillRect(timeMinuteX, timeY, (timeSecondX - timeMinuteX), -(cvtRatioTextY - timeY), TFT_BLACK);
+    tftL.setCursor(timeMinuteX, timeY);  // Adjust coordinates as needed
+    if (timeM < 10) tftL.print("0");
+    tftL.print(timeM);
+    tftL.print(":");
+  }
+  if (((millis() - lastTimePingM) > 60000) && hasBeenPinged) {
+    lastTimePingM = millis();
+    timeM = timeM + 1;
+    lastTimeM = timeM;
+    tftL.fillRect(timeMinuteX, timeY, (240 - timeMinuteX), -(cvtRatioTextY - timeY), TFT_BLACK);
+    tftL.setCursor(timeMinuteX, timeY);  // Adjust coordinates as needed
+    if (timeM < 10) tftL.print("0");
+    tftL.println(timeM);
+  }
+
+  if (timeS != lastTimeS) {
+    lastTimePingS = millis();
+    lastTimeS = timeS;
+    tftL.fillRect(timeSecondX, timeY, (240 - timeSecondX), -(cvtRatioTextY - timeY), TFT_BLACK);
+    tftL.setCursor(timeSecondX, timeY);  // Adjust coordinates as needed
+    if (timeS < 10) tftL.print("0");
+    tftL.println(timeS);
+  }
+  if (((millis() - lastTimePingS) > 1000) && hasBeenPinged) {
+    lastTimePingS = millis();
+    if (timeS > 59) {
+      timeM++;
+      timeS = 0;
+    } else timeS++;
+    lastTimeS = timeS;
+    tftL.fillRect(timeSecondX, timeY, (240 - timeSecondX), -(cvtRatioTextY - timeY), TFT_BLACK);
+    tftL.setCursor(timeSecondX, timeY);  // Adjust coordinates as needed
+    if (timeS < 10) tftL.print("0");
+    tftL.println(timeS);
+  }
 }
 
 void updateCvtRatio() {
 
-  tftL.fillRect(0, cvtRatioTextY, 240, 100, TFT_BLACK);
+  tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_BLACK);
   tftL.setTextColor(TFT_WHITE);
   tftL.setCursor(cvtRatioTextX, cvtRatioTextY);  // Adjust coordinates as needed
   tftL.setFont(&FreeMono12pt7b);
@@ -251,7 +305,7 @@ void update2wd4wdState() {
 
   if (fourWheelsState && !fourWheelsUnknown) {
 
-    tftL.fillRect(twoWheelX, twoWheelY, 240, -50, TFT_BLACK);
+    tftL.fillRect(twoWheelX, twoWheelY, 240, 35, TFT_BLACK);
     tftL.setFont(&FreeMonoBold24pt7b);
     tftL.setTextColor(0x8410);
     tftL.setCursor(twoWheelX, twoWheelY);  // Adjust coordinates as needed
@@ -264,7 +318,7 @@ void update2wd4wdState() {
 
   else if (!fourWheelsState && !fourWheelsUnknown) {
 
-    tftL.fillRect(twoWheelX, twoWheelY, 240, -50, TFT_BLACK);
+    tftL.fillRect(twoWheelX, twoWheelY, 240, 35, TFT_BLACK);
     tftL.setFont(&FreeMonoBold24pt7b);
     tftL.setTextColor(TFT_RED);
     tftL.setCursor(twoWheelX, twoWheelY);  // Adjust coordinates as needed
@@ -276,7 +330,7 @@ void update2wd4wdState() {
 
   else {
 
-    tftL.fillRect(twoWheelX, twoWheelY, 240, -50, TFT_BLACK);
+    tftL.fillRect(twoWheelX, twoWheelY, 240, 35, TFT_BLACK);
     tftL.setFont(&FreeMonoBold24pt7b);
     tftL.setTextColor(0x8410);
     tftL.setCursor(twoWheelX, twoWheelY);  // Adjust coordinates as needed

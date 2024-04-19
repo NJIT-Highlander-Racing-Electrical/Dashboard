@@ -1,13 +1,5 @@
 // Updates all data variables from CAN-Bus data here
 
-/*
-*     FUEL GAUGE: 0-9 VALUE
-*         Note: if fuel sensor is malfunctioning or not initialized on power on, set to zero; no fuel lights will be displayed. If fuel is working but empty, make sure its minimum value is 1 so red fuel LED stays lit.
-*     2WD/4WD INPUT FROM DAQ
-*     LOW BAT WARNING FROM DAQ
-*     
-*/
-
 void updateCanbus() {
 
   int packetSize = CAN.parsePacket();
@@ -16,90 +8,93 @@ void updateCanbus() {
     // received a packet
     int packetId = CAN.packetId();  // Get the packet ID
 
-    Serial.print("Received packet with id 0x");
-    Serial.print(packetId, HEX);
-    Serial.print(" and length ");
-    Serial.println(packetSize);
+    //DEBUG_SERIAL.print("Received packet with id 0x");
+    //DEBUG_SERIAL.print(packetId, HEX);
+    //DEBUG_SERIAL.print(" and length ");
+    //DEBUG_SERIAL.println(packetSize);
 
     switch (packetId) {
         // Primary RPM Case
       case 0x1F:
         primaryRPM = CAN.parseInt();
-        Serial.print("Received primary RPM as: ");
-        Serial.println(primaryRPM);
+        primaryRPM *= 10;
+        DEBUG_SERIAL.print("Received primary RPM as: ");
+        DEBUG_SERIAL.println(primaryRPM);
         break;
 
         // Secondary Primary RPM Case
       case 0x20:
         secondaryRPM = CAN.parseInt();
-        Serial.print("Received secondary RPM as: ");
-        Serial.println(secondaryRPM);
+        secondaryRPM *= 10;
+        DEBUG_SERIAL.print("Received secondary RPM as: ");
+        DEBUG_SERIAL.println(secondaryRPM);
         break;
 
       //CVT Temperature Case
       case 0x21:
         cvtTemp = CAN.parseInt();
-        Serial.print("Received cvtTemp as: ");
-        Serial.println(cvtTemp);
+        DEBUG_SERIAL.print("Received cvtTemp as: ");
+        DEBUG_SERIAL.println(cvtTemp);
         break;
 
       case 0x51:
         daqOn = CAN.parseInt();
-        Serial.print("Received daqOn as: ");
-        Serial.println(daqOn);
+        DEBUG_SERIAL.print("Received daqOn as: ");
+        DEBUG_SERIAL.println(daqOn);
         break;
 
       case 0x53:
         daqError = CAN.parseInt();
-        Serial.print("Received daqError as: ");
-        Serial.println(daqError);
+        DEBUG_SERIAL.print("Received daqError as: ");
+        DEBUG_SERIAL.println(daqError);
         break;
 
       case 0x52:
         fourWheelsState = CAN.parseInt();
-        Serial.print("Received fourWheelsEngaged as: ");
-        Serial.println(fourWheelsState);
+        DEBUG_SERIAL.print("Received fourWheelsEngaged as: ");
+        DEBUG_SERIAL.println(fourWheelsState);
         break;
 
       case 0x54:
         fourWheelsUnknown = CAN.parseInt();
-        Serial.print("Received fourWheelsUnknown as: ");
-        Serial.println(fourWheelsUnknown);
+        DEBUG_SERIAL.print("Received fourWheelsUnknown as: ");
+        DEBUG_SERIAL.println(fourWheelsUnknown);
         break;
 
       case 0x3D:
         batteryLow = CAN.parseInt();
-        Serial.print("Received batteryLow as: ");
-        Serial.println(batteryLow);
+        DEBUG_SERIAL.print("Received batteryLow as: ");
+        DEBUG_SERIAL.println(batteryLow);
         break;
 
       case 0x33:
         fuelLevel = CAN.parseInt();
-        Serial.print("Received fuelLevel as: ");
-        Serial.println(fuelLevel);
+        DEBUG_SERIAL.print("Received fuelLevel as: ");
+        DEBUG_SERIAL.println(fuelLevel);
         break;
 
       case 0x49:
         timeH = CAN.parseInt();
-        Serial.print("Received timeH as: ");
-        Serial.println(timeH);
+        DEBUG_SERIAL.print("Received timeH as: ");
+        DEBUG_SERIAL.println(timeH);
         break;
 
       case 0x4A:
         timeM = CAN.parseInt();
-        Serial.print("Received timeM as: ");
-        Serial.println(timeM);
+        DEBUG_SERIAL.print("Received timeM as: ");
+        DEBUG_SERIAL.println(timeM);
         break;
 
       case 0x4B:
         timeS = CAN.parseInt();
-        Serial.print("Received timeS as: ");
-        Serial.println(timeS);
+        DEBUG_SERIAL.print("Received timeS as: ");
+        DEBUG_SERIAL.println(timeS);
         break;
 
 
       default:
-        Serial.println("Unknown packet ID");
+        DEBUG_SERIAL.print("Unknown packet ID: ");
+        DEBUG_SERIAL.println(packetId);
         while (CAN.available()) {
           CAN.read();  // Discard the data
         }
