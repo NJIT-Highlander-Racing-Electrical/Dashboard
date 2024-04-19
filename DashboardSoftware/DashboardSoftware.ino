@@ -2,7 +2,9 @@
 
 #include <CAN.h>
 
-#define DEBUG false
+TaskHandle_t CAN_Task;
+
+#define DEBUG true
 #define DEBUG_SERIAL \
   if (DEBUG) Serial
 
@@ -79,7 +81,8 @@ int fuelLevel = 0;
 
 //Definitions for four status LEDs
 int cvtTemp = 0;
-const int cvtTempMax = 100;
+const int cvtTempMax = 150;
+const int cvtOffTemp = 140;
 bool daqOn = false;
 bool daqError = false;
 bool batteryLow = false;
@@ -155,6 +158,16 @@ void setup() {
   rpmGaugeSetup();
 
 
+  xTaskCreatePinnedToCore(
+    CAN_Task_Code, /* Task function. */
+    "CAN_Task",   /* name of task. */
+    10000,     /* Stack size of task */
+    NULL,      /* parameter of the task */
+    1,         /* priority of the task */
+    &CAN_Task,    /* Task handle to keep track of created task */
+    0);        /* pin task to core 0 */
+  delay(250);
+
   //Left display configurations
   tftL.begin();
   tftL.setFont(&FreeMonoBold24pt7b);
@@ -172,12 +185,6 @@ void setup() {
 
 
 void loop() {
-
-  canbusDataStart = millis();
-  while ((millis() - canbusDataStart) < canbusDataPeriod) {
-    updateCanbus();  // dedicate 100ms to just canbus sampling to not miss messages
-    delay(1);
-  }
 
   cvtRatio = (secondaryRPM / (primaryRPM + 1.0));
 
@@ -227,7 +234,7 @@ void loop() {
   } else digitalWrite(daqLed, LOW);
 
   if (cvtTemp > cvtTempMax) digitalWrite(cvtLed, HIGH);
-  else digitalWrite(cvtLed, LOW);
+  if (cvtTemp < cvtOffTemp) digitalWrite(cvtLed, LOW);
 }
 
 
@@ -345,4 +352,18 @@ void update2wd4wdState() {
 //This is necessary to get a decimal number for the CVT ratio (standard MAP function will only return an int)
 float mapfloat(long x, long in_min, long in_max, long out_min, long out_max) {
   return (float)(x - in_min) * (out_max - out_min) / (float)(in_max - in_min) + out_min;
+}
+
+
+
+void CAN_Task_Code( void * pvParameters ){
+  Serial.print("CAN Task running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;){
+ 
+ updateCanbus();  // dedicate 100ms to just canbus sampling to not miss messages
+    delay(1);
+
+  } 
 }
