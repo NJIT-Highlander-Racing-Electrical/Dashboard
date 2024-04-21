@@ -14,7 +14,7 @@ Dashboard for the 2023 vehicle including data from:
 * Seven Segment Displays
 * 1.28" Round LCDs
 * 5mm LEDs
-* TLC5940 16-Channel LED Drivers
+* TLC5917 8-Channel Sinking constant Current LED Drivers
 
 ## Key Features
 
@@ -26,7 +26,7 @@ Dashboard for the 2023 vehicle including data from:
 6. LED Indicators for Fuel Level
 7. Status LEDs for CVT Temperature, Data Acquisition, Battery Level, and Power On/off
 8. CAN-BUS Communication with Rest of Vehicle
-9. Boot screen including Highlander Racing logo and Baja vehicle
+9. Boot screen including Highlander Racing logo
 
 ## Visuals
 
