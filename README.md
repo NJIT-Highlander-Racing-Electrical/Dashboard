@@ -10,8 +10,6 @@ Dashboard for the 2023 vehicle including data from:
 ## Hardware
 
 * ESP32 Microcontroller (Select NodeMCU-32S board in Arduino IDE)
-  * Note: Newer microcontrollers do not play nicely with CAN/TWAI, so any ESP32's with four mounting holes needs the CAN frequency doubled
-  * From this: https://www.eevblog.com/forum/microcontrollers/psa-esp32-can-frequency-assignment-broken-in-chip-revision/
 * TJA1051T CAN Transceiver
 * Seven Segment Displays
 * 1.28" Round LCDs
