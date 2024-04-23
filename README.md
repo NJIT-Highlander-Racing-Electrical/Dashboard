@@ -14,7 +14,7 @@ Dashboard for the 2023 vehicle including data from:
 * Seven Segment Displays
 * 1.28" Round LCDs
 * 5mm LEDs
-* TLC5917 8-Channel Sinking constant Current LED Drivers
+* TLC5917 8-Channel Sinking Constant Current LED Drivers
 
 ## Key Features
 
@@ -27,6 +27,11 @@ Dashboard for the 2023 vehicle including data from:
 7. Status LEDs for CVT Temperature, Data Acquisition, Battery Level, and Power On/off
 8. CAN-BUS Communication with Rest of Vehicle
 9. Boot screen including Highlander Racing logo
+
+## ESP32 Dual-Core Utilization
+
+* We decided to run CAN-Bus scanning solely on Core 0 (via a task) to ensure all messages are properly received
+* Writing to displays, 7-segment drivers, and math functions all take time, which means messages can be missed
 
 ## Visuals
 
