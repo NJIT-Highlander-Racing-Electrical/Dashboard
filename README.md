@@ -11,7 +11,7 @@ Dashboard for the 2023 vehicle including data from:
 
 * ESP32 Microcontroller (Select NodeMCU-32S board in Arduino IDE)
 * TJA1051T CAN Transceiver
-* Seven Segment Displays
+* 1" Seven Segment Displays (Kingbright SA10-21SRWA)
 * 1.28" Round LCDs
 * 5mm LEDs
 * TLC5917 8-Channel Sinking Constant Current LED Drivers
@@ -44,3 +44,16 @@ Dashboard for the 2023 vehicle including data from:
 * TLC5917 Library: https://github.com/Andy4495/TLC591x/tree/main
 * Adafruit CAN Pal Guide: https://learn.adafruit.com/adafruit-can-pal/pinouts
 * ESP32 Pinout: https://lastminuteengineers.com/wp-content/uploads/iot/ESP32-Pinout.png
+
+ ## Known Issues/Limitations
+ * The current PCB inside the dashboard has the fuel LEDs wire as follows
+   * TLC Output -> LED Anode -> LED Cathode -> Current Limiting Resistor -> Ground
+   * However, the TLC5917 is a sinking driver, and thus the LEDs need a 5V source
+   * This issue should be fixed in the most up-to-date KiCad schematic and PCB
+ * The density of the components and traces meant that seven traces could not be made without increasing the board thickness beyond two layers
+   * To accomodate this, jumper wires were installed point to point to make the missing connections
+ * The through holes for the LCDs and CAN-Bus module were too small and the headers had to be adjusted
+ * The enclosure for the dashboard needs some improvements:
+   * Better waterproofing (obviously)
+   * Improved acrylic support
+     * The front clear acrylic cover cracked due to the pressure from the bolts
