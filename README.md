@@ -57,3 +57,5 @@ Dashboard for the 2023 vehicle including data from:
    * Better waterproofing (obviously)
    * Improved acrylic support
      * The front clear acrylic cover cracked due to the pressure from the bolts
+* The DAS/battery subsystems do not include a method to obtain a low battery warning, so the battery light on the dashboard is not active
+* The fuel sensor was not installed on the 2024 vehicle due to a lack of time, so the fuel LEDs are not active 
