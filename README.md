@@ -60,4 +60,5 @@ Dashboard for the 2023 vehicle including data from:
 * The DAS/battery subsystems do not include a method to obtain a low battery warning, so the battery light on the dashboard is not active
 * The fuel sensor was not installed on the 2024 vehicle due to a lack of time, so the fuel LEDs are not active
 * At the competition, it was apparent that the whole dash was fairly dim in the bright sun
-  * Goals for next year should be to incorporate an (ideally detachable) sunshade, brighter LEDs, brighter LCD displays or a suitable alternative  
+  * Goals for next year should be to incorporate an (ideally detachable) sunshade, brighter LEDs, brighter LCD displays or a suitable alternative
+  * Other nice-to-haves would be a pot for brightness control and/or some other kind of driver input to change menus or settings
