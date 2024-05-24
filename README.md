@@ -62,3 +62,4 @@ Dashboard for the 2023 vehicle including data from:
 * At the competition, it was apparent that the whole dash was fairly dim in the bright sun
   * Goals for next year should be to incorporate an (ideally detachable) sunshade, brighter LEDs, brighter LCD displays or a suitable alternative
   * Other nice-to-haves would be a pot for brightness control and/or some other kind of driver input to change menus or settings
+  * G-Force on driver indicator with magnitude and direction would be neat as well
