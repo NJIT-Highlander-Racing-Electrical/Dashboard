@@ -86,8 +86,11 @@ unsigned long lastClockFlashMillis = 0;
 bool colonsOn = false;
 
 unsigned long lastRpmDialUpdate = 0;
-int rpmDialDelayMS = 100;
-int rpmDialStepVal = 25;
+int rpmDialDelayMS = 20;
+int rpmDialStepVal = 50;
+unsigned long endpointPauseStartTime = 0;
+int endpointDelay = 500;
+bool endpointPaused = false;
 bool stepUp = 1;  // 1 = step up direction, 0 = step down direction
 
 void setup() {
@@ -127,9 +130,11 @@ void setup() {
   digitalWrite(batteryLed, HIGH);
 
 
-  digitalWrite(redFuelLED, HIGH);
-  digitalWrite(yellowFuelLED1, HIGH);
-  digitalWrite(yellowFuelLED1, HIGH);
+  digitalWrite(redFuelLED, LOW);
+  digitalWrite(yellowFuelLED1, LOW);
+  digitalWrite(yellowFuelLED2, LOW);
+
+  updateSevenSegments(88);
 }
 
 
@@ -137,40 +142,59 @@ void setup() {
 void loop() {
 
 
+ digitalWrite(redFuelLED, LOW);
+  digitalWrite(yellowFuelLED1, LOW);
+  digitalWrite(yellowFuelLED2, LOW);
+
+
   if ((millis() - lastRpmDialUpdate) > rpmDialDelayMS) {
 
-    if (stepUp) {
-      primaryRPM += rpmDialStepVal;
-      if (primaryRPM > cvtMaxRPM) {
-        stepUp = false;
+    // Handle endpoint pause logic
+    if (endpointPaused) {
+      // Check if endpoint delay has passed
+      if ((millis() - endpointPauseStartTime) > endpointDelay) {
+        endpointPaused = false;  // End the pause
+      }
+    } else {
+      // Adjust RPM values only when not paused
+      if (stepUp) {
+        if (primaryRPM > cvtMaxRPM) {
+          stepUp = false;
+          endpointPauseStartTime = millis();  // Start pause at max RPM
+          endpointPaused = true;              // Enter paused state
+        } else {
+          primaryRPM += rpmDialStepVal;  // Increase RPM
+        }
+      } else {
+        if (primaryRPM < cvtMinRPM) {
+          stepUp = true;
+          endpointPauseStartTime = millis();  // Start pause at min RPM
+          endpointPaused = true;              // Enter paused state
+        } else {
+          primaryRPM -= rpmDialStepVal;  // Decrease RPM
+        }
+      }
+
+      // Update RPM gauge when not paused
+      if (!endpointPaused) {
+        mappedRPMAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
+        updateRPMGauge(mappedRPMAngle, primaryRPM);
+        lastRpmDialUpdate = millis();  // Reset timer for next update
       }
     }
-
-    if (!stepUp) {
-      primaryRPM -= rpmDialStepVal;
-      if (primaryRPM < cvtMinRPM) {
-        stepUp = true;
-      }
-    }
-
-    mappedRPMAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
-    updateRPMGauge(mappedRPMAngle, primaryRPM);
-    lastRpmDialUpdate = millis();
   }
+
 
 
   if ((millis() - lastClockFlashMillis) > 1000) {
     if (colonsOn) {
       colonsOn = false;
-      digitalWrite(yellowFuelLED2, HIGH);
     } else {
       colonsOn = true;
-      digitalWrite(yellowFuelLED2, LOW);
     }
     updateTime();
     lastClockFlashMillis = millis();
   }
-  
 }
 
 
