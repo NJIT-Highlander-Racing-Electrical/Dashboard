@@ -167,13 +167,13 @@
 // ###### EDIT THE PIN NUMBERS IN THE LINES FOLLOWING TO SUIT YOUR ESP8266 SETUP ######
 
 // For NodeMCU - use pin numbers in the form PIN_Dx where Dx is the NodeMCU pin designation
-//#define TFT_MISO  PIN_D6  // Automatically assigned with ESP8266 if not defined
-//#define TFT_MOSI  PIN_D7  // Automatically assigned with ESP8266 if not defined
-//#define TFT_SCLK  PIN_D5  // Automatically assigned with ESP8266 if not defined
+#define TFT_MISO  PIN_D6  // Automatically assigned with ESP8266 if not defined
+#define TFT_MOSI  PIN_D7  // Automatically assigned with ESP8266 if not defined
+#define TFT_SCLK  PIN_D5  // Automatically assigned with ESP8266 if not defined
 
-//#define TFT_CS    PIN_D8  // Chip select control pin D8
-//#define TFT_DC    PIN_D3  // Data Command control pin
-//#define TFT_RST   PIN_D4  // Reset pin (could connect to NodeMCU RST, see next line)
+#define TFT_CS    PIN_D8  // Chip select control pin D8
+#define TFT_DC    PIN_D3  // Data Command control pin
+#define TFT_RST   PIN_D4  // Reset pin (could connect to NodeMCU RST, see next line)
 //#define TFT_RST  -1     // Set TFT_RST to -1 if the display RESET is connected to NodeMCU RST or 3.3V
 
 
@@ -210,22 +210,22 @@
 // The hardware SPI can be mapped to any pins
 
 //#define TFT_MISO 19
-//#define TFT_MOSI 23
-//#define TFT_SCLK 18
-//#define TFT_CS   15  // Chip select control pin
-//#define TFT_DC    2  // Data Command control pin
+#define TFT_MOSI 23
+#define TFT_SCLK 18
+#define TFT_CS   5  // Chip select control pin
+#define TFT_DC    4  // Data Command control pin
 //#define TFT_RST   4  // Reset pin (could connect to RST pin)
-//#define TFT_RST  -1  // Set TFT_RST to -1 if display RESET is connected to ESP32 board RST
+#define TFT_RST  -1  // Set TFT_RST to -1 if display RESET is connected to ESP32 board RST
 
 // For ESP32 Dev board (only tested with GC9A01 display)
 // The hardware SPI can be mapped to any pins
 
-#define TFT_MOSI 23 // In some display driver board, it might be written as "SDA" and so on.
-#define TFT_SCLK 18
-#define TFT_CS   5  // Chip select control pin
-#define TFT_DC   4  // Data Command control pin
-#define TFT_RST  -1  // Reset pin (could connect to Arduino RESET pin)
-#define TFT_BL   -1  // LED back-light
+//#define TFT_MOSI 15 // In some display driver board, it might be written as "SDA" and so on.
+//#define TFT_SCLK 14
+//#define TFT_CS   5  // Chip select control pin
+//#define TFT_DC   27  // Data Command control pin
+//#define TFT_RST  33  // Reset pin (could connect to Arduino RESET pin)
+//#define TFT_BL   22  // LED back-light
 
 //#define TOUCH_CS 21     // Chip select pin (T_CS) of touch screen
 
