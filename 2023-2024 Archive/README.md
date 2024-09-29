@@ -7,6 +7,10 @@ Dashboard for the 2023 vehicle including data from:
 * BajaDAS
 * 2WD/4WD Engagement Switch
 
+## Setup Notse
+
+If attempting to modify or upload the programs in this repository, make sure to utilize the libraries included. These libraries may have been modified from their default installations. For example, TFT_eSPI specifies default pins for CS and DC pins on the LCDs, but we have used different pins. 
+
 ## Hardware
 
 * ESP32 Microcontroller (Select NodeMCU-32S board in Arduino IDE)
