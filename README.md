@@ -13,6 +13,10 @@ There are many aspects to improve on from last year's dashboard, as well as seve
 * Sunshade
   * Last year, the LCDs were too dim in direct sunlight. Although there may not be brighter LCDs available for purchase, a sunshade may fix this issue
   * The 7-segments were also dim, however the resistor on the LED drivers used to set the supply current meant that they were also not running at peak brightness.
+ * Improved front cover
+     * The acrylic is subject to cracking under pressure from the mounting screws
+     * Either rubber washers to reduce stress (also improves waterproofing)
+     * Or stronger material 
 * Integration of wheel speed sensor data (if useful)
 * Better graphic design
 * Other limitations/setbacks are discussed in the [2023-2024 Archive README](https://github.com/NJIT-Highlander-Racing-Electrical/Dashboard/tree/main/2023-2024%20Archive)
