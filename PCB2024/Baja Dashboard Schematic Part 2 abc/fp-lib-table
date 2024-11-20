@@ -1,6 +1,0 @@
-(fp_lib_table
-  (version 7)
-  (lib (name "Libraries")(type "KiCad")(uri "C:/Users/nicoa/OneDrive/Desktop/Dashboard-main/PCB2024/Libraries")(options "")(descr ""))
-  (lib (name "AHT XX")(type "KiCad")(uri "${BAJA}/AHT XX/AHT XX.pretty")(options "")(descr ""))
-  (lib (name "bajaRedoSaves")(type "KiCad")(uri "${BAJA}/bajaRedoSaves.pretty")(options "")(descr ""))
-)

@@ -1,0 +1,10 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "Arduinos")(type "KiCad")(uri "${BAJA}/Arduinos.kicad_sym")(options "")(descr ""))
+  (lib (name "LCD")(type "KiCad")(uri "C:/BajaDashboard/Dashboard-main/PCB2024/LCD.kicad_sym")(options "")(descr ""))
+  (lib (name "ESP 32")(type "KiCad")(uri "C:/BajaDashboard/Dashboard-main/PCB2024/ESP 32.kicad_sym")(options "")(descr ""))
+  (lib (name "TLC591x - Copy")(type "KiCad")(uri "${BAJA}/TLC591x - Copy.kicad_sym")(options "")(descr ""))
+  (lib (name "TLC591x")(type "KiCad")(uri "${BAJA}/TLC591x.kicad_sym")(options "")(descr ""))
+  (lib (name "Voltage Regulators - Copy")(type "KiCad")(uri "C:/BajaDashboard/Dashboard-main/PCB2024/Voltage Regulators - Copy.kicad_sym")(options "")(descr ""))
+  (lib (name "Voltage Regulators")(type "KiCad")(uri "${BAJA}/Voltage Regulators.kicad_sym")(options "")(descr ""))
+)
