@@ -3720,7 +3720,7 @@
 		)
 	)
 	(junction
-		(at 140.97 110.49)
+		(at 143.51 146.05)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "04e7a11e-0848-4482-b2bc-61986cf7fe52")
@@ -3732,7 +3732,7 @@
 		(uuid "0c551432-312e-4e9f-b9c4-c3db4330a4e7")
 	)
 	(junction
-		(at 109.22 111.76)
+		(at 111.76 147.32)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "0f3326b9-9f39-4a6c-9ea3-f8ef32c3d069")
@@ -3744,7 +3744,7 @@
 		(uuid "29fc84d8-f48b-49d5-aef5-3c458c726854")
 	)
 	(junction
-		(at 124.46 119.38)
+		(at 127 154.94)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "3ccb1687-f35b-4c11-9183-d7f5f1ae81b1")
@@ -3756,7 +3756,7 @@
 		(uuid "44d20515-39f1-42a4-8fee-e89cbb5a6d71")
 	)
 	(junction
-		(at 106.68 92.71)
+		(at 109.22 128.27)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "606115a5-ebd1-491d-9ed3-cd8c7ffe3319")
@@ -3768,13 +3768,13 @@
 		(uuid "7ff35a17-46e4-4cff-88d9-2c050ba83b93")
 	)
 	(junction
-		(at 146.05 110.49)
+		(at 148.59 146.05)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "893515a0-7c56-4558-bec0-7cfc8fcbe45e")
 	)
 	(junction
-		(at 146.05 102.87)
+		(at 148.59 138.43)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "8b1133b3-0719-4a5d-84dd-5b0feea897bf")
@@ -3816,7 +3816,7 @@
 		(uuid "e4d65c0c-61eb-410a-bd05-9390c9856ef7")
 	)
 	(junction
-		(at 124.46 92.71)
+		(at 127 128.27)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "eb61d4ab-c373-4d13-951c-5aaca520e267")
@@ -3839,7 +3839,7 @@
 	)
 	(wire
 		(pts
-			(xy 137.16 91.44) (xy 137.16 99.06)
+			(xy 139.7 127) (xy 139.7 134.62)
 		)
 		(stroke
 			(width 0)
@@ -3859,6 +3859,16 @@
 	)
 	(wire
 		(pts
+			(xy 104.14 114.3) (xy 106.68 114.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "06fb9fbb-fca1-4b19-9ba6-f634d3fdd619")
+	)
+	(wire
+		(pts
 			(xy 180.34 40.64) (xy 182.88 40.64)
 		)
 		(stroke
@@ -3869,17 +3879,7 @@
 	)
 	(wire
 		(pts
-			(xy 101.6 129.54) (xy 104.14 129.54)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0a4656d7-7975-41d4-b42f-a3b5b78565ce")
-	)
-	(wire
-		(pts
-			(xy 109.22 104.14) (xy 109.22 111.76)
+			(xy 111.76 139.7) (xy 111.76 147.32)
 		)
 		(stroke
 			(width 0)
@@ -3949,7 +3949,7 @@
 	)
 	(wire
 		(pts
-			(xy 109.22 119.38) (xy 124.46 119.38)
+			(xy 111.76 154.94) (xy 127 154.94)
 		)
 		(stroke
 			(width 0)
@@ -4069,7 +4069,7 @@
 	)
 	(wire
 		(pts
-			(xy 148.59 91.44) (xy 137.16 91.44)
+			(xy 151.13 127) (xy 139.7 127)
 		)
 		(stroke
 			(width 0)
@@ -4119,7 +4119,7 @@
 	)
 	(wire
 		(pts
-			(xy 124.46 92.71) (xy 106.68 92.71)
+			(xy 127 128.27) (xy 109.22 128.27)
 		)
 		(stroke
 			(width 0)
@@ -4149,7 +4149,7 @@
 	)
 	(wire
 		(pts
-			(xy 157.48 91.44) (xy 156.21 91.44)
+			(xy 160.02 127) (xy 158.75 127)
 		)
 		(stroke
 			(width 0)
@@ -4259,7 +4259,7 @@
 	)
 	(wire
 		(pts
-			(xy 124.46 114.3) (xy 124.46 119.38)
+			(xy 127 149.86) (xy 127 154.94)
 		)
 		(stroke
 			(width 0)
@@ -4299,7 +4299,7 @@
 	)
 	(wire
 		(pts
-			(xy 124.46 90.17) (xy 124.46 92.71)
+			(xy 127 119.38) (xy 127 128.27)
 		)
 		(stroke
 			(width 0)
@@ -4319,7 +4319,7 @@
 	)
 	(wire
 		(pts
-			(xy 137.16 110.49) (xy 140.97 110.49)
+			(xy 139.7 146.05) (xy 143.51 146.05)
 		)
 		(stroke
 			(width 0)
@@ -4349,7 +4349,7 @@
 	)
 	(wire
 		(pts
-			(xy 111.76 86.36) (xy 111.76 99.06)
+			(xy 114.3 121.92) (xy 114.3 134.62)
 		)
 		(stroke
 			(width 0)
@@ -4359,7 +4359,7 @@
 	)
 	(wire
 		(pts
-			(xy 124.46 119.38) (xy 146.05 119.38)
+			(xy 127 154.94) (xy 148.59 154.94)
 		)
 		(stroke
 			(width 0)
@@ -4509,7 +4509,7 @@
 	)
 	(wire
 		(pts
-			(xy 140.97 110.49) (xy 140.97 86.36)
+			(xy 143.51 146.05) (xy 143.51 121.92)
 		)
 		(stroke
 			(width 0)
@@ -4539,7 +4539,7 @@
 	)
 	(wire
 		(pts
-			(xy 111.76 104.14) (xy 109.22 104.14)
+			(xy 114.3 139.7) (xy 111.76 139.7)
 		)
 		(stroke
 			(width 0)
@@ -4549,7 +4549,7 @@
 	)
 	(wire
 		(pts
-			(xy 137.16 104.14) (xy 138.43 104.14)
+			(xy 139.7 139.7) (xy 140.97 139.7)
 		)
 		(stroke
 			(width 0)
@@ -4779,7 +4779,7 @@
 	)
 	(wire
 		(pts
-			(xy 146.05 95.25) (xy 146.05 85.09)
+			(xy 148.59 130.81) (xy 148.59 120.65)
 		)
 		(stroke
 			(width 0)
@@ -4939,6 +4939,16 @@
 	)
 	(wire
 		(pts
+			(xy 114.3 114.3) (xy 121.92 114.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "82e82162-607d-424a-8900-a3404ff0036f")
+	)
+	(wire
+		(pts
 			(xy 227.33 138.43) (xy 227.33 139.7)
 		)
 		(stroke
@@ -5029,7 +5039,7 @@
 	)
 	(wire
 		(pts
-			(xy 146.05 85.09) (xy 106.68 85.09)
+			(xy 148.59 120.65) (xy 109.22 120.65)
 		)
 		(stroke
 			(width 0)
@@ -5119,7 +5129,7 @@
 	)
 	(wire
 		(pts
-			(xy 124.46 92.71) (xy 124.46 93.98)
+			(xy 127 128.27) (xy 127 129.54)
 		)
 		(stroke
 			(width 0)
@@ -5139,7 +5149,7 @@
 	)
 	(wire
 		(pts
-			(xy 146.05 102.87) (xy 138.43 102.87)
+			(xy 148.59 138.43) (xy 140.97 138.43)
 		)
 		(stroke
 			(width 0)
@@ -5269,7 +5279,7 @@
 	)
 	(wire
 		(pts
-			(xy 106.68 109.22) (xy 111.76 109.22)
+			(xy 109.22 144.78) (xy 114.3 144.78)
 		)
 		(stroke
 			(width 0)
@@ -5299,7 +5309,7 @@
 	)
 	(wire
 		(pts
-			(xy 140.97 110.49) (xy 146.05 110.49)
+			(xy 143.51 146.05) (xy 148.59 146.05)
 		)
 		(stroke
 			(width 0)
@@ -5409,7 +5419,7 @@
 	)
 	(wire
 		(pts
-			(xy 140.97 86.36) (xy 111.76 86.36)
+			(xy 143.51 121.92) (xy 114.3 121.92)
 		)
 		(stroke
 			(width 0)
@@ -5426,16 +5436,6 @@
 			(type default)
 		)
 		(uuid "b60151e7-5f6e-43c9-9d0b-18ce2e7dd62f")
-	)
-	(wire
-		(pts
-			(xy 111.76 129.54) (xy 119.38 129.54)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b70f9249-28e7-4fa2-aaa6-11095f99f8fe")
 	)
 	(wire
 		(pts
@@ -5489,7 +5489,7 @@
 	)
 	(wire
 		(pts
-			(xy 138.43 102.87) (xy 138.43 104.14)
+			(xy 140.97 138.43) (xy 140.97 139.7)
 		)
 		(stroke
 			(width 0)
@@ -5539,7 +5539,7 @@
 	)
 	(wire
 		(pts
-			(xy 106.68 92.71) (xy 106.68 109.22)
+			(xy 109.22 128.27) (xy 109.22 144.78)
 		)
 		(stroke
 			(width 0)
@@ -5669,7 +5669,7 @@
 	)
 	(wire
 		(pts
-			(xy 106.68 85.09) (xy 106.68 92.71)
+			(xy 109.22 120.65) (xy 109.22 128.27)
 		)
 		(stroke
 			(width 0)
@@ -5779,7 +5779,7 @@
 	)
 	(wire
 		(pts
-			(xy 147.32 102.87) (xy 146.05 102.87)
+			(xy 149.86 138.43) (xy 148.59 138.43)
 		)
 		(stroke
 			(width 0)
@@ -5789,7 +5789,7 @@
 	)
 	(wire
 		(pts
-			(xy 109.22 111.76) (xy 109.22 114.3)
+			(xy 111.76 147.32) (xy 111.76 149.86)
 		)
 		(stroke
 			(width 0)
@@ -5819,16 +5819,6 @@
 	)
 	(wire
 		(pts
-			(xy 124.46 119.38) (xy 124.46 124.46)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e3c9ac40-b72d-42df-8397-67695f06b5eb")
-	)
-	(wire
-		(pts
 			(xy 203.2 78.74) (xy 208.28 78.74)
 		)
 		(stroke
@@ -5849,7 +5839,7 @@
 	)
 	(wire
 		(pts
-			(xy 137.16 110.49) (xy 137.16 109.22)
+			(xy 139.7 146.05) (xy 139.7 144.78)
 		)
 		(stroke
 			(width 0)
@@ -5869,7 +5859,7 @@
 	)
 	(wire
 		(pts
-			(xy 146.05 118.11) (xy 146.05 119.38)
+			(xy 148.59 153.67) (xy 148.59 154.94)
 		)
 		(stroke
 			(width 0)
@@ -5966,16 +5956,6 @@
 			(type default)
 		)
 		(uuid "f828c025-c961-4a67-9cb6-7c9bb101feaf")
-	)
-	(wire
-		(pts
-			(xy 124.46 134.62) (xy 124.46 139.7)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f8aec22a-d75a-402a-80de-f3083f49a6f2")
 	)
 	(wire
 		(pts
@@ -6228,17 +6208,6 @@
 		)
 		(uuid "771fef60-7bf3-4a3c-82e5-21e0f7a4f15a")
 	)
-	(label "555BJT"
-		(at 101.6 129.54 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "80770a31-bc00-485a-a69c-ac3221d2cf3a")
-	)
 	(label "SDLU1"
 		(at 30.48 30.48 180)
 		(fields_autoplaced yes)
@@ -6271,6 +6240,17 @@
 			(justify left bottom)
 		)
 		(uuid "8d0b3664-d4fa-47ef-99fe-07cc87a6bb4e")
+	)
+	(label "555BJT"
+		(at 104.14 114.3 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "8e32e397-53c8-4ea0-8239-b11165b60f01")
 	)
 	(label "U7RightES"
 		(at 207.01 38.1 0)
@@ -6940,34 +6920,44 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:Speaker")
-		(at 157.48 86.36 90)
+		(lib_id "MMBT2222_:MMBT2222_")
+		(at 124.46 114.3 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "0befa068-44ac-4e23-a901-72c2ae23c7db")
-		(property "Reference" "LS1"
-			(at 151.384 81.534 90)
+		(uuid "0aecee15-846a-49ac-985a-22e524b6c1f5")
+		(property "Reference" "Q1"
+			(at 128.27 113.0299 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
+				(justify left)
 			)
 		)
-		(property "Value" "Speaker"
-			(at 154.94 81.534 90)
+		(property "Value" "MMBT2222_"
+			(at 129.286 111.252 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
+				(justify left)
 			)
 		)
-		(property "Footprint" "Buzzer_Beeper:Buzzer_12x9.5RM7.6"
-			(at 162.56 86.36 0)
+		(property "Footprint" "bajaRedoSaves:MMBT2222"
+			(at 124.46 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 124.46 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6975,8 +6965,8 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "~"
-			(at 158.75 86.614 0)
+		(property "Description" ""
+			(at 124.46 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6984,25 +6974,109 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Speaker"
-			(at 157.48 86.36 0)
+		(property "MF" "ON Semiconductor"
+			(at 124.46 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify bottom)
 				(hide yes)
 			)
 		)
-		(pin "2"
-			(uuid "fb9f5514-4878-4364-a03b-0e5cdac69199")
+		(property "Description_1" "\nBipolar (BJT) Transistor NPN 30 V 600 mA 250MHz 300 mW Surface Mount SOT-23-3 (TO-236)\n"
+			(at 124.46 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
 		)
-		(pin "1"
-			(uuid "8eeb0414-3e53-407a-a430-3c10a8c8fe05")
+		(property "Package" "SOT-23-3 Fairchild Semiconductor"
+			(at 124.46 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Price" "None"
+			(at 124.46 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "SnapEDA_Link" "https://www.snapeda.com/parts/MMBT2222/Onsemi/view-part/?ref=snap"
+			(at 124.46 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "MP" "MMBT2222"
+			(at 124.46 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Purchase-URL" "https://www.snapeda.com/api/url_track_click_mouser/?unipart_id=214298&manufacturer=ON Semiconductor&part_name=MMBT2222&search_term=None"
+			(at 124.46 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Availability" "In Stock"
+			(at 124.46 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Check_prices" "https://www.snapeda.com/parts/MMBT2222/Onsemi/view-part/?ref=eda"
+			(at 124.46 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(pin "B"
+			(uuid "2a9de070-ffda-4b8b-a079-8f7d62d5c45d")
+		)
+		(pin "C"
+			(uuid "b6a97215-29bc-48b4-91bb-ae4ddf29cf39")
+		)
+		(pin "E"
+			(uuid "2813344b-3390-488c-bb4f-bcd9862bc5d6")
 		)
 		(instances
-			(project ""
+			(project "Baja Dashboard Schematic Part 2"
 				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
-					(reference "LS1")
+					(reference "Q1")
 					(unit 1)
 				)
 			)
@@ -7880,6 +7954,72 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 127 154.94 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "26b634ba-7688-4e82-8cf0-b980a4ed3c56")
+		(property "Reference" "#PWR038"
+			(at 127 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 127 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 127 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 127 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 127 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "130a59dc-2592-4896-97d1-51c4f155c86d")
+		)
+		(instances
+			(project "Baja Dashboard Schematic Part 2"
+				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
+					(reference "#PWR038")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+3.3V")
 		(at 251.46 83.82 0)
 		(unit 1)
@@ -8298,6 +8438,71 @@
 			(project "Baja Dashboard Schematic Part 2"
 				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
 					(reference "#PWR036")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
+		(at 127 109.22 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3393ed91-150b-473a-b466-872130b63f42")
+		(property "Reference" "#PWR037"
+			(at 127 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 124.206 107.188 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 127 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 127 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 127 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "947347f8-a923-4892-8bbe-f0f90f180cf1")
+		)
+		(instances
+			(project "Baja Dashboard Schematic Part 2"
+				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
+					(reference "#PWR037")
 					(unit 1)
 				)
 			)
@@ -8865,73 +9070,6 @@
 			(project "Baja Dashboard Schematic Part 2"
 				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
 					(reference "U5")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 107.95 129.54 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "4f5a4d6a-904b-427d-8bea-7976c1e9e0e0")
-		(property "Reference" "R11"
-			(at 108.204 131.826 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "300"
-			(at 107.95 127.508 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0201_0603Metric"
-			(at 107.95 131.318 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 107.95 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 107.95 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "c59d3370-a85f-4208-a100-87983e3f1fa8")
-		)
-		(pin "1"
-			(uuid "9916e03a-2454-4cbf-a14d-16ec118af8cb")
-		)
-		(instances
-			(project "Baja Dashboard Schematic Part 2"
-				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
-					(reference "R11")
 					(unit 1)
 				)
 			)
@@ -10328,72 +10466,6 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 160.02 91.44 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "79e7946e-8de0-4a14-b4c3-4a6cda00c184")
-		(property "Reference" "#PWR039"
-			(at 160.02 97.79 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 160.02 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 160.02 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 160.02 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 160.02 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "7a035c94-51a7-4d2c-a3f1-66a29a2ded0f")
-		)
-		(instances
-			(project "Baja Dashboard Schematic Part 2"
-				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
-					(reference "#PWR039")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
 		(at 186.69 148.59 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -10460,7 +10532,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 109.22 115.57 0)
+		(at 111.76 151.13 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -10469,7 +10541,7 @@
 		(fields_autoplaced yes)
 		(uuid "7c033308-76fd-413f-b357-14c183baaf36")
 		(property "Reference" "C1"
-			(at 113.03 114.2999 0)
+			(at 115.57 149.8599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10478,7 +10550,7 @@
 			)
 		)
 		(property "Value" "10nF"
-			(at 113.03 116.8399 0)
+			(at 115.57 152.3999 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10487,7 +10559,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_Tantalum_SMD:CP_EIA-1608-08_AVX-J"
-			(at 110.1852 119.38 0)
+			(at 112.7252 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10496,7 +10568,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 109.22 115.57 0)
+			(at 111.76 151.13 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10505,7 +10577,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 109.22 115.57 0)
+			(at 111.76 151.13 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10681,6 +10753,72 @@
 			(project "Baja Dashboard Schematic Part 2"
 				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
 					(reference "#PWR08")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 162.56 127 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8505321b-64ec-466a-9ac9-ff255736538e")
+		(property "Reference" "#PWR039"
+			(at 162.56 133.35 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 162.56 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 162.56 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 162.56 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 162.56 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8d9da8fd-73f9-4190-b9d2-526e67f0a28c")
+		)
+		(instances
+			(project "Baja Dashboard Schematic Part 2"
+				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
+					(reference "#PWR039")
 					(unit 1)
 				)
 			)
@@ -10958,7 +11096,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 146.05 114.3 0)
+		(at 148.59 149.86 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -10967,7 +11105,7 @@
 		(fields_autoplaced yes)
 		(uuid "8f16abcc-627d-4200-8ecd-d27d4980bff8")
 		(property "Reference" "C2"
-			(at 149.86 113.0299 0)
+			(at 152.4 148.5899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10976,7 +11114,7 @@
 			)
 		)
 		(property "Value" "10^pF"
-			(at 149.86 115.5699 0)
+			(at 152.4 151.1299 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10985,7 +11123,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_Tantalum_SMD:CP_EIA-1608-08_AVX-J"
-			(at 147.0152 118.11 0)
+			(at 149.5552 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10994,7 +11132,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 146.05 114.3 0)
+			(at 148.59 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11003,7 +11141,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 146.05 114.3 0)
+			(at 148.59 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11446,7 +11584,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 146.05 99.06 0)
+		(at 148.59 134.62 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -11454,7 +11592,7 @@
 		(dnp no)
 		(uuid "ac5cc011-cbbd-45e4-bc6e-fa0ab2c06e17")
 		(property "Reference" "R2"
-			(at 147.828 98.298 0)
+			(at 150.368 133.858 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11463,7 +11601,7 @@
 			)
 		)
 		(property "Value" "300"
-			(at 148.59 100.3299 0)
+			(at 151.13 135.8899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11472,7 +11610,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0201_0603Metric"
-			(at 144.272 99.06 90)
+			(at 146.812 134.62 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11481,7 +11619,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 146.05 99.06 0)
+			(at 148.59 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11490,7 +11628,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 146.05 99.06 0)
+			(at 148.59 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11508,6 +11646,73 @@
 			(project "Baja Dashboard Schematic Part 2"
 				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
 					(reference "R2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 110.49 114.3 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "af4cce78-a59d-4956-b503-fbce11a80a71")
+		(property "Reference" "R11"
+			(at 110.744 116.586 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "300"
+			(at 110.49 112.268 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0201_0603Metric"
+			(at 110.49 116.078 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 110.49 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 110.49 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "dafb1c84-e981-457c-874b-601786d64536")
+		)
+		(pin "1"
+			(uuid "37f7f047-8511-4fcb-837d-fc09694c710a")
+		)
+		(instances
+			(project "Baja Dashboard Schematic Part 2"
+				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
+					(reference "R11")
 					(unit 1)
 				)
 			)
@@ -11821,71 +12026,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+5V")
-		(at 124.46 90.17 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "b913c480-020b-45e3-890e-281f3a0bbac7")
-		(property "Reference" "#PWR037"
-			(at 124.46 93.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+5V"
-			(at 121.666 88.138 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 124.46 90.17 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 124.46 90.17 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 124.46 90.17 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "e1beb551-0247-4189-a732-a443f7dd30d0")
-		)
-		(instances
-			(project ""
-				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
-					(reference "#PWR037")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "7 Segment LCD:7_Segment_LED")
 		(at 76.2 85.09 0)
 		(unit 1)
@@ -12114,236 +12254,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
-		(at 124.46 139.7 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "c37bb88b-9610-4674-8205-d37545984c19")
-		(property "Reference" "#PWR038"
-			(at 124.46 146.05 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 124.46 144.78 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 124.46 139.7 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 124.46 139.7 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 124.46 139.7 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "8c23a581-d3a5-4a74-bb2d-0e9ad45f6f9f")
-		)
-		(instances
-			(project "Baja Dashboard Schematic Part 2"
-				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
-					(reference "#PWR038")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "MMBT2222_:MMBT2222_")
-		(at 121.92 129.54 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "c4904234-6fd4-4f25-8aa0-c2630269c504")
-		(property "Reference" "Q2"
-			(at 125.73 128.2699 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "MMBT2222_"
-			(at 125.73 130.8099 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "bajaRedoSaves:MMBT2222"
-			(at 121.92 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 121.92 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 121.92 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MF" "ON Semiconductor"
-			(at 121.92 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "Description_1" "\nBipolar (BJT) Transistor NPN 30 V 600 mA 250MHz 300 mW Surface Mount SOT-23-3 (TO-236)\n"
-			(at 121.92 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "Package" "SOT-23-3 Fairchild Semiconductor"
-			(at 121.92 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "Price" "None"
-			(at 121.92 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "SnapEDA_Link" "https://www.snapeda.com/parts/MMBT2222/Onsemi/view-part/?ref=snap"
-			(at 121.92 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "MP" "MMBT2222"
-			(at 121.92 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "Purchase-URL" "https://www.snapeda.com/api/url_track_click_mouser/?unipart_id=214298&manufacturer=ON Semiconductor&part_name=MMBT2222&search_term=None"
-			(at 121.92 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "Availability" "In Stock"
-			(at 121.92 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "Check_prices" "https://www.snapeda.com/parts/MMBT2222/Onsemi/view-part/?ref=eda"
-			(at 121.92 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(pin "B"
-			(uuid "1ecba67e-ed19-42e2-b0cf-76a204500f85")
-		)
-		(pin "C"
-			(uuid "7df52107-118d-41c0-a90a-e451a2a72e30")
-		)
-		(pin "E"
-			(uuid "cece952a-9f41-4bf5-a257-7ee112202d96")
-		)
-		(instances
-			(project ""
-				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
-					(reference "Q2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Switch:SW_Push")
 		(at 96.52 62.23 0)
 		(unit 1)
@@ -12480,7 +12390,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 152.4 91.44 90)
+		(at 154.94 127 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -12489,7 +12399,7 @@
 		(fields_autoplaced yes)
 		(uuid "ca593659-f1cb-4d21-aedd-b234160a718c")
 		(property "Reference" "R3"
-			(at 152.4 85.09 90)
+			(at 154.94 120.65 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12497,7 +12407,7 @@
 			)
 		)
 		(property "Value" "300"
-			(at 152.4 87.63 90)
+			(at 154.94 123.19 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12505,7 +12415,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0201_0603Metric"
-			(at 152.4 93.218 90)
+			(at 154.94 128.778 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12514,7 +12424,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 152.4 91.44 0)
+			(at 154.94 127 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12523,7 +12433,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 152.4 91.44 0)
+			(at 154.94 127 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12617,7 +12527,7 @@
 	)
 	(symbol
 		(lib_id "Timer:TLC555xPS")
-		(at 124.46 104.14 0)
+		(at 127 139.7 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -12625,7 +12535,7 @@
 		(dnp no)
 		(uuid "cbfb1c26-78a7-4e05-bde8-404fb5b216f3")
 		(property "Reference" "U9"
-			(at 126.6541 91.44 0)
+			(at 129.1941 127 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12634,7 +12544,7 @@
 			)
 		)
 		(property "Value" "TLC555xPS"
-			(at 126.6541 93.98 0)
+			(at 129.1941 129.54 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12643,7 +12553,7 @@
 			)
 		)
 		(property "Footprint" "bajaRedoSaves:TLC555"
-			(at 140.97 114.3 0)
+			(at 143.51 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12652,7 +12562,7 @@
 			)
 		)
 		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tlc555.pdf"
-			(at 146.05 114.3 0)
+			(at 148.59 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12661,7 +12571,7 @@
 			)
 		)
 		(property "Description" "Single LinCMOS Timer, 555 compatible, VSSOP-8"
-			(at 124.46 104.14 0)
+			(at 127 139.7 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12952,7 +12862,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 146.05 106.68 0)
+		(at 148.59 142.24 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -12961,7 +12871,7 @@
 		(fields_autoplaced yes)
 		(uuid "d4c9c6e6-e673-4d65-b347-77be3e9699ae")
 		(property "Reference" "R1"
-			(at 148.59 105.4099 0)
+			(at 151.13 140.9699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12970,7 +12880,7 @@
 			)
 		)
 		(property "Value" "200"
-			(at 148.59 107.9499 0)
+			(at 151.13 143.5099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12979,7 +12889,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0201_0603Metric"
-			(at 144.272 106.68 90)
+			(at 146.812 142.24 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12988,7 +12898,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 146.05 106.68 0)
+			(at 148.59 142.24 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12997,7 +12907,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 146.05 106.68 0)
+			(at 148.59 142.24 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13669,6 +13579,75 @@
 			(project "Baja Dashboard Schematic Part 2"
 				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
 					(reference "#PWR044")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:Speaker")
+		(at 160.02 121.92 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f9326401-3eaf-4867-bd86-cd97291e0a71")
+		(property "Reference" "LS1"
+			(at 153.924 117.094 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "Speaker"
+			(at 157.48 117.094 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Buzzer_Beeper:Buzzer_12x9.5RM7.6"
+			(at 165.1 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 161.29 122.174 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Speaker"
+			(at 160.02 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "327f77d4-311b-4e59-a97e-c6c5332d119b")
+		)
+		(pin "1"
+			(uuid "4de6a516-3115-4b6b-a7e2-b79d06dc8a79")
+		)
+		(instances
+			(project "Baja Dashboard Schematic Part 2"
+				(path "/4e7877e6-0ece-45a5-b98d-6438ada69c95"
+					(reference "LS1")
 					(unit 1)
 				)
 			)
