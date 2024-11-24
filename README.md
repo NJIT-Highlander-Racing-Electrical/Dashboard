@@ -11,14 +11,23 @@ A dashboard for the vehicle including data from:
 There are many aspects to improve on from last year's dashboard, as well as several other new features we would like to add. Here are some topics to look into:
 
 * Sunshade
-  * Last year, the LCDs were too dim in direct sunlight. Although there may not be brighter LCDs available for purchase, a sunshade may fix this issue
-  * The 7-segments were also dim, however the resistor on the LED drivers used to set the supply current meant that they were also not running at peak brightness.
+  * Last year, the LCDs were too dim in direct sunlight. This year, we will be implementing a sunshade to fix this
+  * This sunshade can be made out of sheet metal, formed to shape with a 3D printed mold, attached via screws to the dashboard's back cover, and painted black to minimize reflections.
  * Improved front cover
      * The acrylic is subject to cracking under pressure from the mounting screws
-     * Either rubber washers to reduce stress (also improves waterproofing)
-     * Or stronger material 
-* Integration of wheel speed sensor data (if useful)
-* Better graphic design
+     * This year, we will be using polycarbonate and we can use rubber washers on the mounting screws too
+ * Waterproofing
+     * Last year, the dashboard was not waterproof. This year, we are adding gasket material
+          * For the front, we will sandwich it between the polycarbonate and 3D printed frame
+          * For the rear, we can put it between the rear 3D printed cover and the main 3D printed frame
+* Integration of wheel speed sensor data
+     * Wheel speed data can be used to determine whether a wheel has locked up or has wheelspin.
+     * This should be a bright color that takes priority over anything else on the dashboard. For example, if the front left wheel is locked, the top of the left circular display should flash red.
+* Brighter Displays
+     * With the dark mode background last year, the displays were not bright enough. This year we are using light backgrounds.
+* Driver Input
+     * This year, we are implementing two push buttons on the back of the dashboard that the driver can use for miscellaneous functions
+           * Switching display data, adjusting brightness, etc
 * Other limitations/setbacks are discussed in the [2023-2024 Archive README](https://github.com/NJIT-Highlander-Racing-Electrical/Dashboard/tree/main/2023-2024%20Archive)
 
 
