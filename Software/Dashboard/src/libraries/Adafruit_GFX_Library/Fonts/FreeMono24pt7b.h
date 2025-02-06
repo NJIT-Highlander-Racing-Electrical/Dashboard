@@ -1,5 +1,5 @@
 #pragma once
-#include <Adafruit_GFX.h>
+#include "../../Adafruit_GFX_Library/Adafruit_GFX.h"
 
 const uint8_t FreeMono24pt7bBitmaps[] PROGMEM = {
     0x73, 0x9C, 0xE7, 0x39, 0xCE, 0x73, 0x9C, 0xE7, 0x10, 0x84, 0x21, 0x08,

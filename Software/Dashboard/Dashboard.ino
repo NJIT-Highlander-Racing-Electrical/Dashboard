@@ -5,19 +5,30 @@
   if (DEBUG) Serial
 
 #include "SPI.h"
+#include "src/libraries/Adafruit_BusIO/Adafruit_I2CDevice.h"
 #include "src/libraries/Adafruit_GFX_Library/Adafruit_GFX.h"
 #include "src/libraries/Adafruit_GC9A01A/Adafruit_GC9A01A.h"
 #include "src/libraries/TJpg_Decoder/src/TJpg_Decoder.h"
-#include <Fonts/FreeMono12pt7b.h>
-#include <Fonts/FreeMonoBold18pt7b.h>
-#include <Fonts/FreeMonoBold24pt7b.h>
+#include "src/libraries/Adafruit_GFX_Library/Fonts/FreeMono12pt7b.h"
+#include "src/libraries/Adafruit_GFX_Library/Fonts/FreeMonoBold18pt7b.h"
+#include "src/libraries/Adafruit_GFX_Library/Fonts/FreeMonoBold24pt7b.h"
 #include "src/libraries/TLC591x/src/TLC591x.h"
+#include "src/NotoSansBold36.h"
+#include "src/NotoSansBold15.h"
+
+#include "src/libraries/TFT_eSPI/TFT_eSPI.h"
+
 #if defined(ENERGIA_ARCH_MSP432R)
 #include <stdio.h>
 #endif
-TLC591x myLED(3, 32, 33, 25, 26);  // Uncomment if using OE pin
 
-#include "rpmGauge.h"
+// Constructor parameters: # of chips, SDI in, CLK pin, LE pin, OE pin (optional parameter)
+TLC591x myLED(3, 32, 33, 21, 22);  // Uncomment if using OE pin
+
+
+// Setup for right circular display
+TFT_eSPI tft = TFT_eSPI();
+TFT_eSprite sprite = TFT_eSprite(&tft);
 
 // Setup for left circular display
 #define TFT_DC_L 16
@@ -164,8 +175,8 @@ void loop() {
     analogWrite(daqLed, 25);
   } else digitalWrite(daqLed, LOW);
 
-  if (cvtTemperature > cvtTempMax) digitalWrite(cvtLed, HIGH);
-  if (cvtTemperature < cvtOffTemp) digitalWrite(cvtLed, LOW);
+  if (primaryTemperature > cvtTempMax || secondaryTemperature > cvtTempMax) digitalWrite(cvtLed, HIGH);
+  if (primaryTemperature < cvtTempMax && secondaryTemperature < cvtTempMax) digitalWrite(cvtLed, LOW);
 }
 
 

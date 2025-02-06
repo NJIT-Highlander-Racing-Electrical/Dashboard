@@ -20,11 +20,11 @@
 
 #pragma once
 
-#include "Adafruit_GFX.h"
+#include "../Adafruit_GFX_Library/Adafruit_GFX.h"
 #include "Arduino.h"
 #include "Print.h"
-#include <Adafruit_SPITFT.h>
-#include <Adafruit_SPITFT_Macros.h>
+#include "../Adafruit_GFX_Library/Adafruit_SPITFT.h"
+#include "../Adafruit_GFX_Library/Adafruit_SPITFT_Macros.h"
 #include <SPI.h>
 
 #define GC9A01A_TFTWIDTH 240  ///< Display width in pixels

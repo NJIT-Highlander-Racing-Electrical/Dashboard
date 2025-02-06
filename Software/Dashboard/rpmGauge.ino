@@ -1,11 +1,7 @@
 //RPM dial with digital readout
 //Main graphic adapted from this project: https://www.youtube.com/watch?v=cBtsLxZ13hQ
 
-#include "src/libraries/TFT_eSPI/TFT_eSPI.h"
-TFT_eSPI tft = TFT_eSPI();
-TFT_eSprite sprite = TFT_eSprite(&tft);
-#include "src/NotoSansBold36.h"
-#include "src/NotoSansBold15.h"
+
 #define AA_FONT_LARGE NotoSansBold36
 #define AA_FONT_SMALL NotoSansBold15
 
