@@ -62,27 +62,21 @@ int lastRPM = 0;
 const float gearboxRatio = 8.25;
 const float wheelCircumference = 23.0;  // Wheel circumference in inches; distance traveled per revolution; should be 23 inches
 float totalMultiplier = 0;
-uint8_t wheelSpeed = 0;
-
-//Number of fuel level LEDs to display (0-9)
-int fuelLevel = 0;
+uint8_t calculatedWheelSpeed = 0;
 
 //Definitions for four status LEDs
 const int cvtTempMax = 150;
 const int cvtOffTemp = 140;
-bool daqOn = false;
-bool daqError = false;
-bool batteryLow = false;
 
 //Pins for four status LEDs (power status is tied to VCC)
-const int cvtLed = 2;
-const int daqLed = 27;
-const int batteryLed = 15;
+const int cvtLed = 11;
+const int batteryLed = 12;
+const int daqLed = 13;
 
 //Pins for three non-green fuel LEDs (brightness was uneven with them on the LED driver :( )
-const int redFuelLED = 12;
-const int yellowFuelLED1 = 13;
-const int yellowFuelLED2 = 14;
+const int redFuelLED = 10;
+const int yellowFuelLED1 = 9;
+const int yellowFuelLED2 = 8;
 
 //Definitions for GPS time
 int lastTimeH = 0;
@@ -134,12 +128,12 @@ void loop() {
   cvtRatio = (secondaryRPM / (primaryRPM + 1.0));
 
   // 0.000015782828283 inches in a mile and 60 minutes in one hour
-  wheelSpeed = (secondaryRPM * totalMultiplier);
+  calculatedWheelSpeed = (secondaryRPM * totalMultiplier);
 
   // This takes the calculated speed and displays it on the seven segments
-  DEBUG_SERIAL.print("WHEEL SPEED: ");
-  DEBUG_SERIAL.println(wheelSpeed);
-  updateSevenSegments(wheelSpeed);
+  DEBUG_SERIAL.print("CALCULATED WHEEL SPEED: ");
+  DEBUG_SERIAL.println(calculatedWheelSpeed);
+  updateSevenSegments(calculatedWheelSpeed);
 
   //This takes the CVT rpm and plots the dial accordingly
   mappedRPMAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
