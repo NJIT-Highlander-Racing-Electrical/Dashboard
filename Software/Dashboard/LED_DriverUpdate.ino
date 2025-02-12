@@ -40,19 +40,22 @@ void updateSevenSegments(uint8_t number) {
   uint8_t segmentsTens = segmentPatterns[tens];
   uint8_t segmentsUnits = segmentPatterns[units];
   uint8_t segmentsFuel = fuelPatterns[fuelLevel];
-/*
+
+  /*
   Serial.print(segmentsTens);
   Serial.print(",");
   Serial.print(segmentsUnits);
   Serial.print(",");
   Serial.println(segmentsFuel);
-*/
+  */
+
 
   // Display the speed and the green fuel LEDs using printDirect function
   uint8_t displayData[3] = { segmentsUnits, segmentsTens, segmentsFuel };
   myLED.printDirect(displayData);
 
   //Update the other red and yellow fuel leds
+ 
   if (fuelLevel == 0) {
     digitalWrite(redFuelLED, LOW);
     digitalWrite(yellowFuelLED1, LOW);

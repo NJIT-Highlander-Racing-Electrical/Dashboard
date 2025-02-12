@@ -102,6 +102,7 @@ void setup() {
   pinMode(yellowFuelLED1, OUTPUT);
   pinMode(yellowFuelLED2, OUTPUT);
 
+
   myLED.displayEnable();       // This command has no effect if you aren't using OE pin
   myLED.displayBrightness(180);  // 0 is max, 255 is min
   updateSevenSegments(95);     // Part of boot screen sequence
