@@ -576,7 +576,7 @@
 		(fp_text user "${REFERENCE}"
 			(at 0 2.5 0)
 			(unlocked yes)
-			(layer "F.Fab")
+			(layer "F.SilkS")
 			(uuid "5b8a9e4b-19d4-4996-a355-05956f2591f1")
 			(effects
 				(font
@@ -2296,7 +2296,7 @@
 		(fp_text user "${REFERENCE}"
 			(at 0 2.5 0)
 			(unlocked yes)
-			(layer "F.Fab")
+			(layer "F.SilkS")
 			(uuid "e45f6460-1159-4c1e-b2ee-04aaf65ad3ee")
 			(effects
 				(font
