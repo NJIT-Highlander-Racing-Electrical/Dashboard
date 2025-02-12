@@ -1,22 +1,12 @@
-// EXTREMELY IMPORTANT NOTE: THE FREQUENCY FOR THE CANBUS RATE IS DOUBLED ON THIS BECAUSE THE BOARDS ARE MESSED UP (WIDESPREAD ESP32 ISSUE)
-
-#include <CAN.h>
-
-TaskHandle_t CAN_Task;
+#include "src/libraries/BajaCAN.h" // https://arduino.github.io/arduino-cli/0.35/sketch-specification/#src-subfolder
 
 #define DEBUG true
 #define DEBUG_SERIAL \
   if (DEBUG) Serial
 
-#define TX_GPIO_NUM 21  // Connects to CTX
-#define RX_GPIO_NUM 22  // Connects to CRX
-
-//#include <gpio_viewer.h>
-//GPIOViewer gpio_viewer;
-
 #include "SPI.h"
-#include "Adafruit_GFX.h"
-#include "Adafruit_GC9A01A.h"
+#include <Adafruit_GFX.h>
+#include <Adafruit_GC9A01A.h>
 #include <TJpg_Decoder.h>
 #include <Fonts/FreeMono12pt7b.h>
 #include <Fonts/FreeMonoBold18pt7b.h>
@@ -25,7 +15,7 @@ TaskHandle_t CAN_Task;
 #if defined(ENERGIA_ARCH_MSP432R)
 #include <stdio.h>
 #endif
-TLC591x myLED(3, 32, 33, 25, 26);  // Uncomment if using OE pin
+TLC591x myLED(3, 32, 33, 21, 22);  // Uncomment if using OE pin
 
 #include "rpmGauge.h"
 
@@ -64,15 +54,13 @@ bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap) 
 }
 
 //Defintions for CVT data (CVT RPM Sensor -> Dashboard Displays)
-int primaryRPM = 0;
-int secondaryRPM = 0;
 float cvtMinRatio = 0.9;
 float cvtMaxRatio = 3.9;
 float cvtRatio = 0;
 float lastCvtRatio = 0;
 int lastRPM = 0;
 const float gearboxRatio = 8.25;
-const float wheelCircumference = 23.0;  //Wheel circumference in inches; distance traveled per revolution; should be 23 inches
+const float wheelCircumference = 23.0;  // Wheel circumference in inches; distance traveled per revolution; should be 23 inches
 float totalMultiplier = 0;
 uint8_t wheelSpeed = 0;
 
@@ -80,7 +68,6 @@ uint8_t wheelSpeed = 0;
 int fuelLevel = 0;
 
 //Definitions for four status LEDs
-int cvtTemp = 0;
 const int cvtTempMax = 150;
 const int cvtOffTemp = 140;
 bool daqOn = false;
@@ -97,21 +84,7 @@ const int redFuelLED = 12;
 const int yellowFuelLED1 = 13;
 const int yellowFuelLED2 = 14;
 
-//Definitions for 2WD/4WD state
-bool fourWheelsState = false;
-bool lastFourWheelsState = false;
-bool fourWheelsUnknown = true;
-bool fourWheelsStartFlag = true;
-
-int canbusDataPeriod = 50;
-unsigned long canbusDataStart = 0;
-
-
 //Definitions for GPS time
-int timeH = 0;
-int timeM = 0;
-int timeS = 0;
-
 int lastTimeH = 0;
 int lastTimeM = 0;
 int lastTimeS = 0;
@@ -120,27 +93,11 @@ unsigned long lastTimePingM = 0;
 unsigned long lastTimePingS = 0;
 bool hasBeenPinged = false;
 
-//char formattedTime[9];
-
 void setup() {
 
   DEBUG_SERIAL.begin(460800);
-  //ESP32 MAC can be found using this: https://randomnerdtutorials.com/get-change-esp32-esp8266-mac-address-arduino/#:~:text=Get%20ESP32%20or%20ESP8266%20MAC%20Address
-  //This one's is: D4:8A:FC:A8:59:7C
-  //gpio_viewer.connectToWifi("SSID", "PASSWORD");
-  //gpio_viewer.begin();
 
-
-
-  CAN.setPins(RX_GPIO_NUM, TX_GPIO_NUM);
-
-  if (!CAN.begin(1000E3)) {
-    DEBUG_SERIAL.println("Starting CAN failed!");
-    while (1)
-      ;
-  } else {
-    DEBUG_SERIAL.println("CAN Initialized");
-  }
+  setupCAN(DASHBOARD);
 
   pinMode(cvtLed, OUTPUT);
   pinMode(daqLed, OUTPUT);
@@ -157,17 +114,6 @@ void setup() {
   TJpgDec.setCallback(tft_output);
   rpmGaugeSetup();
 
-
-  xTaskCreatePinnedToCore(
-    CAN_Task_Code, /* Task function. */
-    "CAN_Task",   /* name of task. */
-    10000,     /* Stack size of task */
-    NULL,      /* parameter of the task */
-    1,         /* priority of the task */
-    &CAN_Task,    /* Task handle to keep track of created task */
-    0);        /* pin task to core 0 */
-  delay(250);
-
   //Left display configurations
   tftL.begin();
   tftL.setFont(&FreeMonoBold24pt7b);
@@ -179,7 +125,6 @@ void setup() {
   updateTime();
   totalMultiplier = (1.0 / gearboxRatio) * wheelCircumference * 3.1415926 * 0.00001578282828 * 60.0;  // 00001578282828 is miles in an inch
   updateCvtRatio();
-  update2wd4wdState();
 }
 
 
@@ -208,20 +153,6 @@ void loop() {
     updateCvtRatio();
   }
 
-  //This updates the 2WD/4WD State on left display
-
-  if (!fourWheelsUnknown && fourWheelsStartFlag) {
-    fourWheelsStartFlag = false;
-    lastFourWheelsState = fourWheelsState;
-    update2wd4wdState();
-  }
-
-  if (fourWheelsState != lastFourWheelsState) {
-    lastFourWheelsState = fourWheelsState;
-    update2wd4wdState();
-  }
-
-
 
   // These lines toggle the status LEDs
   if (batteryLow) digitalWrite(batteryLed, HIGH);
@@ -233,8 +164,8 @@ void loop() {
     analogWrite(daqLed, 25);
   } else digitalWrite(daqLed, LOW);
 
-  if (cvtTemp > cvtTempMax) digitalWrite(cvtLed, HIGH);
-  if (cvtTemp < cvtOffTemp) digitalWrite(cvtLed, LOW);
+  if (primaryTemperature > cvtTempMax || secondaryTemperature > cvtTempMax) digitalWrite(cvtLed, HIGH);
+  if (primaryTemperature < cvtOffTemp && secondaryTemperature < cvtOffTemp) digitalWrite(cvtLed, LOW);
 }
 
 
@@ -244,54 +175,54 @@ void updateTime() {
   tftL.setFont(&FreeMonoBold18pt7b);
   tftL.setTextColor(TFT_WHITE);
 
-  if (timeH != lastTimeH) {
+  if (gpsTimeHour != lastTimeH) {
     hasBeenPinged = true;
-    lastTimeH = timeH;
+    lastTimeH = gpsTimeHour;
     tftL.fillRect(timeHourX, timeY, (timeMinuteX - timeHourX), -(cvtRatioTextY - timeY), TFT_BLACK);
     tftL.setCursor(timeHourX, timeY);  // Adjust coordinates as needed
-    if (timeH < 10) tftL.print("0");
-    tftL.print(timeH);
+    if (gpsTimeHour < 10) tftL.print("0");
+    tftL.print(gpsTimeHour);
     tftL.print(":");
   }
 
-  if (timeM != lastTimeM) {
+  if (gpsTimeMinute != lastTimeM) {
     lastTimePingM = millis();
-    lastTimeM = timeM;
+    lastTimeM = gpsTimeMinute;
     tftL.fillRect(timeMinuteX, timeY, (timeSecondX - timeMinuteX), -(cvtRatioTextY - timeY), TFT_BLACK);
     tftL.setCursor(timeMinuteX, timeY);  // Adjust coordinates as needed
-    if (timeM < 10) tftL.print("0");
-    tftL.print(timeM);
+    if (gpsTimeMinute < 10) tftL.print("0");
+    tftL.print(gpsTimeMinute);
     tftL.print(":");
   }
   if (((millis() - lastTimePingM) > 60000) && hasBeenPinged) {
     lastTimePingM = millis();
-    timeM = timeM + 1;
-    lastTimeM = timeM;
+    gpsTimeMinute = gpsTimeMinute + 1;
+    lastTimeM = gpsTimeMinute;
     tftL.fillRect(timeMinuteX, timeY, (240 - timeMinuteX), -(cvtRatioTextY - timeY), TFT_BLACK);
     tftL.setCursor(timeMinuteX, timeY);  // Adjust coordinates as needed
-    if (timeM < 10) tftL.print("0");
-    tftL.println(timeM);
+    if (gpsTimeMinute < 10) tftL.print("0");
+    tftL.println(gpsTimeMinute);
   }
 
-  if (timeS != lastTimeS) {
+  if (gpsTimeSecond != lastTimeS) {
     lastTimePingS = millis();
-    lastTimeS = timeS;
+    lastTimeS = gpsTimeSecond;
     tftL.fillRect(timeSecondX, timeY, (240 - timeSecondX), -(cvtRatioTextY - timeY), TFT_BLACK);
     tftL.setCursor(timeSecondX, timeY);  // Adjust coordinates as needed
-    if (timeS < 10) tftL.print("0");
-    tftL.println(timeS);
+    if (gpsTimeSecond < 10) tftL.print("0");
+    tftL.println(gpsTimeSecond);
   }
   if (((millis() - lastTimePingS) > 1000) && hasBeenPinged) {
     lastTimePingS = millis();
-    if (timeS > 59) {
-      timeM++;
-      timeS = 0;
-    } else timeS++;
-    lastTimeS = timeS;
+    if (gpsTimeSecond > 59) {
+      gpsTimeMinute++;
+      gpsTimeSecond = 0;
+    } else gpsTimeSecond++;
+    lastTimeS = gpsTimeSecond;
     tftL.fillRect(timeSecondX, timeY, (240 - timeSecondX), -(cvtRatioTextY - timeY), TFT_BLACK);
     tftL.setCursor(timeSecondX, timeY);  // Adjust coordinates as needed
-    if (timeS < 10) tftL.print("0");
-    tftL.println(timeS);
+    if (gpsTimeSecond < 10) tftL.print("0");
+    tftL.println(gpsTimeSecond);
   }
 }
 
@@ -307,63 +238,7 @@ void updateCvtRatio() {
   tftL.println(cvtRatio, 1);
 }
 
-
-void update2wd4wdState() {
-
-  if (fourWheelsState && !fourWheelsUnknown) {
-
-    tftL.fillRect(twoWheelX, twoWheelY, 240, 35, TFT_BLACK);
-    tftL.setFont(&FreeMonoBold24pt7b);
-    tftL.setTextColor(0x8410);
-    tftL.setCursor(twoWheelX, twoWheelY);  // Adjust coordinates as needed
-    tftL.println("2WD");
-    tftL.setTextColor(TFT_RED);
-    tftL.setCursor(fourWheelX, fourWheelY);  // Adjust coordinates as needed
-    tftL.println("4WD");
-
-  }
-
-  else if (!fourWheelsState && !fourWheelsUnknown) {
-
-    tftL.fillRect(twoWheelX, twoWheelY, 240, 35, TFT_BLACK);
-    tftL.setFont(&FreeMonoBold24pt7b);
-    tftL.setTextColor(TFT_RED);
-    tftL.setCursor(twoWheelX, twoWheelY);  // Adjust coordinates as needed
-    tftL.println("2WD");
-    tftL.setTextColor(0x8410);
-    tftL.setCursor(fourWheelX, fourWheelY);  // Adjust coordinates as needed
-    tftL.println("4WD");
-  }
-
-  else {
-
-    tftL.fillRect(twoWheelX, twoWheelY, 240, 35, TFT_BLACK);
-    tftL.setFont(&FreeMonoBold24pt7b);
-    tftL.setTextColor(0x8410);
-    tftL.setCursor(twoWheelX, twoWheelY);  // Adjust coordinates as needed
-    tftL.println("2WD");
-    tftL.setTextColor(0x8410);
-    tftL.setCursor(fourWheelX, fourWheelY);  // Adjust coordinates as needed
-    tftL.println("4WD");
-  }
-}
-
-
 //This is necessary to get a decimal number for the CVT ratio (standard MAP function will only return an int)
 float mapfloat(long x, long in_min, long in_max, long out_min, long out_max) {
   return (float)(x - in_min) * (out_max - out_min) / (float)(in_max - in_min) + out_min;
-}
-
-
-
-void CAN_Task_Code( void * pvParameters ){
-  Serial.print("CAN Task running on core ");
-  Serial.println(xPortGetCoreID());
-
-  for(;;){
- 
- updateCanbus();  // dedicate 100ms to just canbus sampling to not miss messages
-    delay(1);
-
-  } 
 }

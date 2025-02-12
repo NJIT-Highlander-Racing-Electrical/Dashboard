@@ -1,5 +1,5 @@
 //Boot screen for the vehicle that displays the Highlander Racing logo, Lightning McQueen "95", and a fuel LEDs animation
-#include "Highlander_Racing_Image.h"
+#include "src/Highlander_Racing_Image.h"
 
 void bootScreen() {
   tft.fillScreen(TFT_BLACK);

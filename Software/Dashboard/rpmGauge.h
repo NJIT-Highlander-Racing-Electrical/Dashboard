@@ -4,8 +4,8 @@
 #include <TFT_eSPI.h>
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite sprite = TFT_eSprite(&tft);
-#include "NotoSansBold36.h"
-#include "NotoSansBold15.h"
+#include "src/NotoSansBold36.h"
+#include "src/NotoSansBold15.h"
 #define AA_FONT_LARGE NotoSansBold36
 #define AA_FONT_SMALL NotoSansBold15
 
