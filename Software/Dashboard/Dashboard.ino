@@ -103,7 +103,7 @@ void setup() {
   pinMode(yellowFuelLED2, OUTPUT);
 
   myLED.displayEnable();       // This command has no effect if you aren't using OE pin
-  myLED.displayBrightness(0);  // 0 is max, 255 is min
+  myLED.displayBrightness(180);  // 0 is max, 255 is min
   updateSevenSegments(95);     // Part of boot screen sequence
 
   TJpgDec.setSwapBytes(true);
@@ -133,8 +133,6 @@ void loop() {
   calculatedWheelSpeed = (secondaryRPM * totalMultiplier);
 
   // This takes the calculated speed and displays it on the seven segments
-  DEBUG_SERIAL.print("CALCULATED WHEEL SPEED: ");
-  DEBUG_SERIAL.println(calculatedWheelSpeed);
   updateSevenSegments(calculatedWheelSpeed);
 
   //This takes the CVT rpm and plots the dial accordingly
