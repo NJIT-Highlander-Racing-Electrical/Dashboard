@@ -1,4 +1,4 @@
-#include "src/libraries/BajaCAN.h" // https://arduino.github.io/arduino-cli/0.35/sketch-specification/#src-subfolder
+#include "src/libraries/BajaCAN.h"  // https://arduino.github.io/arduino-cli/0.35/sketch-specification/#src-subfolder
 
 #define DEBUG true
 #define DEBUG_SERIAL \
@@ -69,14 +69,16 @@ const int cvtTempMax = 150;
 const int cvtOffTemp = 140;
 
 //Pins for four status LEDs (power status is tied to VCC)
-const int cvtLed = 11;
-const int batteryLed = 12;
-const int daqLed = 13;
-
+const int cvtLed = 2;
+const int lowBatteryLed = 15;
+const int dasLed = 27;
+ 
 //Pins for three non-green fuel LEDs (brightness was uneven with them on the LED driver :( )
-const int redFuelLED = 10;
-const int yellowFuelLED1 = 9;
-const int yellowFuelLED2 = 8;
+const int redFuelLED = 12;
+const int yellowFuelLED1 = 13;
+const int yellowFuelLED2 = 14;
+
+int fuelLevel = 0; // Since this is not being sent/received in BajaCAN.h (as of now), it is defined here
 
 //Definitions for GPS time
 int lastTimeH = 0;
@@ -94,8 +96,8 @@ void setup() {
   setupCAN(DASHBOARD);
 
   pinMode(cvtLed, OUTPUT);
-  pinMode(daqLed, OUTPUT);
-  pinMode(batteryLed, OUTPUT);
+  pinMode(dasLed, OUTPUT);
+  pinMode(lowBatteryLed, OUTPUT);
   pinMode(redFuelLED, OUTPUT);
   pinMode(yellowFuelLED1, OUTPUT);
   pinMode(yellowFuelLED2, OUTPUT);
@@ -149,14 +151,12 @@ void loop() {
 
 
   // These lines toggle the status LEDs
-  if (batteryLow) digitalWrite(batteryLed, HIGH);
-  else digitalWrite(batteryLed, LOW);
+  if (batteryPercentage < 20) digitalWrite(lowBatteryLed, HIGH);
+  else digitalWrite(lowBatteryLed, LOW);
 
-  if (daqOn && !daqError) {
-    digitalWrite(daqLed, HIGH);
-  } else if (daqError) {
-    analogWrite(daqLed, 25);
-  } else digitalWrite(daqLed, LOW);
+  if (sdLoggingActive) {
+    digitalWrite(dasLed, HIGH);
+  } else digitalWrite(dasLed, LOW);
 
   if (primaryTemperature > cvtTempMax || secondaryTemperature > cvtTempMax) digitalWrite(cvtLed, HIGH);
   if (primaryTemperature < cvtOffTemp && secondaryTemperature < cvtOffTemp) digitalWrite(cvtLed, LOW);
