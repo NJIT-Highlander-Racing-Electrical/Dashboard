@@ -30,6 +30,12 @@ There are many aspects to improve on from last year's dashboard, as well as seve
            * Switching display data, adjusting brightness, etc
 * Other limitations/setbacks are discussed in the [2023-2024 Archive README](https://github.com/NJIT-Highlander-Racing-Electrical/Dashboard/tree/main/2023-2024%20Archive)
 
+## 2024-2025 Known Issues
+
+### GC9A01 SCLK Pin
+
+The SPI Clock pin on the ESP32 is 18, but the PCB has it tied to 19. On the final version, we can just snip off the two pins that go into the PCB and swap them around with two small jumpers. Software Serial is not ideal for speed and would require software modifications.
+
 
 ## Hardware
 
