@@ -19,8 +19,8 @@
 // Other RP2040-based boards might not have "D" pin defines as shown above
 // and will use GPIO bit numbers. On non-RP2040 boards, you can usually use
 // pin numbers silkscreened on the board.
-#define TFT_DC  9
-#define TFT_CS 10
+#define TFT_DC  16
+#define TFT_CS 17
 // If display breakout has a backlight control pin, that can be defined here
 // as TFT_BL. On some breakouts it's not needed, backlight is always on.
 
