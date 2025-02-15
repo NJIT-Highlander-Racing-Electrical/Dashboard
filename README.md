@@ -38,7 +38,9 @@ The SPI Clock pin on the ESP32 is 18, but the PCB has it tied to 19. On the fina
 
 ### TLC5917 Chip 3 OE and R-EXT Pins
 
-On the TLC5917 that controls the green fuel LEDs, the R-EXT pin is tied to ground. This causes the TLC to try to push infinite current into the LEDs. If left open, which will be our solution for this year instead of replacing the PCBs, 5mA of current will go through. The OE pin has the resistor that should have been attached to the R-EXT pin. The OE pin needs to be pulled LOW to enable the displays, so we can simply cut off the resistor there and short it to ground.
+On the TLC5917 that controls the green fuel LEDs, the R-EXT pin is tied to ground. This causes the TLC to try to push infinite current into the LEDs. We can simply not solder that pin to the pad, and instead bend it up and jump it to a GND pin using the proper resistor
+
+The OE pin has the resistor that should have been attached to the R-EXT pin. The OE pin needs to be pulled LOW to enable the displays, so we can simply cut off the resistor there and short it to ground.
 
 ### Fuel LEDs
 
