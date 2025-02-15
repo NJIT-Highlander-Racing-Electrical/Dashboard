@@ -27,7 +27,7 @@ There are many aspects to improve on from last year's dashboard, as well as seve
      * With the dark mode background last year, the displays were not bright enough. This year we are using light backgrounds.
 * Driver Input
      * This year, we are implementing two push buttons on the back of the dashboard that the driver can use for miscellaneous functions
-           * Switching display data, adjusting brightness, etc
+         * Switching display data, adjusting brightness, etc
 * Other limitations/setbacks are discussed in the [2023-2024 Archive README](https://github.com/NJIT-Highlander-Racing-Electrical/Dashboard/tree/main/2023-2024%20Archive)
 
 ## 2024-2025 Known Issues
