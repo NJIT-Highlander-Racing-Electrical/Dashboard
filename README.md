@@ -36,9 +36,13 @@ There are many aspects to improve on from last year's dashboard, as well as seve
 
 The SPI Clock pin on the ESP32 is 18, but the PCB has it tied to 19. On the final version, we can just snip off the two pins that go into the PCB and swap them around with two small jumpers. Software Serial is not ideal for speed and would require software modifications.
 
+### TLC5917 Chip 3 OE and R-EXT Pins
+
+On the TLC5917 that controls the green fuel LEDs, the R-EXT pin is tied to ground. This causes the TLC to try to push infinite current into the LEDs. If left open, which will be our solution for this year instead of replacing the PCBs, 5mA of current will go through. The OE pin has the resistor that should have been attached to the R-EXT pin. The OE pin needs to be pulled LOW to enable the displays, so we can simply cut off the resistor there and short it to ground.
+
 ### Fuel LEDs
 
- The six green fuel LEDs and the leftmost red LED do not light up in the boot animation
+ The leftmost red LED does not light up in the boot animation
  
 
 
