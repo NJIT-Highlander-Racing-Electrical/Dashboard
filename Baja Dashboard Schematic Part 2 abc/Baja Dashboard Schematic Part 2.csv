@@ -1,0 +1,12 @@
+Designator,Comment,Footprint
+C1,10nF,Capacitor_Tantalum_SMD:CP_EIA-1608-08_AVX-J
+C2,10^pF,Capacitor_Tantalum_SMD:CP_EIA-1608-08_AVX-J
+"C3,C4",10uF,Capacitor_Tantalum_SMD:CP_EIA-1608-08_AVX-J
+LS1,HMDZ Magnetic Buzzer 12x9.5mm 5V DC 85db with Pin,Buzzer_Beeper:Buzzer_12x9.5RM7.6
+Q1,MMBT2222_,bajaRedoSaves:MMBT2222
+R1,200,Resistor_SMD:R_0201_0603Metric
+"R2,R3,R4,R5,R6,R7,R8,R9,R10,R11",300,Resistor_SMD:R_0201_0603Metric
+"R12,R15,R16",1000,Resistor_SMD:R_0201_0603Metric
+"R13,R14",750,Resistor_SMD:R_0201_0603Metric
+"U1,U2,U3",TLC5917,bajaRedoSaves:TLC5917ID
+U9,TLC555xPS,bajaRedoSaves:TLC555
