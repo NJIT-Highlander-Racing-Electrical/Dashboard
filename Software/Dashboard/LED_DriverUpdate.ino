@@ -51,6 +51,7 @@ void updateSevenSegments(uint8_t number) {
 
 
   // Display the speed and the green fuel LEDs using printDirect function
+  fuelLevel=0;
   uint8_t displayData[3] = { segmentsUnits, segmentsTens, segmentsFuel };
   myLED.printDirect(displayData);
 

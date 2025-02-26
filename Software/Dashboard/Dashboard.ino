@@ -88,6 +88,7 @@ int lastTimeS = 0;
 unsigned long lastTimePingM = 0;
 unsigned long lastTimePingS = 0;
 bool hasBeenPinged = false;
+int slowestWheel=frontLeftWheelRPM;
 
 void setup() {
 
@@ -114,7 +115,7 @@ void setup() {
   //Left display configurations
   tftL.begin();
   tftL.setFont(&FreeMonoBold24pt7b);
-  tftL.fillScreen(GC9A01A_BLACK);
+  tftL.fillScreen(GC9A01A_WHITE);
 
   //This should be a few seconds of splash screen displaying Highlander Racing logos/stuff on boot
   bootScreen();
@@ -127,7 +128,7 @@ void setup() {
 
 
 void loop() {
-
+  fuelLevel=70;
   cvtRatio = (secondaryRPM / (primaryRPM + 1.0));
 
   // 0.000015782828283 inches in a mile and 60 minutes in one hour
@@ -136,10 +137,19 @@ void loop() {
   // This takes the calculated speed and displays it on the seven segments
   updateSevenSegments(calculatedWheelSpeed);
 
+  if(slowestWheel>frontRightWheelRPM){
+    slowestWheel=frontRightWheelRPM;
+  }
+  if(slowestWheel>rearLeftWheelRPM){
+    slowestWheel=rearLeftWheelRPM;
+  }
+  if(slowestWheel>rearRightWheelRPM){
+    slowestWheel=rearRightWheelRPM;
+  }
   //This takes the CVT rpm and plots the dial accordingly
   mappedRPMAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
-  updateRPMGauge(mappedRPMAngle, primaryRPM);
-
+  //primaryRPM will be replaced with the wheel spinning the slowest 
+  updateRPMGauge(mappedRPMAngle, slowestWheel, calculatedWheelSpeed);
   updateTime();
 
   //This updates the digital CVT ratio on left display
@@ -159,6 +169,7 @@ void loop() {
 
   if (primaryTemperature > cvtTempMax || secondaryTemperature > cvtTempMax) digitalWrite(cvtLed, HIGH);
   if (primaryTemperature < cvtOffTemp && secondaryTemperature < cvtOffTemp) digitalWrite(cvtLed, LOW);
+  //Pins for three non-green fuel LEDs (brightness was uneven with them on the LED driver :( )
 }
 
 
@@ -166,24 +177,26 @@ void updateTime() {
 
 
   tftL.setFont(&FreeMonoBold18pt7b);
-  tftL.setTextColor(TFT_WHITE);
+  tftL.setTextColor(TFT_BLACK);
+  tftL.setCursor(timeHourX, timeY);
+  tftL.print("04:55:55");
 
-  if (gpsTimeHour != lastTimeH) {
+ /* if (gpsTimeHour != lastTimeH) {
     hasBeenPinged = true;
     lastTimeH = gpsTimeHour;
-    tftL.fillRect(timeHourX, timeY, (timeMinuteX - timeHourX), -(cvtRatioTextY - timeY), TFT_BLACK);
+    //tftL.fillRect(timeHourX, timeY, (timeMinuteX - timeHourX), -(cvtRatioTextY - timeY), TFT_WHITE);
     tftL.setCursor(timeHourX, timeY);  // Adjust coordinates as needed
-    if (gpsTimeHour < 10) tftL.print("0");
-    tftL.print(gpsTimeHour);
+    //if (gpsTimeHour < 10) tftL.print("0");
+    tftL.print(gpsTimeHour); 
     tftL.print(":");
   }
 
   if (gpsTimeMinute != lastTimeM) {
     lastTimePingM = millis();
     lastTimeM = gpsTimeMinute;
-    tftL.fillRect(timeMinuteX, timeY, (timeSecondX - timeMinuteX), -(cvtRatioTextY - timeY), TFT_BLACK);
+   // tftL.fillRect(timeMinuteX, timeY, (timeSecondX - timeMinuteX), -(cvtRatioTextY - timeY), TFT_WHITE);
     tftL.setCursor(timeMinuteX, timeY);  // Adjust coordinates as needed
-    if (gpsTimeMinute < 10) tftL.print("0");
+    //if (gpsTimeMinute < 10) tftL.print("0");
     tftL.print(gpsTimeMinute);
     tftL.print(":");
   }
@@ -191,7 +204,7 @@ void updateTime() {
     lastTimePingM = millis();
     gpsTimeMinute = gpsTimeMinute + 1;
     lastTimeM = gpsTimeMinute;
-    tftL.fillRect(timeMinuteX, timeY, (240 - timeMinuteX), -(cvtRatioTextY - timeY), TFT_BLACK);
+    //ftL.fillRect(timeMinuteX, timeY, (240 - timeMinuteX), -(cvtRatioTextY - timeY), TFT_WHITE);
     tftL.setCursor(timeMinuteX, timeY);  // Adjust coordinates as needed
     if (gpsTimeMinute < 10) tftL.print("0");
     tftL.println(gpsTimeMinute);
@@ -200,9 +213,9 @@ void updateTime() {
   if (gpsTimeSecond != lastTimeS) {
     lastTimePingS = millis();
     lastTimeS = gpsTimeSecond;
-    tftL.fillRect(timeSecondX, timeY, (240 - timeSecondX), -(cvtRatioTextY - timeY), TFT_BLACK);
+    //tftL.fillRect(timeSecondX, timeY, (240 - timeSecondX), -(cvtRatioTextY - timeY), TFT_WHITE);
     tftL.setCursor(timeSecondX, timeY);  // Adjust coordinates as needed
-    if (gpsTimeSecond < 10) tftL.print("0");
+    //if (gpsTimeSecond < 10) tftL.print("0");
     tftL.println(gpsTimeSecond);
   }
   if (((millis() - lastTimePingS) > 1000) && hasBeenPinged) {
@@ -212,22 +225,22 @@ void updateTime() {
       gpsTimeSecond = 0;
     } else gpsTimeSecond++;
     lastTimeS = gpsTimeSecond;
-    tftL.fillRect(timeSecondX, timeY, (240 - timeSecondX), -(cvtRatioTextY - timeY), TFT_BLACK);
+    //tftL.fillRect(timeSecondX, timeY, (240 - timeSecondX), -(cvtRatioTextY - timeY), TFT_WHITE);
     tftL.setCursor(timeSecondX, timeY);  // Adjust coordinates as needed
     if (gpsTimeSecond < 10) tftL.print("0");
     tftL.println(gpsTimeSecond);
-  }
+  }*/
 }
 
 void updateCvtRatio() {
 
-  tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_BLACK);
-  tftL.setTextColor(TFT_WHITE);
+  //tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_RED);
+  tftL.setTextColor(TFT_BLACK);
   tftL.setCursor(cvtRatioTextX, cvtRatioTextY);  // Adjust coordinates as needed
   tftL.setFont(&FreeMono12pt7b);
   tftL.println("CVT");
   tftL.setFont(&FreeMonoBold24pt7b);
-  tftL.setCursor(cvtRatioDataX, cvtRatioDataY);
+  tftL.setCursor(cvtRatioDataX, cvtRatioDataY); //cvtRatioTextX, cvtRatioTextY
   tftL.println(cvtRatio, 1);
 }
 

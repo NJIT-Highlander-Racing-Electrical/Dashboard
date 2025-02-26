@@ -11,9 +11,9 @@ TFT_eSprite sprite = TFT_eSprite(&tft);
 
 
 //......................................colors
-#define backColor 0x0026
+#define backColor 0xFFFF //I really like 0x03EF, 0x7800, 
 #define gaugeColor 0x055D
-#define dataColor 0x0311
+#define dataColor 0x0311 //0x0311, 
 #define red 0xF00C
 #define needleColor 0xF811
 
@@ -36,6 +36,7 @@ double rad = 0.01745;
 unsigned short color1;
 unsigned short color2;
 float sA;
+int velocity =0;
 
 
 
@@ -53,7 +54,7 @@ void rpmGaugeSetup() {
   sprite.setSwapBytes(true);
   sprite.loadFont(AA_FONT_SMALL);
   sprite.setTextDatum(4);
-  sprite.setTextColor(TFT_WHITE, backColor);
+  sprite.setTextColor(TFT_RED, backColor);
 
   int a = 120;
   for (int i = 0; i < 360; i++) {
@@ -75,7 +76,8 @@ void rpmGaugeSetup() {
 
 
 
-void updateRPMGauge(int speedAngle, int primaryRPM) {
+void updateRPMGauge(int speedAngle, int primaryRPM, int calculatedWheelSpeed) {
+  
 
 if (speedAngle < 0) speedAngle = 0;
 
@@ -84,7 +86,7 @@ if (speedAngle < 0) speedAngle = 0;
   //Outermost Arc
   sprite.drawSmoothArc(cx, cy, r, ir, 30, 330, gaugeColor, backColor);
   //Inner-Outer Arc
-  sprite.drawSmoothArc(cx, cy, r - 5, r - 6, 30, 330, TFT_WHITE, backColor);
+  sprite.drawSmoothArc(cx, cy, r - 5, r - 6, 30, 330, TFT_BLACK, backColor);
   //Red Region Arc
   sprite.drawSmoothArc(cx, cy, r - 9, r - 8, 270, 330, red, backColor);
   //Innermost Arc
@@ -95,7 +97,7 @@ if (speedAngle < 0) speedAngle = 0;
   for (int i = 0; i < 26; i++) {
     if (i < 20) {
       color1 = gaugeColor;
-      color2 = TFT_WHITE;
+      color2 = TFT_BLACK;
     } else {
       color1 = red;
       color2 = red;
@@ -123,16 +125,31 @@ if (speedAngle < 0) speedAngle = 0;
     // DRAW TEXT
     sprite.unloadFont();
     sprite.loadFont(AA_FONT_LARGE);
-    sprite.setTextColor(TFT_WHITE, backColor);
+    sprite.setTextColor(TFT_BLACK, backColor);
     sprite.drawString(String((int)primaryRPM), cx, cy, 4);
     sprite.unloadFont();
 
     sprite.loadFont(AA_FONT_SMALL);
-    sprite.setTextColor(TFT_ORANGE, backColor);
+    sprite.setTextColor(0x03E0, backColor);
     sprite.drawString("x100", cx, 210);
-    sprite.drawString("RPM", cx, 195);
-
-    // PUSH SPRITE TO SCREEN
+    sprite.drawString("RPM", cx, 195); 
+    //checks for which wheel is losing traction and which is locked when the car still moving
+    if(frontRightWheelRPM==0 && calculatedWheelSpeed>0){
+      sprite.fillRect(0,0,300,125,TFT_RED);
+    }
+    if(frontRightWheelRPM>0 && calculatedWheelSpeed==0){
+      sprite.fillRect(0,0,300,125,TFT_ORANGE);
+    }
+    if(rearRightWheelRPM==0 && calculatedWheelSpeed>0){
+      sprite.fillRect(0,125,300,125,TFT_RED);
+    }
+    if(rearRightWheelRPM>0 && calculatedWheelSpeed==0){
+      sprite.fillRect(0,125,300,125,TFT_ORANGE);
+    }
+    // //braakes are locked
+    //sprite.fillRect(0,125,300,125,TFT_ORANGE); //lose traction
+    // PUSH SPRITE TO SCREEN#0x FA51C
     sprite.pushSprite(0, 10);
-
+//fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color); red  is losing traction, orange is brake lock up
+   //
 }
