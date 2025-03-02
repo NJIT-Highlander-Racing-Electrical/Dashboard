@@ -89,6 +89,14 @@ unsigned long lastTimePingM = 0;
 unsigned long lastTimePingS = 0;
 bool hasBeenPinged = false;
 int slowestWheel=frontLeftWheelRPM;
+int RightButton=18; //selects screen
+int LeftButton=34;//changes options
+int screenSelect=0; //done by modulus. 0 is brightness, 1 is error code, 2 is mark
+bool screenSelectStop=false;
+int brightnessUpDown=0;
+int MPHBrightness=180;// 0 is max, 255 is min
+bool BrightStop=false;
+
 
 void setup() {
 
@@ -102,10 +110,12 @@ void setup() {
   pinMode(redFuelLED, OUTPUT);
   pinMode(yellowFuelLED1, OUTPUT);
   pinMode(yellowFuelLED2, OUTPUT);
+  pinMode(RightButton, INPUT);
+  pinMode(LeftButton, INPUT);
 
 
   myLED.displayEnable();       // This command has no effect if you aren't using OE pin
-  myLED.displayBrightness(180);  // 0 is max, 255 is min
+  myLED.displayBrightness(MPHBrightness);  
   updateSevenSegments(95);     // Part of boot screen sequence
 
   TJpgDec.setSwapBytes(true);
@@ -128,15 +138,16 @@ void setup() {
 
 
 void loop() {
-  fuelLevel=70;
+  //Serial.println(digitalRead(RightButton));
+  //Serial.println(digitalRead(LeftButton));
   cvtRatio = (secondaryRPM / (primaryRPM + 1.0));
 
   // 0.000015782828283 inches in a mile and 60 minutes in one hour
-  calculatedWheelSpeed = (secondaryRPM * totalMultiplier);
+  //calculatedWheelSpeed = (secondaryRPM * totalMultiplier);
 
   // This takes the calculated speed and displays it on the seven segments
-  updateSevenSegments(calculatedWheelSpeed);
-
+  updateSevenSegments(gpsVelocity);
+  //the wheel with the slowest rpm is displayed on dashboard
   if(slowestWheel>frontRightWheelRPM){
     slowestWheel=frontRightWheelRPM;
   }
@@ -149,7 +160,7 @@ void loop() {
   //This takes the CVT rpm and plots the dial accordingly
   mappedRPMAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
   //primaryRPM will be replaced with the wheel spinning the slowest 
-  updateRPMGauge(mappedRPMAngle, slowestWheel, calculatedWheelSpeed);
+  updateRPMGauge(mappedRPMAngle, slowestWheel);
   updateTime();
 
   //This updates the digital CVT ratio on left display
@@ -170,6 +181,70 @@ void loop() {
   if (primaryTemperature > cvtTempMax || secondaryTemperature > cvtTempMax) digitalWrite(cvtLed, HIGH);
   if (primaryTemperature < cvtOffTemp && secondaryTemperature < cvtOffTemp) digitalWrite(cvtLed, LOW);
   //Pins for three non-green fuel LEDs (brightness was uneven with them on the LED driver :( )
+
+  //options are brightness, error code screen, mark, and ....
+  if(digitalRead(LeftButton)==HIGH && screenSelectStop==false){
+    screenSelect+=1;
+    screenSelectStop=true;
+  }
+  if(digitalRead(LeftButton)==LOW && screenSelectStop==true){
+    screenSelectStop=false;
+  }
+  //this is screen brightness screen
+  if(screenSelect%3==0 && digitalRead(LeftButton)==HIGH && BrightStop==false){
+    MPHBrightness+=1;
+    BrightStop=true;
+  }
+  if(screenSelect%3==0 && digitalRead(LeftButton)==LOW && BrightStop==true){
+    BrightStop=false;
+  }
+  if(screenSelect%3==0 && brightnessUpDown%2==0 && digitalRead(LeftButton)==HIGH){//0 mod 3 is 0, 1 mod 3 is 1, 2 mod 3 is 2, 3 mod 3 is 0....0 mod 2 is 0, 1 mod 2 is 1, 2 mod 2 is 0
+    MPHBrightness+=1; //lower brightness
+    tftL.setFont(&FreeMonoBold18pt7b);
+    tftL.setTextColor(TFT_BLACK);
+    tftL.setCursor(timeHourX-20, timeY+50);
+    tftL.print("brightness");
+    tftL.setCursor(timeHourX+55, timeY+90);
+    tftL.print(MPHBrightness);
+  } 
+  if(screenSelect%3==0 && brightnessUpDown%2==0 && digitalRead(LeftButton)==HIGH){
+    MPHBrightness-=1; //increase brightness
+    tftL.setFont(&FreeMonoBold18pt7b);
+    tftL.setTextColor(TFT_BLACK);
+    tftL.setCursor(timeHourX-20, timeY+50);
+    tftL.print("brightness");
+    tftL.setCursor(timeHourX+55, timeY+90);
+    tftL.print(MPHBrightness);
+  } 
+  if(screenSelect%3==2 && digitalRead(LeftButton)==HIGH){//write to SD card
+    sdLoggingActive=0; //0x3A
+    tftL.setFont(&FreeMono12pt7b);
+    tftL.setTextColor(TFT_BLACK);
+    tftL.setCursor(timeHourX-5, timeY+50);
+    tftL.print("Shits fucked?");
+    tftL.setCursor(timeHourX-20, timeY+80);
+    tftL.print("PressLeftButton");
+  }
+  if(screenSelect%3==2 && digitalRead(LeftButton)==LOW){//write to SD card
+    sdLoggingActive=1; //0x3A
+    tftL.setFont(&FreeMono12pt7b);
+    tftL.setTextColor(TFT_BLACK);
+    tftL.setCursor(timeHourX-5, timeY+50);
+    tftL.print("Shits fucked?");
+    tftL.setCursor(timeHourX-20, timeY+80);
+    tftL.print("PressLeftButton");
+  }
+  if(screenSelect%3==1 && digitalRead(LeftButton)==HIGH){
+    tftL.setFont(&FreeMonoBold18pt7b);
+    tftL.setTextColor(TFT_BLACK);
+    tftL.setCursor(timeHourX+40, timeY+30);
+    tftL.print("Error");
+    tftL.setCursor(timeHourX+50, timeY+60);
+    tftL.print("P106"); //whose fucked
+    tftL.setCursor(timeHourX+55, timeY+90);
+    tftL.print("160"); //what is the data. This is the error code screen
+  }//error screen
+
 }
 
 
@@ -233,8 +308,6 @@ void updateTime() {
 }
 
 void updateCvtRatio() {
-
-  //tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_RED);
   tftL.setTextColor(TFT_BLACK);
   tftL.setCursor(cvtRatioTextX, cvtRatioTextY);  // Adjust coordinates as needed
   tftL.setFont(&FreeMono12pt7b);
@@ -242,6 +315,19 @@ void updateCvtRatio() {
   tftL.setFont(&FreeMonoBold24pt7b);
   tftL.setCursor(cvtRatioDataX, cvtRatioDataY); //cvtRatioTextX, cvtRatioTextY
   tftL.println(cvtRatio, 1);
+  //checks for wheel slippage or locking
+  if(frontLeftWheelRPM==0 && gpsVelocity>0){
+    tftL.fillRect(0,0,300,125,TFT_RED);
+  }
+  if(frontLeftWheelRPM>0 && gpsVelocity==0){
+    tftL.fillRect(0,0,300,125,TFT_ORANGE);
+  }
+  if(rearLeftWheelRPM==0 && gpsVelocity>0){
+    tftL.fillRect(0,125,300,125,TFT_RED);
+  }
+  if(rearLeftWheelRPM>0 && gpsVelocity==0){
+    tftL.fillRect(0,125,300,125,TFT_ORANGE);
+  }
 }
 
 //This is necessary to get a decimal number for the CVT ratio (standard MAP function will only return an int)

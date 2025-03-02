@@ -36,7 +36,6 @@ double rad = 0.01745;
 unsigned short color1;
 unsigned short color2;
 float sA;
-int velocity =0;
 
 
 
@@ -134,16 +133,16 @@ if (speedAngle < 0) speedAngle = 0;
     sprite.drawString("x100", cx, 210);
     sprite.drawString("RPM", cx, 195); 
     //checks for which wheel is losing traction and which is locked when the car still moving
-    if(frontRightWheelRPM==0 && calculatedWheelSpeed>0){
+    if(frontRightWheelRPM==0 && gpsVelocity>0){
       sprite.fillRect(0,0,300,125,TFT_RED);
     }
-    if(frontRightWheelRPM>0 && calculatedWheelSpeed==0){
+    if(frontRightWheelRPM>0 && gpsVelocity==0){
       sprite.fillRect(0,0,300,125,TFT_ORANGE);
     }
-    if(rearRightWheelRPM==0 && calculatedWheelSpeed>0){
+    if(rearRightWheelRPM==0 && gpsVelocity>0){
       sprite.fillRect(0,125,300,125,TFT_RED);
     }
-    if(rearRightWheelRPM>0 && calculatedWheelSpeed==0){
+    if(rearRightWheelRPM>0 && gpsVelocity==0){
       sprite.fillRect(0,125,300,125,TFT_ORANGE);
     }
     // //braakes are locked
