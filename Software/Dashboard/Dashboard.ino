@@ -89,14 +89,14 @@ unsigned long lastTimePingM = 0;
 unsigned long lastTimePingS = 0;
 bool hasBeenPinged = false;
 int slowestWheel=frontLeftWheelRPM;
-int RightButton=18; //selects screen
+int RightButton=19; //selects screen
 int LeftButton=34;//changes options
 int screenSelect=0; //done by modulus. 0 is brightness, 1 is error code, 2 is mark
 bool screenSelectStop=false;
 int brightnessUpDown=0;
 int MPHBrightness=180;// 0 is max, 255 is min
 bool BrightStop=false;
-
+bool ClearDriverData=false;
 
 void setup() {
 
@@ -138,8 +138,6 @@ void setup() {
 
 
 void loop() {
-  //Serial.println(digitalRead(RightButton));
-  //Serial.println(digitalRead(LeftButton));
   cvtRatio = (secondaryRPM / (primaryRPM + 1.0));
 
   // 0.000015782828283 inches in a mile and 60 minutes in one hour
@@ -183,22 +181,33 @@ void loop() {
   //Pins for three non-green fuel LEDs (brightness was uneven with them on the LED driver :( )
 
   //options are brightness, error code screen, mark, and ....
-  if(digitalRead(LeftButton)==HIGH && screenSelectStop==false){
+  if(digitalRead(LeftButton)==LOW && screenSelectStop==false){
     screenSelect+=1;
     screenSelectStop=true;
   }
-  if(digitalRead(LeftButton)==LOW && screenSelectStop==true){
+  if(digitalRead(LeftButton)==HIGH && screenSelectStop==true){
     screenSelectStop=false;
   }
   //this is screen brightness screen
-  if(screenSelect%3==0 && digitalRead(LeftButton)==HIGH && BrightStop==false){
-    MPHBrightness+=1;
+  if(screenSelect%3==0 && digitalRead(RightButton)==LOW && BrightStop==false){
+    brightnessUpDown+=1;
     BrightStop=true;
   }
-  if(screenSelect%3==0 && digitalRead(LeftButton)==LOW && BrightStop==true){
+  if(screenSelect%3==0 && digitalRead(RightButton)==HIGH && BrightStop==true){
     BrightStop=false;
   }
-  if(screenSelect%3==0 && brightnessUpDown%2==0 && digitalRead(LeftButton)==HIGH){//0 mod 3 is 0, 1 mod 3 is 1, 2 mod 3 is 2, 3 mod 3 is 0....0 mod 2 is 0, 1 mod 2 is 1, 2 mod 2 is 0
+  if(digitalRead(LeftButton)==LOW && ClearDriverData==false){
+    tftL.fillRect(timeHourX-40, timeY+5, 300, 95, TFT_WHITE);
+    ClearDriverData==true;
+  }if(digitalRead(RightButton)==LOW && ClearDriverData==false && screenSelect%3!=2){
+    tftL.fillRect(timeHourX-40, timeY+5, 300, 95, TFT_WHITE);
+    ClearDriverData==true;
+  }
+  if(digitalRead(LeftButton)==HIGH && digitalRead(RightButton)==HIGH && ClearDriverData==true){
+    ClearDriverData==true;
+  }
+  
+  if(screenSelect%3==0 && brightnessUpDown%2==0 && digitalRead(RightButton)==LOW){//0 mod 3 is 0, 1 mod 3 is 1, 2 mod 3 is 2, 3 mod 3 is 0....0 mod 2 is 0, 1 mod 2 is 1, 2 mod 2 is 0
     MPHBrightness+=1; //lower brightness
     tftL.setFont(&FreeMonoBold18pt7b);
     tftL.setTextColor(TFT_BLACK);
@@ -206,8 +215,7 @@ void loop() {
     tftL.print("brightness");
     tftL.setCursor(timeHourX+55, timeY+90);
     tftL.print(MPHBrightness);
-  } 
-  if(screenSelect%3==0 && brightnessUpDown%2==0 && digitalRead(LeftButton)==HIGH){
+  }else if(screenSelect%3==0 && brightnessUpDown%2==1 && digitalRead(RightButton)==LOW){
     MPHBrightness-=1; //increase brightness
     tftL.setFont(&FreeMonoBold18pt7b);
     tftL.setTextColor(TFT_BLACK);
@@ -215,8 +223,14 @@ void loop() {
     tftL.print("brightness");
     tftL.setCursor(timeHourX+55, timeY+90);
     tftL.print(MPHBrightness);
-  } 
-  if(screenSelect%3==2 && digitalRead(LeftButton)==HIGH){//write to SD card
+  }else if(screenSelect%3==0){
+    tftL.setFont(&FreeMonoBold18pt7b);
+    tftL.setTextColor(TFT_BLACK);
+    tftL.setCursor(timeHourX-20, timeY+50);
+    tftL.print("brightness");
+    tftL.setCursor(timeHourX+55, timeY+90);
+    tftL.print(MPHBrightness);
+  }else if(screenSelect%3==2 && digitalRead(RightButton)==LOW){//write to SD card
     sdLoggingActive=0; //0x3A
     tftL.setFont(&FreeMono12pt7b);
     tftL.setTextColor(TFT_BLACK);
@@ -224,8 +238,7 @@ void loop() {
     tftL.print("Shits fucked?");
     tftL.setCursor(timeHourX-20, timeY+80);
     tftL.print("PressLeftButton");
-  }
-  if(screenSelect%3==2 && digitalRead(LeftButton)==LOW){//write to SD card
+  }else if(screenSelect%3==2 && digitalRead(RightButton)==HIGH){//write to SD card
     sdLoggingActive=1; //0x3A
     tftL.setFont(&FreeMono12pt7b);
     tftL.setTextColor(TFT_BLACK);
@@ -233,17 +246,25 @@ void loop() {
     tftL.print("Shits fucked?");
     tftL.setCursor(timeHourX-20, timeY+80);
     tftL.print("PressLeftButton");
+  }else if(screenSelect%3==1 && digitalRead(LeftButton)==LOW){//error screen
+    if (primaryTemperature > cvtTempMax || secondaryTemperature > cvtTempMax){
+      tftL.setTextColor(TFT_BLACK);
+      tftL.setCursor(timeHourX+40, timeY+30);
+      tftL.print("Error");
+      tftL.setCursor(timeHourX+50, timeY+60);
+      tftL.print("CVTH"); //whose fucked
+      tftL.setCursor(timeHourX+35, timeY+90);
+      tftL.print(primaryTemperature);
+      tftL.setCursor(timeHourX+75, timeY+90);
+      tftL.print(secondaryTemperature);
+    }else{
+      tftL.setTextColor(TFT_BLACK);
+      tftL.setCursor(timeHourX, timeY+30);
+      tftL.print("No Error");
+    }
+  }else{
+
   }
-  if(screenSelect%3==1 && digitalRead(LeftButton)==HIGH){
-    tftL.setFont(&FreeMonoBold18pt7b);
-    tftL.setTextColor(TFT_BLACK);
-    tftL.setCursor(timeHourX+40, timeY+30);
-    tftL.print("Error");
-    tftL.setCursor(timeHourX+50, timeY+60);
-    tftL.print("P106"); //whose fucked
-    tftL.setCursor(timeHourX+55, timeY+90);
-    tftL.print("160"); //what is the data. This is the error code screen
-  }//error screen
 
 }
 

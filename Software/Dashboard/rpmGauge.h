@@ -75,7 +75,7 @@ void rpmGaugeSetup() {
 
 
 
-void updateRPMGauge(int speedAngle, int primaryRPM, int calculatedWheelSpeed) {
+void updateRPMGauge(int speedAngle, int primaryRPM) {
   
 
 if (speedAngle < 0) speedAngle = 0;
