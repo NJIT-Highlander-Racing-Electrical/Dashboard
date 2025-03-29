@@ -1,6 +1,6 @@
 /*********************************************************************************
 *   
-*   BajaCAN.h  -- Version 1.2.14
+*   BajaCAN.h  -- Version 1.2.15
 * 
 *   The goal of this BajaCAN header/driver is to enable all subsystems throughout
 *   the vehicle to use the same variables, data types, and functions. That way,
@@ -246,7 +246,7 @@ volatile int gpsDateDay;
 volatile int gpsDateYear;
 volatile int gpsAltitude;
 volatile int gpsHeading;
-volatile float gpsVelocity;
+volatile int gpsVelocity;
 volatile bool sdLoggingActive;
 
 // Power CAN

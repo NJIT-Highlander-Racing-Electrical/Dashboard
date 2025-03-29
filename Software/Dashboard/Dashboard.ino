@@ -36,14 +36,6 @@ const int cvtRatioTextY = 180;
 const int cvtRatioDataX = 80;
 const int cvtRatioDataY = 220;
 
-// Parameters to control the RPM dial on right circular display
-const int cvtMinRPM = 0;
-const int cvtMaxRPM = 4000;
-const int angleMin = 0;
-const int angleMax = 240;
-int mappedRPMAngle = 0;
-
-
 // Function for boot sequence Highlander Racing Image
 bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap) {
   if (y >= tft.height()) return 0;
@@ -109,7 +101,6 @@ void setup() {
 
   myLED.displayEnable();  // This command has no effect if you aren't using OE pin
   myLED.displayBrightness(ledBrightness);
-  updateSevenSegments(95);  // Part of boot screen sequence
 
   TJpgDec.setSwapBytes(true);
   TJpgDec.setCallback(tft_output);
@@ -144,7 +135,7 @@ void loop() {
   updateLedDisplays();
 
   // Update the gauge based on the current primaryRPM
-  updateRPMGauge(mappedRPMAngle, primaryRPM, Osc, ABSTractionLightOscillator);
+  updateRPMGauge(primaryRPM, Osc, ABSTractionLightOscillator);
 
   // Update the left display with the most recent time
   updateTime();
@@ -199,7 +190,21 @@ void updateStatusLEDs() {
 void updateTime() {
 
   // If we discover that the time has changed since the last time updating the display, then push the latest time
+
+  Serial.print("GPS HH:MM:SS   ");
+  Serial.print(gpsTimeHour);
+  Serial.print(":");
+  Serial.print(gpsTimeMinute);
+  Serial.print(":");
+  Serial.println(gpsTimeSecond);
+
+  Serial.print("lastUpdatedSecond: ");
+  Serial.println(lastUpdatedSecond);
+
   if (gpsTimeSecond != lastUpdatedSecond) {
+
+    lastUpdatedSecond = gpsTimeSecond;
+
     tftL.setFont(&FreeMonoBold18pt7b);
     tftL.setTextColor(TFT_BLACK);
     tftL.fillRect(0, timeY, 240, -(cvtRatioTextY - timeY - 95), TFT_WHITE);

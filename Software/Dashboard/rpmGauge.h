@@ -10,6 +10,13 @@ TFT_eSprite sprite = TFT_eSprite(&tft);
 #define AA_FONT_SMALL NotoSansBold15
 
 
+// Parameters to control the RPM dial
+int rpmAngle = 0;
+const int cvtMinRPM = 0;
+const int cvtMaxRPM = 4000;
+const int angleMin = 0;
+const int angleMax = 240;
+
 //......................................colors
 #define backColor 0xFFFF  //I really like 0x03EF, 0x7800,
 #define gaugeColor 0x055D
@@ -74,9 +81,9 @@ void rpmGaugeSetup() {
 
 
 
-void updateRPMGauge(int rpmAngle, int primaryRPM, int Oss, int ABSTractionLightOssilator) {
+void updateRPMGauge(int primaryRPM, int Oss, int ABSTractionLightOssilator) {
 
-  mappedRPMAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
+rpmAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
 
   if (rpmAngle < 0) rpmAngle = 0;
 

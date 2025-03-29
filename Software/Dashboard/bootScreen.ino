@@ -10,16 +10,19 @@ void bootScreen() {
     for (int i = 1; i < 10; i++) {
       batteryLevel = i;
 
-
-      updateSevenSegments(95);
+      gpsVelocity = 95;
+      updateLedDisplays();
       delay(30);
     }
     for (int i = 9; i > 0; i--) {
       batteryLevel = i;
-      updateSevenSegments(95);
+      gpsVelocity = 95;
+      updateLedDisplays();
       delay(30);
     }
   }
+
+  gpsVelocity = 0;
 
   batteryLevel = 0;
 }

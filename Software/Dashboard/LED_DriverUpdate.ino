@@ -2,7 +2,7 @@
 //Once the proper segments are set, the displayData is written
 //This also updated the battery LEDs using the global battery level variable
 
-void updateSevenSegments() {
+void updateLedDisplays() {
 
   uint8_t tens = gpsVelocity / 10;   // Extract tens digit
   uint8_t units = gpsVelocity % 10;  // Extract units digit
