@@ -1,6 +1,6 @@
 /*********************************************************************************
 *   
-*   BajaCAN.h  -- Version 1.2.13 
+*   BajaCAN.h  -- Version 1.2.14
 * 
 *   The goal of this BajaCAN header/driver is to enable all subsystems throughout
 *   the vehicle to use the same variables, data types, and functions. That way,
@@ -314,7 +314,7 @@ void CAN_Task_Code(void* pvParameters) {
     int packetSize = CAN.parsePacket();
     int packetId;
 
-    if ((packetSize || CAN.packetId() != -1) && (packetSize != 0)) {
+    if ((packetSize > 0) || (CAN.packetRtr() && CAN.packetId() != -1)) {
       // received a packet
       packetId = CAN.packetId();  // Get the packet ID
 
