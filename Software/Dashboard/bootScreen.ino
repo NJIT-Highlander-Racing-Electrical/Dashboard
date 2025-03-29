@@ -8,36 +8,36 @@ void bootScreen() {
   for (int i = 0; i < 5; i++) {
 
     for (int i = 1; i < 10; i++) {
-      fuelLevel = i;
+      batteryLevel = i;
 
 
       updateSevenSegments(95);
       delay(30);
     }
     for (int i = 9; i > 0; i--) {
-      fuelLevel = i;
+      batteryLevel = i;
       updateSevenSegments(95);
       delay(30);
     }
   }
 
-  fuelLevel = 0;
+  batteryLevel = 0;
 }
 
 
 
 
-/*  Old fuel READY-SET-GO Animation
+/*  Old  READY-SET-GO Animation
 
-  fuelLevel = 1;
+  batteryLevel = 1;
   updateSevenSegments(95);
   delay(750);
 
-  fuelLevel = 3;
+  batteryLevel = 3;
   updateSevenSegments(95);
   delay(750);
 
-  fuelLevel = 9;
+  batteryLevel = 9;
   updateSevenSegments(95);
   delay(1500);
 

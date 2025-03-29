@@ -4,6 +4,8 @@
 #define DEBUG_SERIAL \
   if (DEBUG) Serial
 
+
+// Including all libraries
 #include "SPI.h"
 #include <Adafruit_GFX.h>
 #include <Adafruit_GC9A01A.h>
@@ -15,7 +17,9 @@
 #if defined(ENERGIA_ARCH_MSP432R)
 #include <stdio.h>
 #endif
-TLC591x myLED(3, 32, 33, 21, 22);  // Uncomment if using OE pin
+
+
+TLC591x myLED(3, 32, 33, 21, 22); //num_chips, SDI_pin, CLK_pin, LE_pin, OE_pin
 
 #include "rpmGauge.h"
 
@@ -60,11 +64,8 @@ float cvtRatio = 0;
 float lastCvtRatio = 0;
 int lastRPM = 0;
 const float gearboxRatio = 8.25;
-const float wheelCircumference = 23.0;  // Wheel circumference in inches; distance traveled per revolution; should be 23 inches
-float totalMultiplier = 0;
-uint8_t calculatedWheelSpeed = 0;
 
-//Definitions for four status LEDs
+//Pins for four status LEDs
 const int cvtTempMax = 150;
 const int cvtOffTemp = 140;
 
@@ -73,32 +74,29 @@ const int cvtLed = 2;
 const int lowBatteryLed = 15;
 const int dasLed = 27;
  
-//Pins for three non-green fuel LEDs (brightness was uneven with them on the LED driver :( )
-const int redFuelLED = 12;
-const int yellowFuelLED1 = 13;
-const int yellowFuelLED2 = 14;
+//Pins for three non-green LEDs (brightness was uneven with them on the LED driver :( )
+const int redLed = 12;
+const int yellowLed1 = 13;
+const int yellowLed2 = 14;
 
-int fuelLevel = 0; // Since this is not being sent/received in BajaCAN.h (as of now), it is defined here
+//Variable for battery level, which represents number of LEDs illuminated based on battery percentage 
+int batteryLevel;
 
 //Definitions for GPS time
 int lastTimeH = 0;
 int lastTimeM = 0;
 int lastTimeS = 0;
 
-unsigned long lastTimePingM = 0;
-unsigned long lastTimePingS = 0;
-bool hasBeenPinged = false;
-int slowestWheel=frontLeftWheelRPM;
-int RightButton=19; //selects screen
-int LeftButton=34;//changes options
+int rightButton=19; //selects screen
+int leftButton=34;//changes options
 int screenSelect=0; //done by modulus. 0 is brightness, 1 is error code, 2 is mark
 bool screenSelectStop=false;
 int brightnessUpDown=0;
-int MPHBrightness=180;// 0 is max, 255 is min
+int MPHBrightness=255;// 0 is max, 255 is min
 bool BrightStop=false;
 bool ClearDriverData=false;
-int ABSTractionLightOssilator=0;
-int Oss=6;
+int ABSTractionLightOscillator=0;
+int Osc=6;
 int timeEla=0; //seconds
 int LastGPSSec=gpsTimeSecond;
 
@@ -110,11 +108,11 @@ void setup() {
   pinMode(cvtLed, OUTPUT);
   pinMode(dasLed, OUTPUT);
   pinMode(lowBatteryLed, OUTPUT);
-  pinMode(redFuelLED, OUTPUT);
-  pinMode(yellowFuelLED1, OUTPUT);
-  pinMode(yellowFuelLED2, OUTPUT);
-  pinMode(RightButton, INPUT);
-  pinMode(LeftButton, INPUT);
+  pinMode(redLed, OUTPUT);
+  pinMode(yellowLed1, OUTPUT);
+  pinMode(yellowLed2, OUTPUT);
+  pinMode(rightButton, INPUT);
+  pinMode(leftButton, INPUT);
 
 
   myLED.displayEnable();       // This command has no effect if you aren't using OE pin
@@ -141,44 +139,24 @@ void setup() {
 
 
 void loop() {
-  fuelLevel=map(batteryPercentage,20, 100, 0,9);
-  Serial.println(fuelLevel);
-  if(fuelLevel==1){
-    digitalWrite(redFuelLED, HIGH);
-  }
-  if(fuelLevel==2){
-    digitalWrite(yellowFuelLED1, HIGH);
-  }
-  if(fuelLevel==3){
-    digitalWrite(yellowFuelLED2, HIGH);
-  }
 
-  ABSTractionLightOssilator++;
+
+  batteryLevel=map(batteryPercentage, 20, 100, 0, 9);
+
+  ABSTractionLightOscillator++;
   if(gpsTimeSecond!=LastGPSSec){
     timeEla++;
   }LastGPSSec=gpsTimeSecond;
   
   cvtRatio = (secondaryRPM / (primaryRPM + 1.0));
 
-  // 0.000015782828283 inches in a mile and 60 minutes in one hour
-  //calculatedWheelSpeed = (secondaryRPM * totalMultiplier);
-
-  // This takes the calculated speed and displays it on the seven segments
+  // This takes the GPS speed (mph) and displays it on the seven segments
   updateSevenSegments(gpsVelocity);
-  //the wheel with the slowest rpm is displayed on dashboard
-  if(slowestWheel>frontRightWheelRPM){
-    slowestWheel=frontRightWheelRPM;
-  }
-  if(slowestWheel>rearLeftWheelRPM){
-    slowestWheel=rearLeftWheelRPM;
-  }
-  if(slowestWheel>rearRightWheelRPM){
-    slowestWheel=rearRightWheelRPM;
-  }
+ 
   //This takes the CVT rpm and plots the dial accordingly
   mappedRPMAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
   //primaryRPM will be replaced with the wheel spinning the slowest 
-  updateRPMGauge(mappedRPMAngle, slowestWheel, Oss, ABSTractionLightOssilator);
+  updateRPMGauge(mappedRPMAngle, slowestWheel, Osc, ABSTractionLightOscillator);
   updateTime();
 
   //This updates the digital CVT ratio on left display
@@ -197,35 +175,35 @@ void loop() {
   } else digitalWrite(dasLed, LOW);
   if (primaryTemperature > cvtTempMax || secondaryTemperature > cvtTempMax) digitalWrite(cvtLed, HIGH);
   if (primaryTemperature < cvtOffTemp && secondaryTemperature < cvtOffTemp) digitalWrite(cvtLed, LOW);
-  //Pins for three non-green fuel LEDs (brightness was uneven with them on the LED driver :( )
+  //Pins for three non-green LEDs (brightness was uneven with them on the LED driver :( )
   //options are brightness, error code screen, mark, and ....
-  if(digitalRead(LeftButton)==LOW && screenSelectStop==false){
+  if(digitalRead(leftButton)==LOW && screenSelectStop==false){
     screenSelect+=1;
     screenSelectStop=true;
   }
-  if(digitalRead(LeftButton)==HIGH && screenSelectStop==true){
+  if(digitalRead(leftButton)==HIGH && screenSelectStop==true){
     screenSelectStop=false;
   }
   //this is screen brightness screen
-  if(screenSelect%3==0 && digitalRead(RightButton)==LOW && BrightStop==false){
+  if(screenSelect%3==0 && digitalRead(rightButton)==LOW && BrightStop==false){
     brightnessUpDown+=1;
     BrightStop=true;
   }
-  if(screenSelect%3==0 && digitalRead(RightButton)==HIGH && BrightStop==true){
+  if(screenSelect%3==0 && digitalRead(rightButton)==HIGH && BrightStop==true){
     BrightStop=false;
   }
-  if(digitalRead(LeftButton)==LOW && ClearDriverData==false){
+  if(digitalRead(leftButton)==LOW && ClearDriverData==false){
     tftL.fillRect(timeHourX-40, timeY+5, 300, 95, TFT_WHITE);
     ClearDriverData==true;
-  }if(digitalRead(RightButton)==LOW && ClearDriverData==false && screenSelect%3!=2){
+  }if(digitalRead(rightButton)==LOW && ClearDriverData==false && screenSelect%3!=2){
     tftL.fillRect(timeHourX-40, timeY+5, 300, 95, TFT_WHITE);
     ClearDriverData==true;
   }
-  if(digitalRead(LeftButton)==HIGH && digitalRead(RightButton)==HIGH && ClearDriverData==true){
+  if(digitalRead(leftButton)==HIGH && digitalRead(rightButton)==HIGH && ClearDriverData==true){
     ClearDriverData==true;
   }
   
-  if(screenSelect%4==0 && brightnessUpDown%2==0 && digitalRead(RightButton)==LOW){//0 mod 3 is 0, 1 mod 3 is 1, 2 mod 3 is 2, 3 mod 3 is 0....0 mod 2 is 0, 1 mod 2 is 1, 2 mod 2 is 0
+  if(screenSelect%4==0 && brightnessUpDown%2==0 && digitalRead(rightButton)==LOW){//0 mod 3 is 0, 1 mod 3 is 1, 2 mod 3 is 2, 3 mod 3 is 0....0 mod 2 is 0, 1 mod 2 is 1, 2 mod 2 is 0
     MPHBrightness+=1; //lower brightness
     tftL.setFont(&FreeMonoBold18pt7b);
     tftL.setTextColor(TFT_BLACK);
@@ -233,7 +211,7 @@ void loop() {
     tftL.print("brightness");
     tftL.setCursor(timeHourX+55, timeY+90);
     tftL.print(MPHBrightness);
-  }else if(screenSelect%4==0 && brightnessUpDown%2==1 && digitalRead(RightButton)==LOW){
+  }else if(screenSelect%4==0 && brightnessUpDown%2==1 && digitalRead(rightButton)==LOW){
     MPHBrightness-=1; //increase brightness
     tftL.setFont(&FreeMonoBold18pt7b);
     tftL.setTextColor(TFT_BLACK);
@@ -248,7 +226,7 @@ void loop() {
     tftL.print("brightness");
     tftL.setCursor(timeHourX+55, timeY+90);
     tftL.print(MPHBrightness);
-  }else if(screenSelect%4==2 && digitalRead(RightButton)==LOW){//write to SD card
+  }else if(screenSelect%4==2 && digitalRead(rightButton)==LOW){//write to SD card
     sdLoggingActive=0; //0x3A
     tftL.setFont(&FreeMono12pt7b);
     tftL.setTextColor(TFT_BLACK);
@@ -256,7 +234,7 @@ void loop() {
     tftL.print("Shits fucked?");
     tftL.setCursor(timeHourX-20, timeY+80);
     tftL.print("PressLeftButton");
-  }else if(screenSelect%4==2 && digitalRead(RightButton)==HIGH){//write to SD card
+  }else if(screenSelect%4==2 && digitalRead(rightButton)==HIGH){//write to SD card
     sdLoggingActive=1; //0x3A
     tftL.setFont(&FreeMono12pt7b);
     tftL.setTextColor(TFT_BLACK);
@@ -264,7 +242,7 @@ void loop() {
     tftL.print("Shits fucked?");
     tftL.setCursor(timeHourX-20, timeY+80);
     tftL.print("PressLeftButton");
-  }else if(screenSelect%4==1 && digitalRead(LeftButton)==LOW){//error screen
+  }else if(screenSelect%4==1 && digitalRead(leftButton)==LOW){//error screen
     if (primaryTemperature > cvtTempMax || secondaryTemperature > cvtTempMax){
       tftL.setFont(&FreeMono12pt7b);
       tftL.setTextColor(TFT_BLACK);
@@ -385,16 +363,16 @@ void updateCvtRatio() {
   tftL.setCursor(cvtRatioDataX, cvtRatioDataY); //cvtRatioTextX, cvtRatioTextY
   tftL.println(cvtRatio, 1);
   //checks for wheel slippage or locking
-  if(frontLeftWheelRPM==0 && gpsVelocity>0 && ABSTractionLightOssilator%Oss==0){
+  if(frontLeftWheelRPM==0 && gpsVelocity>0 && ABSTractionLightOscillator%Osc==0){
     tftL.fillRect(0,0,300,125,TFT_RED);
   }
-  if(frontLeftWheelRPM>0 && gpsVelocity==0 && ABSTractionLightOssilator%Oss==0){
+  if(frontLeftWheelRPM>0 && gpsVelocity==0 && ABSTractionLightOscillator%Osc==0){
     tftL.fillRect(0,0,300,125,TFT_ORANGE);
   }
-  if(rearLeftWheelRPM==0 && gpsVelocity>0 && ABSTractionLightOssilator%Oss==0){
+  if(rearLeftWheelRPM==0 && gpsVelocity>0 && ABSTractionLightOscillator%Osc==0){
     tftL.fillRect(0,125,300,125,TFT_RED);
   }
-  if(rearLeftWheelRPM>0 && gpsVelocity==0 &&ABSTractionLightOssilator%Oss==0){
+  if(rearLeftWheelRPM>0 && gpsVelocity==0 &&ABSTractionLightOscillator%Osc==0){
     tftL.fillRect(0,125,300,125,TFT_ORANGE);
   }
 }

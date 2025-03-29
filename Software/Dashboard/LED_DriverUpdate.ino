@@ -1,6 +1,6 @@
 //A function that accepts an integer number (less than 99MPH) and configures each individual segment
 //Once the proper segments are set, the displayData is written
-//This also updated the fuel LEDs using the global fuel level variable
+//This also updated the battery LEDs using the global battery level variable
 
 void updateSevenSegments(uint8_t number) {
   uint8_t tens = number / 10;   // Extract tens digit
@@ -21,7 +21,7 @@ void updateSevenSegments(uint8_t number) {
     0b01110111   // 9
   };
 
-  const uint8_t fuelPatterns[] = {
+  const uint8_t ledBarPatterns[] = {
     //Note: this function only controls the green LEDs
     0b00000000,  // 0
     0b00000000,  // 1
@@ -39,39 +39,38 @@ void updateSevenSegments(uint8_t number) {
   // Calculate segment patterns for each digit
   uint8_t segmentsTens = segmentPatterns[tens];
   uint8_t segmentsUnits = segmentPatterns[units];
-  uint8_t segmentsFuel = fuelPatterns[fuelLevel];
+  uint8_t segmentsLedBar = ledBarPatterns[batteryLevel];
 
   /*
   Serial.print(segmentsTens);
   Serial.print(",");
   Serial.print(segmentsUnits);
   Serial.print(",");
-  Serial.println(segmentsFuel);
+  Serial.println(segmentsLedBar);
   */
 
 
   // Display the speed and the green fuel LEDs using printDirect function
-  fuelLevel=0;
-  uint8_t displayData[3] = { segmentsUnits, segmentsTens, segmentsFuel };
+  uint8_t displayData[3] = { segmentsUnits, segmentsTens, segmentsLedBar };
   myLED.printDirect(displayData);
 
   //Update the other red and yellow fuel leds
  
-  if (fuelLevel == 0) {
-    digitalWrite(redFuelLED, LOW);
-    digitalWrite(yellowFuelLED1, LOW);
-    digitalWrite(yellowFuelLED2, LOW);
-  } else if (fuelLevel == 1) {
-    digitalWrite(redFuelLED, HIGH);
-    digitalWrite(yellowFuelLED1, LOW);
-    digitalWrite(yellowFuelLED2, LOW);
-  } else if (fuelLevel == 2) {
-    digitalWrite(redFuelLED, HIGH);
-    digitalWrite(yellowFuelLED1, HIGH);
-    digitalWrite(yellowFuelLED2, LOW);
+  if (batteryLevel == 0) {
+    digitalWrite(redLed, LOW);
+    digitalWrite(yellowLed1, LOW);
+    digitalWrite(yellowLed2, LOW);
+  } else if (batteryLevel == 1) {
+    digitalWrite(redLed, HIGH);
+    digitalWrite(yellowLed1, LOW);
+    digitalWrite(yellowLed2, LOW);
+  } else if (batteryLevel == 2) {
+    digitalWrite(redLed, HIGH);
+    digitalWrite(yellowLed1, HIGH);
+    digitalWrite(yellowLed2, LOW);
   } else {
-    digitalWrite(redFuelLED, HIGH);
-    digitalWrite(yellowFuelLED1, HIGH);
-    digitalWrite(yellowFuelLED2, HIGH);
+    digitalWrite(redLed, HIGH);
+    digitalWrite(yellowLed1, HIGH);
+    digitalWrite(yellowLed2, HIGH);
   }
 }
