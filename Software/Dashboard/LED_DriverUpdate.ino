@@ -38,7 +38,15 @@ void updateLedDisplays() {
   };
 
   // Update the number of LEDs based on the batteryPercentage
-  batteryLevel = map(batteryPercentage, 20, 100, 0, 9);
+  if (batteryPercentage < 20) batteryLevel = 1;
+  else if (batteryPercentage < 30) batteryLevel = 2;
+  else if (batteryPercentage < 40) batteryLevel = 3;
+  else if (batteryPersentage < 50) batteryLevel = 4;
+  else if (batteryPercentage < 60) batteryLevel = 5;
+  else if (batteryPercentage < 70) batteryLevel = 6;
+  else if (batteryPercentage < 80) batteryLevel = 7;
+  else if (batteryPercentage < 90) batteryLevel = 8;
+  else batteryLevel = 9;
 
   // Calculate segment patterns for each digit
   uint8_t segmentsTens = segmentPatterns[tens];
