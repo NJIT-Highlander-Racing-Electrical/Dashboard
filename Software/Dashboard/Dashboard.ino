@@ -97,11 +97,14 @@ int brightnessUpDown=0;
 int MPHBrightness=180;// 0 is max, 255 is min
 bool BrightStop=false;
 bool ClearDriverData=false;
+int ABSTractionLightOssilator=0;
+int Oss=6;
+int timeEla=0; //seconds
+int LastGPSSec=gpsTimeSecond;
 
 void setup() {
 
-  DEBUG_SERIAL.begin(460800);
-
+  Serial.begin(460800);
   setupCAN(DASHBOARD);
 
   pinMode(cvtLed, OUTPUT);
@@ -138,6 +141,23 @@ void setup() {
 
 
 void loop() {
+  fuelLevel=map(batteryPercentage,20, 100, 0,9);
+  Serial.println(fuelLevel);
+  if(fuelLevel==1){
+    digitalWrite(redFuelLED, HIGH);
+  }
+  if(fuelLevel==2){
+    digitalWrite(yellowFuelLED1, HIGH);
+  }
+  if(fuelLevel==3){
+    digitalWrite(yellowFuelLED2, HIGH);
+  }
+
+  ABSTractionLightOssilator++;
+  if(gpsTimeSecond!=LastGPSSec){
+    timeEla++;
+  }LastGPSSec=gpsTimeSecond;
+  
   cvtRatio = (secondaryRPM / (primaryRPM + 1.0));
 
   // 0.000015782828283 inches in a mile and 60 minutes in one hour
@@ -158,7 +178,7 @@ void loop() {
   //This takes the CVT rpm and plots the dial accordingly
   mappedRPMAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
   //primaryRPM will be replaced with the wheel spinning the slowest 
-  updateRPMGauge(mappedRPMAngle, slowestWheel);
+  updateRPMGauge(mappedRPMAngle, slowestWheel, Oss, ABSTractionLightOssilator);
   updateTime();
 
   //This updates the digital CVT ratio on left display
@@ -175,11 +195,9 @@ void loop() {
   if (sdLoggingActive) {
     digitalWrite(dasLed, HIGH);
   } else digitalWrite(dasLed, LOW);
-
   if (primaryTemperature > cvtTempMax || secondaryTemperature > cvtTempMax) digitalWrite(cvtLed, HIGH);
   if (primaryTemperature < cvtOffTemp && secondaryTemperature < cvtOffTemp) digitalWrite(cvtLed, LOW);
   //Pins for three non-green fuel LEDs (brightness was uneven with them on the LED driver :( )
-
   //options are brightness, error code screen, mark, and ....
   if(digitalRead(LeftButton)==LOW && screenSelectStop==false){
     screenSelect+=1;
@@ -207,7 +225,7 @@ void loop() {
     ClearDriverData==true;
   }
   
-  if(screenSelect%3==0 && brightnessUpDown%2==0 && digitalRead(RightButton)==LOW){//0 mod 3 is 0, 1 mod 3 is 1, 2 mod 3 is 2, 3 mod 3 is 0....0 mod 2 is 0, 1 mod 2 is 1, 2 mod 2 is 0
+  if(screenSelect%4==0 && brightnessUpDown%2==0 && digitalRead(RightButton)==LOW){//0 mod 3 is 0, 1 mod 3 is 1, 2 mod 3 is 2, 3 mod 3 is 0....0 mod 2 is 0, 1 mod 2 is 1, 2 mod 2 is 0
     MPHBrightness+=1; //lower brightness
     tftL.setFont(&FreeMonoBold18pt7b);
     tftL.setTextColor(TFT_BLACK);
@@ -215,7 +233,7 @@ void loop() {
     tftL.print("brightness");
     tftL.setCursor(timeHourX+55, timeY+90);
     tftL.print(MPHBrightness);
-  }else if(screenSelect%3==0 && brightnessUpDown%2==1 && digitalRead(RightButton)==LOW){
+  }else if(screenSelect%4==0 && brightnessUpDown%2==1 && digitalRead(RightButton)==LOW){
     MPHBrightness-=1; //increase brightness
     tftL.setFont(&FreeMonoBold18pt7b);
     tftL.setTextColor(TFT_BLACK);
@@ -223,14 +241,14 @@ void loop() {
     tftL.print("brightness");
     tftL.setCursor(timeHourX+55, timeY+90);
     tftL.print(MPHBrightness);
-  }else if(screenSelect%3==0){
+  }else if(screenSelect%4==0){
     tftL.setFont(&FreeMonoBold18pt7b);
     tftL.setTextColor(TFT_BLACK);
     tftL.setCursor(timeHourX-20, timeY+50);
     tftL.print("brightness");
     tftL.setCursor(timeHourX+55, timeY+90);
     tftL.print(MPHBrightness);
-  }else if(screenSelect%3==2 && digitalRead(RightButton)==LOW){//write to SD card
+  }else if(screenSelect%4==2 && digitalRead(RightButton)==LOW){//write to SD card
     sdLoggingActive=0; //0x3A
     tftL.setFont(&FreeMono12pt7b);
     tftL.setTextColor(TFT_BLACK);
@@ -238,7 +256,7 @@ void loop() {
     tftL.print("Shits fucked?");
     tftL.setCursor(timeHourX-20, timeY+80);
     tftL.print("PressLeftButton");
-  }else if(screenSelect%3==2 && digitalRead(RightButton)==HIGH){//write to SD card
+  }else if(screenSelect%4==2 && digitalRead(RightButton)==HIGH){//write to SD card
     sdLoggingActive=1; //0x3A
     tftL.setFont(&FreeMono12pt7b);
     tftL.setTextColor(TFT_BLACK);
@@ -246,8 +264,9 @@ void loop() {
     tftL.print("Shits fucked?");
     tftL.setCursor(timeHourX-20, timeY+80);
     tftL.print("PressLeftButton");
-  }else if(screenSelect%3==1 && digitalRead(LeftButton)==LOW){//error screen
+  }else if(screenSelect%4==1 && digitalRead(LeftButton)==LOW){//error screen
     if (primaryTemperature > cvtTempMax || secondaryTemperature > cvtTempMax){
+      tftL.setFont(&FreeMono12pt7b);
       tftL.setTextColor(TFT_BLACK);
       tftL.setCursor(timeHourX+40, timeY+30);
       tftL.print("Error");
@@ -258,10 +277,38 @@ void loop() {
       tftL.setCursor(timeHourX+75, timeY+90);
       tftL.print(secondaryTemperature);
     }else{
+      tftL.setFont(&FreeMonoBold18pt7b);
       tftL.setTextColor(TFT_BLACK);
       tftL.setCursor(timeHourX, timeY+30);
       tftL.print("No Error");
     }
+  }else if(screenSelect%4==3){
+    //hours
+    tftL.fillRect(timeHourX, timeY+30, (timeMinuteX - timeHourX-20), -(cvtRatioTextY - timeY-95), TFT_WHITE);
+    tftL.setCursor(timeHourX, timeY+30);  // Adjust coordinates as needed
+    if (timeEla/3600 < 10) tftL.print("0");
+    tftL.print(timeEla/3600); 
+    tftL.print(":");
+    //mins
+    tftL.fillRect(timeMinuteX, timeY+30, (timeSecondX - timeMinuteX)-20, -(cvtRatioTextY - timeY-95), TFT_WHITE);
+    tftL.setCursor(timeMinuteX, timeY+30);  // Adjust coordinates as needed
+    if (timeEla/60 < 10) tftL.print("0");
+    tftL.print(timeEla/60);
+    tftL.print(":");
+    tftL.fillRect(timeMinuteX, timeY+30, (timeSecondX - timeMinuteX)-20, -(cvtRatioTextY - timeY-95), TFT_WHITE);
+    tftL.setCursor(timeMinuteX, timeY+30);  // Adjust coordinates as needed
+    if (timeEla/60 < 10) tftL.print("0");
+    tftL.print(timeEla/60);
+    tftL.print(":");
+    //seconds
+    tftL.fillRect(timeSecondX, timeY+30, (240 - timeSecondX-3), -(cvtRatioTextY - timeY-95), TFT_WHITE);
+    tftL.setCursor(timeSecondX, timeY+30);  // Adjust coordinates as needed
+    if (timeEla < 10) tftL.print("0");
+    tftL.print(timeEla%60);
+    tftL.fillRect(timeSecondX, timeY+30, (240 - timeSecondX-3), -(cvtRatioTextY - timeY-95), TFT_WHITE);
+    tftL.setCursor(timeSecondX, timeY+30);  // Adjust coordinates as needed
+    if (timeEla%60 < 10) tftL.print("0");
+    tftL.print(timeEla%60);
   }else{
 
   }
@@ -272,63 +319,64 @@ void loop() {
 void updateTime() {
 
 
-  tftL.setFont(&FreeMonoBold18pt7b);
+ /* tftL.setFont(&FreeMonoBold18pt7b);
   tftL.setTextColor(TFT_BLACK);
   tftL.setCursor(timeHourX, timeY);
-  tftL.print("04:55:55");
-
- /* if (gpsTimeHour != lastTimeH) {
-    hasBeenPinged = true;
-    lastTimeH = gpsTimeHour;
-    //tftL.fillRect(timeHourX, timeY, (timeMinuteX - timeHourX), -(cvtRatioTextY - timeY), TFT_WHITE);
+  tftL.print("04:55:55");*/
+  tftL.setFont(&FreeMonoBold18pt7b);
+ // if (gpsTimeHour != lastTimeH) {
+    //hasBeenPinged = true;
+    //lastTimeH = gpsTimeHour;
+    tftL.fillRect(timeHourX, timeY, (timeMinuteX - timeHourX-15), -(cvtRatioTextY - timeY-95), TFT_WHITE);
     tftL.setCursor(timeHourX, timeY);  // Adjust coordinates as needed
-    //if (gpsTimeHour < 10) tftL.print("0");
+    if (gpsTimeHour < 10) tftL.print("0");
     tftL.print(gpsTimeHour); 
     tftL.print(":");
-  }
-
-  if (gpsTimeMinute != lastTimeM) {
-    lastTimePingM = millis();
-    lastTimeM = gpsTimeMinute;
-   // tftL.fillRect(timeMinuteX, timeY, (timeSecondX - timeMinuteX), -(cvtRatioTextY - timeY), TFT_WHITE);
-    tftL.setCursor(timeMinuteX, timeY);  // Adjust coordinates as needed
-    //if (gpsTimeMinute < 10) tftL.print("0");
-    tftL.print(gpsTimeMinute);
-    tftL.print(":");
-  }
-  if (((millis() - lastTimePingM) > 60000) && hasBeenPinged) {
-    lastTimePingM = millis();
-    gpsTimeMinute = gpsTimeMinute + 1;
-    lastTimeM = gpsTimeMinute;
-    //ftL.fillRect(timeMinuteX, timeY, (240 - timeMinuteX), -(cvtRatioTextY - timeY), TFT_WHITE);
+  //}
+  //if (gpsTimeMinute != lastTimeM) {
+    //lastTimePingM = millis();
+    //lastTimeM = gpsTimeMinute;
+    tftL.fillRect(timeMinuteX, timeY, (timeSecondX - timeMinuteX)-20, -(cvtRatioTextY - timeY-95), TFT_WHITE);
     tftL.setCursor(timeMinuteX, timeY);  // Adjust coordinates as needed
     if (gpsTimeMinute < 10) tftL.print("0");
-    tftL.println(gpsTimeMinute);
-  }
+    tftL.print(gpsTimeMinute);
+    tftL.print(":");
+  //}
+  //if (((millis() - lastTimePingM) > 60000) && hasBeenPinged) {
+    //lastTimePingM = millis();
+    //gpsTimeMinute = gpsTimeMinute + 1;
+    //lastTimeM = gpsTimeMinute;
+    tftL.fillRect(timeMinuteX, timeY, (timeSecondX - timeMinuteX)-20, -(cvtRatioTextY - timeY-95), TFT_WHITE);
+    tftL.setCursor(timeMinuteX, timeY);  // Adjust coordinates as needed
+    if (gpsTimeMinute < 10) tftL.print("0");
+    tftL.print(gpsTimeMinute);
+    tftL.print(":");
+  //}
 
-  if (gpsTimeSecond != lastTimeS) {
-    lastTimePingS = millis();
-    lastTimeS = gpsTimeSecond;
-    //tftL.fillRect(timeSecondX, timeY, (240 - timeSecondX), -(cvtRatioTextY - timeY), TFT_WHITE);
-    tftL.setCursor(timeSecondX, timeY);  // Adjust coordinates as needed
-    //if (gpsTimeSecond < 10) tftL.print("0");
-    tftL.println(gpsTimeSecond);
-  }
-  if (((millis() - lastTimePingS) > 1000) && hasBeenPinged) {
-    lastTimePingS = millis();
-    if (gpsTimeSecond > 59) {
-      gpsTimeMinute++;
-      gpsTimeSecond = 0;
-    } else gpsTimeSecond++;
-    lastTimeS = gpsTimeSecond;
-    //tftL.fillRect(timeSecondX, timeY, (240 - timeSecondX), -(cvtRatioTextY - timeY), TFT_WHITE);
+ // if (gpsTimeSecond != lastTimeS) {
+    //lastTimePingS = millis();
+    //lastTimeS = gpsTimeSecond;
+    tftL.fillRect(timeSecondX, timeY, (240 - timeSecondX-3), -(cvtRatioTextY - timeY-95), TFT_WHITE);
     tftL.setCursor(timeSecondX, timeY);  // Adjust coordinates as needed
     if (gpsTimeSecond < 10) tftL.print("0");
-    tftL.println(gpsTimeSecond);
-  }*/
+    tftL.print(gpsTimeSecond);
+ // }
+  //if (((millis() - lastTimePingS) > 1000) && hasBeenPinged) {
+    //lastTimePingS = millis();
+    //if (gpsTimeSecond > 59) {
+     // gpsTimeMinute++;
+     // gpsTimeSecond = 0;
+    //} else gpsTimeSecond++;
+    //lastTimeS = gpsTimeSecond;
+    tftL.fillRect(timeSecondX, timeY, (240 - timeSecondX-3), -(cvtRatioTextY - timeY-95), TFT_WHITE);
+    tftL.setCursor(timeSecondX, timeY);  // Adjust coordinates as needed
+    if (gpsTimeSecond < 10) tftL.print("0");
+    tftL.print(gpsTimeSecond);
+  //}
 }
 
 void updateCvtRatio() {
+  tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_WHITE);
   tftL.setTextColor(TFT_BLACK);
   tftL.setCursor(cvtRatioTextX, cvtRatioTextY);  // Adjust coordinates as needed
   tftL.setFont(&FreeMono12pt7b);
@@ -337,16 +385,16 @@ void updateCvtRatio() {
   tftL.setCursor(cvtRatioDataX, cvtRatioDataY); //cvtRatioTextX, cvtRatioTextY
   tftL.println(cvtRatio, 1);
   //checks for wheel slippage or locking
-  if(frontLeftWheelRPM==0 && gpsVelocity>0){
+  if(frontLeftWheelRPM==0 && gpsVelocity>0 && ABSTractionLightOssilator%Oss==0){
     tftL.fillRect(0,0,300,125,TFT_RED);
   }
-  if(frontLeftWheelRPM>0 && gpsVelocity==0){
+  if(frontLeftWheelRPM>0 && gpsVelocity==0 && ABSTractionLightOssilator%Oss==0){
     tftL.fillRect(0,0,300,125,TFT_ORANGE);
   }
-  if(rearLeftWheelRPM==0 && gpsVelocity>0){
+  if(rearLeftWheelRPM==0 && gpsVelocity>0 && ABSTractionLightOssilator%Oss==0){
     tftL.fillRect(0,125,300,125,TFT_RED);
   }
-  if(rearLeftWheelRPM>0 && gpsVelocity==0){
+  if(rearLeftWheelRPM>0 && gpsVelocity==0 &&ABSTractionLightOssilator%Oss==0){
     tftL.fillRect(0,125,300,125,TFT_ORANGE);
   }
 }
