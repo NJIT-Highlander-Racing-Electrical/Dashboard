@@ -2,9 +2,10 @@
 //Once the proper segments are set, the displayData is written
 //This also updated the battery LEDs using the global battery level variable
 
-void updateSevenSegments(uint8_t number) {
-  uint8_t tens = number / 10;   // Extract tens digit
-  uint8_t units = number % 10;  // Extract units digit
+void updateSevenSegments() {
+
+  uint8_t tens = gpsVelocity / 10;   // Extract tens digit
+  uint8_t units = gpsVelocity % 10;  // Extract units digit
 
   // Segment patterns for digits 0-9 on common-cathode displays
   const uint8_t segmentPatterns[] = {
@@ -36,6 +37,9 @@ void updateSevenSegments(uint8_t number) {
 
   };
 
+  // Update the number of LEDs based on the batteryPercentage
+  batteryLevel = map(batteryPercentage, 20, 100, 0, 9);
+
   // Calculate segment patterns for each digit
   uint8_t segmentsTens = segmentPatterns[tens];
   uint8_t segmentsUnits = segmentPatterns[units];
@@ -50,12 +54,13 @@ void updateSevenSegments(uint8_t number) {
   */
 
 
+
   // Display the speed and the green fuel LEDs using printDirect function
   uint8_t displayData[3] = { segmentsUnits, segmentsTens, segmentsLedBar };
   myLED.printDirect(displayData);
 
   //Update the other red and yellow fuel leds
- 
+
   if (batteryLevel == 0) {
     digitalWrite(redLed, LOW);
     digitalWrite(yellowLed1, LOW);

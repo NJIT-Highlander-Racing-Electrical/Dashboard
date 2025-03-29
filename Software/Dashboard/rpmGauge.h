@@ -11,9 +11,9 @@ TFT_eSprite sprite = TFT_eSprite(&tft);
 
 
 //......................................colors
-#define backColor 0xFFFF //I really like 0x03EF, 0x7800, 
+#define backColor 0xFFFF  //I really like 0x03EF, 0x7800,
 #define gaugeColor 0x055D
-#define dataColor 0x0311 //0x0311, 
+#define dataColor 0x0311  //0x0311,
 #define red 0xF00C
 #define needleColor 0xF811
 
@@ -70,15 +70,15 @@ void rpmGaugeSetup() {
     if (a == 360)
       a = 0;
   }
-
 }
 
 
 
-void updateRPMGauge(int speedAngle, int primaryRPM, int Oss, int ABSTractionLightOssilator) {
-  
+void updateRPMGauge(int rpmAngle, int primaryRPM, int Oss, int ABSTractionLightOssilator) {
 
-if (speedAngle < 0) speedAngle = 0;
+  mappedRPMAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
+
+  if (rpmAngle < 0) rpmAngle = 0;
 
   sprite.fillSprite(backColor);
 
@@ -102,53 +102,52 @@ if (speedAngle < 0) speedAngle = 0;
       color2 = red;
     }
 
-    // DRAW GAUGE LINE MARKINGS AND TEXT LABELS 
+    // DRAW GAUGE LINE MARKINGS AND TEXT LABELS
     if (i % 2 == 0) {
-      int labelValue = i*1.8;
+      int labelValue = i * 1.8;
       sprite.drawWedgeLine(x[i * 12], y[i * 12], px[i * 12], py[i * 12], 2, 1, color1);
       sprite.setTextColor(color2, backColor);
       sprite.drawString(String(labelValue), lx[i * 12], ly[i * 12]);
     } else
       sprite.drawWedgeLine(x[i * 12], y[i * 12], px[i * 12], py[i * 12], 1, 1, color2);
-    
   }
 
-    color1 = gaugeColor;
-    color2 = TFT_WHITE;
+  color1 = gaugeColor;
+  color2 = TFT_WHITE;
 
-    // DRAW NEEDLE
-    sA = speedAngle * 1.2;
-    sprite.drawWedgeLine(px[(int)sA], py[(int)sA], nx[(int)sA], ny[(int)sA], 4, 4, needleColor);
+  // DRAW NEEDLE
+  sA = rpmAngle * 1.2;
+  sprite.drawWedgeLine(px[(int)sA], py[(int)sA], nx[(int)sA], ny[(int)sA], 4, 4, needleColor);
 
 
-    // DRAW TEXT
-    sprite.unloadFont();
-    sprite.loadFont(AA_FONT_LARGE);
-    sprite.setTextColor(TFT_BLACK, backColor);
-    sprite.drawString(String((int)primaryRPM), cx, cy, 4);
-    sprite.unloadFont();
+  // DRAW TEXT
+  sprite.unloadFont();
+  sprite.loadFont(AA_FONT_LARGE);
+  sprite.setTextColor(TFT_BLACK, backColor);
+  sprite.drawString(String((int)primaryRPM), cx, cy, 4);
+  sprite.unloadFont();
 
-    sprite.loadFont(AA_FONT_SMALL);
-    sprite.setTextColor(0x03E0, backColor);
-    sprite.drawString("x100", cx, 210);
-    sprite.drawString("RPM", cx, 195); 
-    //checks for which wheel is losing traction and which is locked when the car still moving
-    if(frontRightWheelRPM==0 && gpsVelocity>0 && ABSTractionLightOssilator%Oss==0){
-      sprite.fillRect(0,0,300,125,TFT_RED);
-    }
-    if(frontRightWheelRPM>0 && gpsVelocity==0 && ABSTractionLightOssilator%Oss==0){
-      sprite.fillRect(0,0,300,125,TFT_ORANGE);
-    }
-    if(rearRightWheelRPM==0 && gpsVelocity>0 && ABSTractionLightOssilator%Oss==0){
-      sprite.fillRect(0,125,300,125,TFT_RED);
-    }
-    if(rearRightWheelRPM>0 && gpsVelocity==0 && ABSTractionLightOssilator%Oss==0){
-      sprite.fillRect(0,125,300,125,TFT_ORANGE);
-    }
-    // //braakes are locked
-    //sprite.fillRect(0,125,300,125,TFT_ORANGE); //lose traction
-    // PUSH SPRITE TO SCREEN#0x FA51C
-    sprite.pushSprite(0, 10);
-//fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color); red  is losing traction, orange is brake lock up
-   //
+  sprite.loadFont(AA_FONT_SMALL);
+  sprite.setTextColor(0x03E0, backColor);
+  sprite.drawString("x100", cx, 210);
+  sprite.drawString("RPM", cx, 195);
+  //checks for which wheel is losing traction and which is locked when the car still moving
+  if (frontRightWheelRPM == 0 && gpsVelocity > 0 && ABSTractionLightOssilator % Oss == 0) {
+    sprite.fillRect(0, 0, 300, 125, TFT_RED);
+  }
+  if (frontRightWheelRPM > 0 && gpsVelocity == 0 && ABSTractionLightOssilator % Oss == 0) {
+    sprite.fillRect(0, 0, 300, 125, TFT_ORANGE);
+  }
+  if (rearRightWheelRPM == 0 && gpsVelocity > 0 && ABSTractionLightOssilator % Oss == 0) {
+    sprite.fillRect(0, 125, 300, 125, TFT_RED);
+  }
+  if (rearRightWheelRPM > 0 && gpsVelocity == 0 && ABSTractionLightOssilator % Oss == 0) {
+    sprite.fillRect(0, 125, 300, 125, TFT_ORANGE);
+  }
+  // //braakes are locked
+  //sprite.fillRect(0,125,300,125,TFT_ORANGE); //lose traction
+  // PUSH SPRITE TO SCREEN#0x FA51C
+  sprite.pushSprite(0, 10);
+  //fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color); red  is losing traction, orange is brake lock up
+  //
 }

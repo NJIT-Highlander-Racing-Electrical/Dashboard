@@ -19,7 +19,7 @@
 #endif
 
 
-TLC591x myLED(3, 32, 33, 21, 22); //num_chips, SDI_pin, CLK_pin, LE_pin, OE_pin
+TLC591x myLED(3, 32, 33, 21, 22);  //num_chips, SDI_pin, CLK_pin, LE_pin, OE_pin
 
 #include "rpmGauge.h"
 
@@ -28,21 +28,15 @@ TLC591x myLED(3, 32, 33, 21, 22); //num_chips, SDI_pin, CLK_pin, LE_pin, OE_pin
 #define TFT_CS_L 17
 Adafruit_GC9A01A tftL(TFT_CS_L, TFT_DC_L);
 
-//X and Y positions on data on left circular display
-const int timeHourX = 33;
-const int timeMinuteX = 90;
-const int timeSecondX = 150;
+// X and Y positions on data on left circular display
+const int timeX = 33;
 const int timeY = 60;
 const int cvtRatioTextX = 100;
 const int cvtRatioTextY = 180;
 const int cvtRatioDataX = 80;
 const int cvtRatioDataY = 220;
-const int fourWheelX = 23;
-const int fourWheelY = 130;
-const int twoWheelX = 133;
-const int twoWheelY = 130;
 
-//Parameters to control the RPM dial on right circular display
+// Parameters to control the RPM dial on right circular display
 const int cvtMinRPM = 0;
 const int cvtMaxRPM = 4000;
 const int angleMin = 0;
@@ -57,7 +51,7 @@ bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap) 
   return 1;
 }
 
-//Defintions for CVT data (CVT RPM Sensor -> Dashboard Displays)
+// Defintions for CVT data (CVT RPM Sensor -> Dashboard Displays)
 float cvtMinRatio = 0.9;
 float cvtMaxRatio = 3.9;
 float cvtRatio = 0;
@@ -65,40 +59,38 @@ float lastCvtRatio = 0;
 int lastRPM = 0;
 const float gearboxRatio = 8.25;
 
-//Pins for four status LEDs
+// Pins for four status LEDs
 const int cvtTempMax = 150;
 const int cvtOffTemp = 140;
 
-//Pins for four status LEDs (power status is tied to VCC)
+// Pins for four status LEDs (power status is tied to VCC)
 const int cvtLed = 2;
 const int lowBatteryLed = 15;
 const int dasLed = 27;
- 
-//Pins for three non-green LEDs (brightness was uneven with them on the LED driver :( )
+
+// Pins for three non-green LEDs (brightness was uneven with them on the LED driver :( )
 const int redLed = 12;
 const int yellowLed1 = 13;
 const int yellowLed2 = 14;
 
-//Variable for battery level, which represents number of LEDs illuminated based on battery percentage 
+// Variable for battery level, which represents number of LEDs illuminated based on battery percentage
 int batteryLevel;
 
-//Definitions for GPS time
-int lastTimeH = 0;
-int lastTimeM = 0;
-int lastTimeS = 0;
+// Allows clock to only update when a second changes
+int lastUpdatedSecond = 0;
 
-int rightButton=19; //selects screen
-int leftButton=34;//changes options
-int screenSelect=0; //done by modulus. 0 is brightness, 1 is error code, 2 is mark
-bool screenSelectStop=false;
-int brightnessUpDown=0;
-int MPHBrightness=255;// 0 is max, 255 is min
-bool BrightStop=false;
-bool ClearDriverData=false;
-int ABSTractionLightOscillator=0;
-int Osc=6;
-int timeEla=0; //seconds
-int LastGPSSec=gpsTimeSecond;
+int rightButton = 19;  //selects screen
+int leftButton = 34;   //changes options
+int screenSelect = 0;  //done by modulus. 0 is brightness, 1 is error code, 2 is mark
+bool screenSelectStop = false;
+int brightnessUpDown = 0;
+int ledBrightness = 255;  // 0 is max, 255 is min
+bool BrightStop = false;
+bool ClearDriverData = false;
+int ABSTractionLightOscillator = 0;
+int Osc = 6;
+int timeEla = 0;  //seconds
+int LastGPSSec = gpsTimeSecond;
 
 void setup() {
 
@@ -115,9 +107,9 @@ void setup() {
   pinMode(leftButton, INPUT);
 
 
-  myLED.displayEnable();       // This command has no effect if you aren't using OE pin
-  myLED.displayBrightness(MPHBrightness);  
-  updateSevenSegments(95);     // Part of boot screen sequence
+  myLED.displayEnable();  // This command has no effect if you aren't using OE pin
+  myLED.displayBrightness(ledBrightness);
+  updateSevenSegments(95);  // Part of boot screen sequence
 
   TJpgDec.setSwapBytes(true);
   TJpgDec.setCallback(tft_output);
@@ -132,7 +124,6 @@ void setup() {
   bootScreen();
 
   updateTime();
-  totalMultiplier = (1.0 / gearboxRatio) * wheelCircumference * 3.1415926 * 0.00001578282828 * 60.0;  // 00001578282828 is miles in an inch
   updateCvtRatio();
 }
 
@@ -141,239 +132,129 @@ void setup() {
 void loop() {
 
 
-  batteryLevel=map(batteryPercentage, 20, 100, 0, 9);
-
   ABSTractionLightOscillator++;
-  if(gpsTimeSecond!=LastGPSSec){
+  if (gpsTimeSecond != LastGPSSec) {
     timeEla++;
-  }LastGPSSec=gpsTimeSecond;
-  
-  cvtRatio = (secondaryRPM / (primaryRPM + 1.0));
+  }
+  LastGPSSec = gpsTimeSecond;
+
 
   // This takes the GPS speed (mph) and displays it on the seven segments
-  updateSevenSegments(gpsVelocity);
- 
-  //This takes the CVT rpm and plots the dial accordingly
-  mappedRPMAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
-  //primaryRPM will be replaced with the wheel spinning the slowest 
-  updateRPMGauge(mappedRPMAngle, slowestWheel, Osc, ABSTractionLightOscillator);
+  // It also updates the battery level LED Bar
+  updateLedDisplays();
+
+  // Update the gauge based on the current primaryRPM
+  updateRPMGauge(mappedRPMAngle, primaryRPM, Osc, ABSTractionLightOscillator);
+
+  // Update the left display with the most recent time
   updateTime();
 
-  //This updates the digital CVT ratio on left display
-  if (abs(cvtRatio - lastCvtRatio) > 0.1) {
-    lastCvtRatio = cvtRatio;
-    updateCvtRatio();
+  // Update the digital CVT ratio on left display
+  updateCvtRatio();
+
+  updateStatusLEDs();
+
+  checkWheelSlipSkid();
+}
+
+
+
+void checkWheelSlipSkid() {
+  //checks for wheel slippage or locking
+  if (frontLeftWheelRPM == 0 && gpsVelocity > 0 && ABSTractionLightOscillator % Osc == 0) {
+    tftL.fillRect(0, 0, 300, 125, TFT_RED);
   }
+  if (frontLeftWheelRPM > 0 && gpsVelocity == 0 && ABSTractionLightOscillator % Osc == 0) {
+    tftL.fillRect(0, 0, 300, 125, TFT_ORANGE);
+  }
+  if (rearLeftWheelRPM == 0 && gpsVelocity > 0 && ABSTractionLightOscillator % Osc == 0) {
+    tftL.fillRect(0, 125, 300, 125, TFT_RED);
+  }
+  if (rearLeftWheelRPM > 0 && gpsVelocity == 0 && ABSTractionLightOscillator % Osc == 0) {
+    tftL.fillRect(0, 125, 300, 125, TFT_ORANGE);
+  }
+}
 
+void updateStatusLEDs() {
+  Serial.print("batteryPercentage: ");
+  Serial.println(batteryPercentage);
 
-  // These lines toggle the status LEDs
+  // update BAT LED
   if (batteryPercentage < 20) digitalWrite(lowBatteryLed, HIGH);
   else digitalWrite(lowBatteryLed, LOW);
 
+
+  // update DAQ LED
   if (sdLoggingActive) {
     digitalWrite(dasLed, HIGH);
-  } else digitalWrite(dasLed, LOW);
+  } else {
+    digitalWrite(dasLed, LOW);
+  }
+
+  // update CVT LED
   if (primaryTemperature > cvtTempMax || secondaryTemperature > cvtTempMax) digitalWrite(cvtLed, HIGH);
   if (primaryTemperature < cvtOffTemp && secondaryTemperature < cvtOffTemp) digitalWrite(cvtLed, LOW);
-  //Pins for three non-green LEDs (brightness was uneven with them on the LED driver :( )
-  //options are brightness, error code screen, mark, and ....
-  if(digitalRead(leftButton)==LOW && screenSelectStop==false){
-    screenSelect+=1;
-    screenSelectStop=true;
-  }
-  if(digitalRead(leftButton)==HIGH && screenSelectStop==true){
-    screenSelectStop=false;
-  }
-  //this is screen brightness screen
-  if(screenSelect%3==0 && digitalRead(rightButton)==LOW && BrightStop==false){
-    brightnessUpDown+=1;
-    BrightStop=true;
-  }
-  if(screenSelect%3==0 && digitalRead(rightButton)==HIGH && BrightStop==true){
-    BrightStop=false;
-  }
-  if(digitalRead(leftButton)==LOW && ClearDriverData==false){
-    tftL.fillRect(timeHourX-40, timeY+5, 300, 95, TFT_WHITE);
-    ClearDriverData==true;
-  }if(digitalRead(rightButton)==LOW && ClearDriverData==false && screenSelect%3!=2){
-    tftL.fillRect(timeHourX-40, timeY+5, 300, 95, TFT_WHITE);
-    ClearDriverData==true;
-  }
-  if(digitalRead(leftButton)==HIGH && digitalRead(rightButton)==HIGH && ClearDriverData==true){
-    ClearDriverData==true;
-  }
-  
-  if(screenSelect%4==0 && brightnessUpDown%2==0 && digitalRead(rightButton)==LOW){//0 mod 3 is 0, 1 mod 3 is 1, 2 mod 3 is 2, 3 mod 3 is 0....0 mod 2 is 0, 1 mod 2 is 1, 2 mod 2 is 0
-    MPHBrightness+=1; //lower brightness
-    tftL.setFont(&FreeMonoBold18pt7b);
-    tftL.setTextColor(TFT_BLACK);
-    tftL.setCursor(timeHourX-20, timeY+50);
-    tftL.print("brightness");
-    tftL.setCursor(timeHourX+55, timeY+90);
-    tftL.print(MPHBrightness);
-  }else if(screenSelect%4==0 && brightnessUpDown%2==1 && digitalRead(rightButton)==LOW){
-    MPHBrightness-=1; //increase brightness
-    tftL.setFont(&FreeMonoBold18pt7b);
-    tftL.setTextColor(TFT_BLACK);
-    tftL.setCursor(timeHourX-20, timeY+50);
-    tftL.print("brightness");
-    tftL.setCursor(timeHourX+55, timeY+90);
-    tftL.print(MPHBrightness);
-  }else if(screenSelect%4==0){
-    tftL.setFont(&FreeMonoBold18pt7b);
-    tftL.setTextColor(TFT_BLACK);
-    tftL.setCursor(timeHourX-20, timeY+50);
-    tftL.print("brightness");
-    tftL.setCursor(timeHourX+55, timeY+90);
-    tftL.print(MPHBrightness);
-  }else if(screenSelect%4==2 && digitalRead(rightButton)==LOW){//write to SD card
-    sdLoggingActive=0; //0x3A
-    tftL.setFont(&FreeMono12pt7b);
-    tftL.setTextColor(TFT_BLACK);
-    tftL.setCursor(timeHourX-5, timeY+50);
-    tftL.print("Shits fucked?");
-    tftL.setCursor(timeHourX-20, timeY+80);
-    tftL.print("PressLeftButton");
-  }else if(screenSelect%4==2 && digitalRead(rightButton)==HIGH){//write to SD card
-    sdLoggingActive=1; //0x3A
-    tftL.setFont(&FreeMono12pt7b);
-    tftL.setTextColor(TFT_BLACK);
-    tftL.setCursor(timeHourX-5, timeY+50);
-    tftL.print("Shits fucked?");
-    tftL.setCursor(timeHourX-20, timeY+80);
-    tftL.print("PressLeftButton");
-  }else if(screenSelect%4==1 && digitalRead(leftButton)==LOW){//error screen
-    if (primaryTemperature > cvtTempMax || secondaryTemperature > cvtTempMax){
-      tftL.setFont(&FreeMono12pt7b);
-      tftL.setTextColor(TFT_BLACK);
-      tftL.setCursor(timeHourX+40, timeY+30);
-      tftL.print("Error");
-      tftL.setCursor(timeHourX+50, timeY+60);
-      tftL.print("CVTH"); //whose fucked
-      tftL.setCursor(timeHourX+35, timeY+90);
-      tftL.print(primaryTemperature);
-      tftL.setCursor(timeHourX+75, timeY+90);
-      tftL.print(secondaryTemperature);
-    }else{
-      tftL.setFont(&FreeMonoBold18pt7b);
-      tftL.setTextColor(TFT_BLACK);
-      tftL.setCursor(timeHourX, timeY+30);
-      tftL.print("No Error");
-    }
-  }else if(screenSelect%4==3){
-    //hours
-    tftL.fillRect(timeHourX, timeY+30, (timeMinuteX - timeHourX-20), -(cvtRatioTextY - timeY-95), TFT_WHITE);
-    tftL.setCursor(timeHourX, timeY+30);  // Adjust coordinates as needed
-    if (timeEla/3600 < 10) tftL.print("0");
-    tftL.print(timeEla/3600); 
-    tftL.print(":");
-    //mins
-    tftL.fillRect(timeMinuteX, timeY+30, (timeSecondX - timeMinuteX)-20, -(cvtRatioTextY - timeY-95), TFT_WHITE);
-    tftL.setCursor(timeMinuteX, timeY+30);  // Adjust coordinates as needed
-    if (timeEla/60 < 10) tftL.print("0");
-    tftL.print(timeEla/60);
-    tftL.print(":");
-    tftL.fillRect(timeMinuteX, timeY+30, (timeSecondX - timeMinuteX)-20, -(cvtRatioTextY - timeY-95), TFT_WHITE);
-    tftL.setCursor(timeMinuteX, timeY+30);  // Adjust coordinates as needed
-    if (timeEla/60 < 10) tftL.print("0");
-    tftL.print(timeEla/60);
-    tftL.print(":");
-    //seconds
-    tftL.fillRect(timeSecondX, timeY+30, (240 - timeSecondX-3), -(cvtRatioTextY - timeY-95), TFT_WHITE);
-    tftL.setCursor(timeSecondX, timeY+30);  // Adjust coordinates as needed
-    if (timeEla < 10) tftL.print("0");
-    tftL.print(timeEla%60);
-    tftL.fillRect(timeSecondX, timeY+30, (240 - timeSecondX-3), -(cvtRatioTextY - timeY-95), TFT_WHITE);
-    tftL.setCursor(timeSecondX, timeY+30);  // Adjust coordinates as needed
-    if (timeEla%60 < 10) tftL.print("0");
-    tftL.print(timeEla%60);
-  }else{
-
-  }
-
 }
-
 
 void updateTime() {
 
+  // If we discover that the time has changed since the last time updating the display, then push the latest time
+  if (gpsTimeSecond != lastUpdatedSecond) {
+    tftL.setFont(&FreeMonoBold18pt7b);
+    tftL.setTextColor(TFT_BLACK);
+    tftL.fillRect(0, timeY, 240, -(cvtRatioTextY - timeY - 95), TFT_WHITE);
+    tftL.setCursor(timeX, timeY);  // Adjust coordinates as needed
 
- /* tftL.setFont(&FreeMonoBold18pt7b);
-  tftL.setTextColor(TFT_BLACK);
-  tftL.setCursor(timeHourX, timeY);
-  tftL.print("04:55:55");*/
-  tftL.setFont(&FreeMonoBold18pt7b);
- // if (gpsTimeHour != lastTimeH) {
-    //hasBeenPinged = true;
-    //lastTimeH = gpsTimeHour;
-    tftL.fillRect(timeHourX, timeY, (timeMinuteX - timeHourX-15), -(cvtRatioTextY - timeY-95), TFT_WHITE);
-    tftL.setCursor(timeHourX, timeY);  // Adjust coordinates as needed
-    if (gpsTimeHour < 10) tftL.print("0");
-    tftL.print(gpsTimeHour); 
-    tftL.print(":");
-  //}
-  //if (gpsTimeMinute != lastTimeM) {
-    //lastTimePingM = millis();
-    //lastTimeM = gpsTimeMinute;
-    tftL.fillRect(timeMinuteX, timeY, (timeSecondX - timeMinuteX)-20, -(cvtRatioTextY - timeY-95), TFT_WHITE);
-    tftL.setCursor(timeMinuteX, timeY);  // Adjust coordinates as needed
-    if (gpsTimeMinute < 10) tftL.print("0");
-    tftL.print(gpsTimeMinute);
-    tftL.print(":");
-  //}
-  //if (((millis() - lastTimePingM) > 60000) && hasBeenPinged) {
-    //lastTimePingM = millis();
-    //gpsTimeMinute = gpsTimeMinute + 1;
-    //lastTimeM = gpsTimeMinute;
-    tftL.fillRect(timeMinuteX, timeY, (timeSecondX - timeMinuteX)-20, -(cvtRatioTextY - timeY-95), TFT_WHITE);
-    tftL.setCursor(timeMinuteX, timeY);  // Adjust coordinates as needed
-    if (gpsTimeMinute < 10) tftL.print("0");
-    tftL.print(gpsTimeMinute);
-    tftL.print(":");
-  //}
 
- // if (gpsTimeSecond != lastTimeS) {
-    //lastTimePingS = millis();
-    //lastTimeS = gpsTimeSecond;
-    tftL.fillRect(timeSecondX, timeY, (240 - timeSecondX-3), -(cvtRatioTextY - timeY-95), TFT_WHITE);
-    tftL.setCursor(timeSecondX, timeY);  // Adjust coordinates as needed
-    if (gpsTimeSecond < 10) tftL.print("0");
-    tftL.print(gpsTimeSecond);
- // }
-  //if (((millis() - lastTimePingS) > 1000) && hasBeenPinged) {
-    //lastTimePingS = millis();
-    //if (gpsTimeSecond > 59) {
-     // gpsTimeMinute++;
-     // gpsTimeSecond = 0;
-    //} else gpsTimeSecond++;
-    //lastTimeS = gpsTimeSecond;
-    tftL.fillRect(timeSecondX, timeY, (240 - timeSecondX-3), -(cvtRatioTextY - timeY-95), TFT_WHITE);
-    tftL.setCursor(timeSecondX, timeY);  // Adjust coordinates as needed
-    if (gpsTimeSecond < 10) tftL.print("0");
-    tftL.print(gpsTimeSecond);
-  //}
+    String timeString = "";
+
+    if (gpsTimeHour < 10) {
+      timeString += 0;  // add a leading 0 for formatting purposes
+    }
+
+    timeString += gpsTimeHour;  // append the hours
+
+    timeString += ":";  // append a colon
+
+    if (gpsTimeMinute < 10) {
+      timeString += 0;  // add a leading 0 for formatting purposes
+    }
+    timeString += gpsTimeMinute;  // append the minutes
+
+    timeString += ":";  // append a colon
+
+    if (gpsTimeSecond < 10) {
+      timeString += 0;  // add a leading 0 for formatting purposes
+    }
+    timeString += gpsTimeSecond;  // append the seconds
+
+    Serial.print("Current Time String is: ");
+    Serial.println(timeString);
+
+    tftL.println(timeString);  // push to the display
+  }
 }
 
 void updateCvtRatio() {
-  tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_WHITE);
-  tftL.setTextColor(TFT_BLACK);
-  tftL.setCursor(cvtRatioTextX, cvtRatioTextY);  // Adjust coordinates as needed
-  tftL.setFont(&FreeMono12pt7b);
-  tftL.println("CVT");
-  tftL.setFont(&FreeMonoBold24pt7b);
-  tftL.setCursor(cvtRatioDataX, cvtRatioDataY); //cvtRatioTextX, cvtRatioTextY
-  tftL.println(cvtRatio, 1);
-  //checks for wheel slippage or locking
-  if(frontLeftWheelRPM==0 && gpsVelocity>0 && ABSTractionLightOscillator%Osc==0){
-    tftL.fillRect(0,0,300,125,TFT_RED);
-  }
-  if(frontLeftWheelRPM>0 && gpsVelocity==0 && ABSTractionLightOscillator%Osc==0){
-    tftL.fillRect(0,0,300,125,TFT_ORANGE);
-  }
-  if(rearLeftWheelRPM==0 && gpsVelocity>0 && ABSTractionLightOscillator%Osc==0){
-    tftL.fillRect(0,125,300,125,TFT_RED);
-  }
-  if(rearLeftWheelRPM>0 && gpsVelocity==0 &&ABSTractionLightOscillator%Osc==0){
-    tftL.fillRect(0,125,300,125,TFT_ORANGE);
+
+  cvtRatio = (secondaryRPM / (primaryRPM + 1.0));
+
+  if (abs(cvtRatio - lastCvtRatio) > 0.1) {
+    lastCvtRatio = cvtRatio;
+
+    // Clear old ratio value
+    tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_WHITE);
+
+    // Display "CVT Text"
+    tftL.setTextColor(TFT_BLACK);
+    tftL.setCursor(cvtRatioTextX, cvtRatioTextY);  // Adjust coordinates as needed
+    tftL.setFont(&FreeMono12pt7b);
+    tftL.println("CVT");
+
+    // Display Ratio Number
+    tftL.setFont(&FreeMonoBold24pt7b);
+    tftL.setCursor(cvtRatioDataX, cvtRatioDataY);  //cvtRatioTextX, cvtRatioTextY
+    tftL.println(cvtRatio, 1);
   }
 }
 
