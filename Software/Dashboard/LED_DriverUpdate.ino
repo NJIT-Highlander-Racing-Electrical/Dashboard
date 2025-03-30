@@ -41,7 +41,7 @@ void updateLedDisplays() {
   if (batteryPercentage < 20) batteryLevel = 1;
   else if (batteryPercentage < 30) batteryLevel = 2;
   else if (batteryPercentage < 40) batteryLevel = 3;
-  else if (batteryPersentage < 50) batteryLevel = 4;
+  else if (batteryPercentage < 50) batteryLevel = 4;
   else if (batteryPercentage < 60) batteryLevel = 5;
   else if (batteryPercentage < 70) batteryLevel = 6;
   else if (batteryPercentage < 80) batteryLevel = 7;

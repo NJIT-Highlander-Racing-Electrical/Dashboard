@@ -62,6 +62,11 @@ const int cvtLed = 2;
 const int lowBatteryLed = 15;
 const int dasLed = 27;
 
+// Brightness parameters for status LEDs
+const int lowBatteryLedBrightness = 75;
+const int dasLedBrightness = 120;
+const int cvtLedBrightness = 75;
+
 // Pins for three non-green LEDs (brightness was uneven with them on the LED driver :( )
 const int redLed = 12;
 const int yellowLed1 = 13;
@@ -220,19 +225,19 @@ void updateStatusLEDs() {
   Serial.println(batteryPercentage);
 
   // update BAT LED
-  if (batteryPercentage < 20) digitalWrite(lowBatteryLed, HIGH);
+  if (batteryPercentage < 20) analogWrite(lowBatteryLed, lowBatteryLedBrightness);
   else digitalWrite(lowBatteryLed, LOW);
 
 
   // update DAQ LED
   if (sdLoggingActive) {
-    digitalWrite(dasLed, HIGH);
+    analogWrite(dasLed, dasLedBrightness);
   } else {
     digitalWrite(dasLed, LOW);
   }
 
   // update CVT LED
-  if (primaryTemperature > cvtTempMax || secondaryTemperature > cvtTempMax) digitalWrite(cvtLed, HIGH);
+  if (primaryTemperature > cvtTempMax || secondaryTemperature > cvtTempMax) analogWrite(cvtLed, cvtLedBrightness);
   if (primaryTemperature < cvtOffTemp && secondaryTemperature < cvtOffTemp) digitalWrite(cvtLed, LOW);
 }
 
