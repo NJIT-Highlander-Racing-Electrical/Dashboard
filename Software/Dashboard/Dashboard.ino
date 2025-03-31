@@ -74,6 +74,11 @@ int leftButton = 34;   // Controls Stopwatch
 // Flags to check if buttons were released (to prevent issues with holding buttons)
 bool rightButtonWasReleased = true;
 bool leftButtonWasReleased = true;
+// Flag to check if both buttons were pressed (for "screenshot")
+bool bothButtonsPressed = false;
+// Variables to track the screenshot bit duration
+const int dataScreenshotFlagDuration = 1000;  // Set the bit for one second. This way we are sure it gets saved in the DAS logs for several entries
+unsigned long dataScreenshotStart = 0;        // Time at which the screenshot flag was set
 
 // Variable for battery level, which represents number of LEDs illuminated based on battery percentage
 int batteryLevel;
@@ -159,44 +164,67 @@ void loop() {
   updateStatusLEDs();
 
   checkWheelSlipSkid();
+
+  checkStatus();
 }
 
 
 
 void checkButtons() {
 
-  // Check left button
-
+  // Update left button state
   if (!digitalRead(leftButton) && leftButtonWasReleased) {  // if left button is pressed
-    sdLoggingActive = !sdLoggingActive;                     // flip logging active state
-    delay(10);                                              // delay for debouncing
     leftButtonWasReleased = false;                          // to prevent continuous toggling while held down
+    delay(10);                                              // delay for debouncing
   }
   if (digitalRead(leftButton)) {
-    leftButtonWasReleased = true;  // if the button was released we can reset this flag
+    leftButtonWasReleased = true;  // if the button was released we can set this flag
+    delay(10);                     // delay for debouncing
   }
 
-  // Check right button
+  // Update right button state
+  if (!digitalRead(rightButton) && rightButtonWasReleased) {  // if right button is pressed
+    rightButtonWasReleased = false;                           // to prevent continuous toggling while held down
+    delay(10);                                                // delay for debouncing
+  }
+  if (digitalRead(rightButton)) {
+    rightButtonWasReleased = true;  // if the button was released we can set this flag
+    delay(10);                      // delay for debouncing
+  }
 
-  if (!digitalRead(rightButton) && rightButtonWasReleased) {  // if left button is pressed
+  // Determine if both buttons were pressed simultaneously
+  if (!digitalRead(leftButton) && !digitalRead(rightButton)) {
+    bothButtonsPressed = true;
+  }
 
+  // Handle button actions
+  if (bothButtonsPressed && (leftButtonWasReleased || rightButtonWasReleased)) {  // if both buttons were pressed before release
+    dataScreenshotFlag = true;                                                    // Set screenshot flag
+    dataScreenshotStart = millis();                                               // Record the current time
+    bothButtonsPressed = false;                                                   // Reset flag
+
+    // Not ideally programmed; this can be improved in the future
+    // Fill the screen with WHITE for a second to represent a screenshot
+    tftL.fillScreen(GC9A01A_WHITE);
+    delay(1000);
+
+  } else if (!digitalRead(leftButton) && leftButtonWasReleased) {    // if only left button was pressed
+    sdLoggingActive = !sdLoggingActive;                              // Toggle logging active state
+  } else if (!digitalRead(rightButton) && rightButtonWasReleased) {  // if only right button was pressed
     stopwatchActive = !stopwatchActive;
-
     if (stopwatchActive) {
       stopwatchStartTime = millis();  // Set the start time to the current millis counter
     } else {
       tftL.fillRect(0, stopwatchY, 240, -(cvtRatioTextY - stopwatchY), TFT_WHITE);  // Clear the stopwatch
     }
-
-    delay(10);                       // delay for debouncing
-    rightButtonWasReleased = false;  // to prevent continuous toggling while held down
-  }
-
-  if (digitalRead(rightButton)) {
-    rightButtonWasReleased = true;  // if the button was released we can reset this flag
   }
 
   if (stopwatchActive) updateStopwatch();  // if the stopwatch is active, continue to update the counter and display
+
+  if (dataScreenshotFlag && ((millis() - dataScreenshotStart) > dataScreenshotFlagDuration)) {
+    dataScreenshotFlag = false;  // If the flag has been set for a second, reset it
+    )
+  }
 }
 
 void checkWheelSlipSkid() {
@@ -357,6 +385,16 @@ void updateCvtRatio() {
     tftL.setCursor(cvtRatioDataX, cvtRatioDataY);  //cvtRatioTextX, cvtRatioTextY
     tftL.println(cvtRatio, 1);
   }
+}
+
+void checkStatus() {
+
+  // At this point, no significant checks are done to the dashboard to report health
+  // Perhaps in the future, some code can check if it is receiving CVT data, GPS time data, etc
+  // However, for now, a simple "alive" check requested by the Base Station will suffice
+
+  // Set status to something non-zero (1) to show that we are alive
+  statusDashboard = 1; 
 }
 
 //This is necessary to get a decimal number for the CVT ratio (standard MAP function will only return an int)
