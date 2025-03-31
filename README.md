@@ -2,7 +2,6 @@
 
 A dashboard for the vehicle including data from:
 * CVT
-* Fuel Level Sensor
 * BajaDAS
 * Wheel Speed Sensors
 
