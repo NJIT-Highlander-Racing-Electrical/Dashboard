@@ -29,6 +29,9 @@ There are many aspects to improve on from last year's dashboard, as well as seve
      * This year, we are implementing two push buttons on the back of the dashboard that the driver can use
      * One button will enable/diasble data logging
      * The other button will start/stop a stopwatch
+     * Pressing both buttons will send a flag bit to DAS and flash the screen
+          * Acts as a data marker for certain things
+          * Like a vehicle data "screenshot"
 * Other limitations/setbacks are discussed in the [2023-2024 Archive README](https://github.com/NJIT-Highlander-Racing-Electrical/Dashboard/tree/main/2023-2024%20Archive)
 
 ## 2024-2025 Known Issues
