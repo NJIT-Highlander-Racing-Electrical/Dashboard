@@ -94,7 +94,7 @@ int stopwatchMinute = 0;
 int stopwatchSecond = 0;
 int stopwatchMillisecond = 0;
 int lastStopwatchSecond = 0;       // only update the stopwatch when the value of the second changes (to prevent display flicker)
-int stopwatchUpdateInterval = 39;  //update every 13ms
+int stopwatchUpdateInterval = 10;  //update every x milliseconds
 unsigned long lastStopwatchUpdateTime = 0;
 String lastStopwatchString = "";  // we write this in backgroudn color before writing hte next digits to prevent flickering. better than drawing whole rectangle over area
 
@@ -188,8 +188,6 @@ void setup() {
   analogWrite(lowBatteryLed, 150);
   analogWrite(dasLed, 100);
   analogWrite(cvtLed, 150);
-
-
 
   // Clear old ratio value
   tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_BLACK);
