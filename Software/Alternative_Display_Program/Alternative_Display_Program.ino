@@ -183,9 +183,7 @@ void setup() {
   tftL.setFont(&FreeMonoBold18pt7b);
   tftL.setTextColor(TFT_WHITE);
   tftL.fillRect(0, stopwatchY, 240, -(cvtRatioTextY - stopwatchY), TFT_BLACK);
-  tftL.setCursor(stopwatchX, stopwatchY);  // Adjust coordinates as needed
 
-  tftL.println("0:00:00.000");  // push to the display
 
   analogWrite(lowBatteryLed, 150);
   analogWrite(dasLed, 100);
@@ -268,7 +266,7 @@ void loop() {
     canvas.setCursor(0, 0);
     canvas.print(stopwatchString);
 
-    tftL.drawRGBBitmap(20, 100, canvas.getBuffer(), 200, 40);  // Push buffer to display
+    tftL.drawRGBBitmap(18, 100, canvas.getBuffer(), 200, 40);  // Push buffer to display
 
     lastStopwatchString = stopwatchString;
   }
