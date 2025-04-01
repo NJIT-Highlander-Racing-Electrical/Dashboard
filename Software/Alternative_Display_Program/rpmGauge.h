@@ -97,7 +97,7 @@ void updateRPMGauge(int currentRPM) {
   //Outermost Arc
   sprite.drawSmoothArc(cx, cy, r, ir, 30, 330, gaugeColor, backColor);
   //Inner-Outer Arc
-  sprite.drawSmoothArc(cx, cy, r - 5, r - 6, 30, 330, TFT_BLACK, backColor);
+  sprite.drawSmoothArc(cx, cy, r - 5, r - 6, 30, 330, TFT_WHITE, backColor);
   //Red Region Arc
   sprite.drawSmoothArc(cx, cy, r - 9, r - 8, 270, 330, red, backColor);
   //Innermost Arc
@@ -108,7 +108,7 @@ void updateRPMGauge(int currentRPM) {
   for (int i = 0; i < 26; i++) {
     if (i < 20) {
       color1 = gaugeColor;
-      color2 = TFT_BLACK;
+      color2 = TFT_WHITE;
     } else {
       color1 = red;
       color2 = red;
@@ -134,7 +134,7 @@ void updateRPMGauge(int currentRPM) {
   // DRAW TEXT
   sprite.unloadFont();
   sprite.loadFont(AA_FONT_LARGE);
-  sprite.setTextColor(TFT_BLACK, backColor);
+  sprite.setTextColor(TFT_WHITE, backColor);
   sprite.drawString(String((int)currentRPM), cx, cy, 4);
   sprite.unloadFont();
 

@@ -29,7 +29,7 @@ Adafruit_GC9A01A tftL(TFT_CS_L, TFT_DC_L);
 // X and Y positions on data on left circular display
 const int timeX = 33;
 const int timeY = 60;
-const int stopwatchX = 33;
+const int stopwatchX = 0;
 const int stopwatchY = 120;
 const int cvtRatioTextX = 100;
 const int cvtRatioTextY = 180;
@@ -92,7 +92,11 @@ unsigned long stopwatchElapsedTime = 0;  // milliseconds
 int stopwatchHour = 0;
 int stopwatchMinute = 0;
 int stopwatchSecond = 0;
-int lastStopwatchSecond = 0;  // only update the stopwatch when the value of the second changes (to prevent display flicker)
+int stopwatchMillisecond = 0;
+int lastStopwatchSecond = 0;       // only update the stopwatch when the value of the second changes (to prevent display flicker)
+int stopwatchUpdateInterval = 39;  //update every 13ms
+unsigned long lastStopwatchUpdateTime = 0;
+String lastStopwatchString = "";  // we write this in backgroudn color before writing hte next digits to prevent flickering. better than drawing whole rectangle over area
 
 
 int screenSelect = 0;  //done by modulus. 0 is brightness, 1 is error code, 2 is mark
@@ -104,6 +108,43 @@ int Osc = 6;
 
 int gpsVelocity = 95;  // vehicle speed numbers
 int batteryPercentage = 100;
+
+GFXcanvas16 canvas(200, 40);  // Create a small buffer for text rendering
+
+struct RPMAnimation {
+  int minRPM;
+  int maxRPM;
+  int durationMs;
+  unsigned long startTime;
+  bool animating;
+
+  void start(int minRPM, int maxRPM, int durationMs) {
+    this->minRPM = minRPM;
+    this->maxRPM = maxRPM;
+    this->durationMs = durationMs;
+    this->startTime = millis();
+    this->animating = true;
+  }
+
+  void update() {
+    if (!animating) return;
+
+    unsigned long elapsed = millis() - startTime;
+    if (elapsed >= durationMs) {
+      updateRPMGauge(maxRPM);
+      animating = false;
+      return;
+    }
+
+    float progress = elapsed / (float)durationMs;
+    float angle = progress * PI;  // Half sine wave (0 to PI)
+    int currentRPM = minRPM + (maxRPM - minRPM) * (0.5 * (1 - cos(angle)));
+    updateRPMGauge(currentRPM);
+  }
+};
+
+RPMAnimation rpmAnim;
+
 
 void setup() {
 
@@ -140,11 +181,11 @@ void setup() {
   // PUSH STATIC STUFF TO DISPLAYS
 
   tftL.setFont(&FreeMonoBold18pt7b);
-  tftL.setTextColor(TFT_BLACK);
+  tftL.setTextColor(TFT_WHITE);
   tftL.fillRect(0, stopwatchY, 240, -(cvtRatioTextY - stopwatchY), TFT_BLACK);
   tftL.setCursor(stopwatchX, stopwatchY);  // Adjust coordinates as needed
 
-  tftL.println("00:00:00");  // push to the display
+  tftL.println("0:00:00.000");  // push to the display
 
   analogWrite(lowBatteryLed, 150);
   analogWrite(dasLed, 100);
@@ -156,7 +197,7 @@ void setup() {
   tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_BLACK);
 
   // Display "CVT Text"
-  tftL.setTextColor(TFT_BLACK);
+  tftL.setTextColor(TFT_WHITE);
   tftL.setCursor(cvtRatioTextX, cvtRatioTextY);  // Adjust coordinates as needed
   tftL.setFont(&FreeMono12pt7b);
   tftL.println("CVT");
@@ -171,45 +212,64 @@ void setup() {
 
 
   tftL.setFont(&FreeMonoBold18pt7b);
-  tftL.setTextColor(TFT_BLACK);
+  tftL.setTextColor(TFT_WHITE);
   tftL.fillRect(0, timeY, 240, -(cvtRatioTextY - timeY - 95), TFT_BLACK);
   tftL.setCursor(timeX, timeY);  // Adjust coordinates as needed
 
 
   tftL.println("12:34:56");  // push to the display
+
+  // This takes the GPS speed (mph) and displays it on the seven segments
+  // It also updates the battery level LED Bar
+  gpsVelocity = 95;
+  updateLedDisplays();
 }
 
 
 
 void loop() {
 
-  // This takes the GPS speed (mph) and displays it on the seven segments
-  // It also updates the battery level LED Bar
-  gpsVelocity = 95;
-  updateLedDisplays();
 
-Serial.print("ESP FREE HEAP"); 
-Serial.println(ESP.getFreeHeap());
+  rpmAnim.update();  // Call this frequently in the main loop
 
-  // Update the gauge based on the current primaryRPM
-  animateRPMDial(0, 4000, 2500);  // Go up to 4000 RPM over 2.5 seconds
-  animateRPMDial(4000, 0, 2500);  // Go down to 0 RPM over 2.5 seconds
+  if ((millis() - lastStopwatchUpdateTime) > stopwatchUpdateInterval) {
+    lastStopwatchUpdateTime = millis();
 
-}
+    stopwatchHour = (millis() - stopwatchStartTime) / 3600000;
+    stopwatchMinute = (millis() - stopwatchStartTime) / 60000 % 60;
+    stopwatchSecond = (millis() - stopwatchStartTime) / 1000 % 60;
+    stopwatchMillisecond = (millis() - stopwatchStartTime) % 1000;
 
 
+    String stopwatchString = "";
 
+    stopwatchString += stopwatchHour;  // append the hours
 
-void animateRPMDial(int minRPM, int maxRPM, int durationMs) {
-  unsigned long startTime = millis();
-  unsigned long endTime = startTime + durationMs;
+    stopwatchString += ":";  // append a colon
 
-  while (millis() < endTime) {
-    float progress = (millis() - startTime) / (float)durationMs;
-    float angle = progress * PI;  // Half sine wave (0 to PI)
-    int currentRPM = minRPM + (maxRPM - minRPM) * (0.5 * (1 - cos(angle)));
-    Serial.println(currentRPM);
-    updateRPMGauge(currentRPM);
-    delay(20);  // Adjust for smoothness
+    if (stopwatchMinute < 10) {
+      stopwatchString += 0;  // add a leading 0 for formatting purposes
+    }
+    stopwatchString += stopwatchMinute;  // append the minutes
+
+    stopwatchString += ":";  // append a colon
+
+    if (stopwatchSecond < 10) {
+      stopwatchString += 0;  // add a leading 0 for formatting purposes
+    }
+    stopwatchString += stopwatchSecond;  // append the seconds
+
+    stopwatchString += ".";  // append a dot
+
+    stopwatchString += stopwatchMillisecond;
+    canvas.fillScreen(GC9A01A_BLACK);  // Clear only the buffer, not the display
+    canvas.setTextColor(GC9A01A_WHITE);
+    canvas.setTextSize(3);  // Adjust text size as needed
+    canvas.setCursor(0, 0);
+    canvas.print(stopwatchString);
+
+    tftL.drawRGBBitmap(20, 100, canvas.getBuffer(), 200, 40);  // Push buffer to display
+
+    lastStopwatchString = stopwatchString;
   }
 }
