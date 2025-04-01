@@ -20,7 +20,7 @@ extern const int engineMaxRPM;
 int primaryRPM;
 
 //......................................colors
-#define backColor 0xFFFF  //I really like 0x03EF, 0x7800,
+#define backColor 0x0000  //I really like 0x03EF, 0x7800,
 #define gaugeColor 0x055D
 #define dataColor 0x0311  //0x0311,
 #define red 0xF00C

@@ -129,7 +129,7 @@ void setup() {
   //Left display configurations
   tftL.begin();
   tftL.setFont(&FreeMonoBold24pt7b);
-  tftL.fillScreen(GC9A01A_WHITE);
+  tftL.fillScreen(GC9A01A_BLACK);
 
   //This should be a few seconds of splash screen displaying Highlander Racing logos/stuff on boot
   bootScreen();
@@ -141,7 +141,7 @@ void setup() {
 
   tftL.setFont(&FreeMonoBold18pt7b);
   tftL.setTextColor(TFT_BLACK);
-  tftL.fillRect(0, stopwatchY, 240, -(cvtRatioTextY - stopwatchY), TFT_WHITE);
+  tftL.fillRect(0, stopwatchY, 240, -(cvtRatioTextY - stopwatchY), TFT_BLACK);
   tftL.setCursor(stopwatchX, stopwatchY);  // Adjust coordinates as needed
 
   tftL.println("00:00:00");  // push to the display
@@ -153,7 +153,7 @@ void setup() {
 
 
   // Clear old ratio value
-  tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_WHITE);
+  tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_BLACK);
 
   // Display "CVT Text"
   tftL.setTextColor(TFT_BLACK);
@@ -172,7 +172,7 @@ void setup() {
 
   tftL.setFont(&FreeMonoBold18pt7b);
   tftL.setTextColor(TFT_BLACK);
-  tftL.fillRect(0, timeY, 240, -(cvtRatioTextY - timeY - 95), TFT_WHITE);
+  tftL.fillRect(0, timeY, 240, -(cvtRatioTextY - timeY - 95), TFT_BLACK);
   tftL.setCursor(timeX, timeY);  // Adjust coordinates as needed
 
 
