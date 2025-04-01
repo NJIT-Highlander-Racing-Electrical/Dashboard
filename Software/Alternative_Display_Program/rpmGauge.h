@@ -59,7 +59,8 @@ void rpmGaugeSetup() {
   tft.setRotation(0);
   tft.fillScreen(backColor);
   sprite.setSwapBytes(true);
-  sprite.createSprite(230, 230);
+  sprite.setColorDepth(8);
+  sprite.createSprite(240,240);
    sprite.setSwapBytes(true);
   sprite.loadFont(AA_FONT_SMALL);
   sprite.setTextDatum(4);
@@ -87,7 +88,7 @@ void rpmGaugeSetup() {
 
 void updateRPMGauge(int currentRPM) {
 
-  rpmAngle = map(primaryRPM, engineMinRPM, engineMaxRPM, angleMin, angleMax);
+  rpmAngle = map(currentRPM, engineMinRPM, engineMaxRPM, angleMin, angleMax);
 
   if (rpmAngle < 0) rpmAngle = 0;
 
@@ -134,7 +135,7 @@ void updateRPMGauge(int currentRPM) {
   sprite.unloadFont();
   sprite.loadFont(AA_FONT_LARGE);
   sprite.setTextColor(TFT_BLACK, backColor);
-  sprite.drawString(String((int)primaryRPM), cx, cy, 4);
+  sprite.drawString(String((int)currentRPM), cx, cy, 4);
   sprite.unloadFont();
 
   sprite.loadFont(AA_FONT_SMALL);

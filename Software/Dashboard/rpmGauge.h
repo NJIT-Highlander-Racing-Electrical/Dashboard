@@ -54,7 +54,8 @@ void rpmGaugeSetup() {
 
   tft.setRotation(0);
   tft.fillScreen(backColor);
-  sprite.createSprite(235, 235);
+  sprite.setColorDepth(8);
+  sprite.createSprite(240, 240);
   sprite.setSwapBytes(true);
   sprite.loadFont(AA_FONT_SMALL);
   sprite.setTextDatum(4);
