@@ -26,22 +26,3 @@ void bootScreen() {
 
   batteryLevel = 0;
 }
-
-
-
-
-/*  Old  READY-SET-GO Animation
-
-  batteryLevel = 1;
-  updateSevenSegments(95);
-  delay(750);
-
-  batteryLevel = 3;
-  updateSevenSegments(95);
-  delay(750);
-
-  batteryLevel = 9;
-  updateSevenSegments(95);
-  delay(1500);
-
-*/
