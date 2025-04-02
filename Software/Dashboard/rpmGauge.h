@@ -15,6 +15,10 @@ int rpmAngle = 0;
 const int angleMin = 0;
 const int angleMax = 240;
 
+extern const int engineMinRPM;
+extern const int engineMaxRPM;
+extern bool rightLcdSpinSkidActive;
+
 //......................................colors
 #define backColor 0xFFFF  //I really like 0x03EF, 0x7800,
 #define gaugeColor 0x055D

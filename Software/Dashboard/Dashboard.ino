@@ -270,7 +270,6 @@ void checkButtons() {
 
   if (dataScreenshotFlag && ((millis() - dataScreenshotStart) > dataScreenshotFlagDuration)) {
     dataScreenshotFlag = false;  // If the flag has been set for a second, reset it
-    )
   }
 }
 
@@ -287,15 +286,15 @@ void checkWheelSpinSkid() {
     spinSkidLightOn = !spinSkidLightOn;  // invert the state
   }
 
-  // Block left LCD if any wheels on left display are slipping/skidding
-  if (frontLeftWheelState == SKID || frontLeftWheelState == SLIP || rearLeftWheelState == SKID || rearLeftWheelState == SLIP) {
+  // Block left LCD if any wheels on left display are spinning/skidding
+  if (frontLeftWheelState == SKID || frontLeftWheelState == SPIN || rearLeftWheelState == SKID || rearLeftWheelState == SPIN) {
     leftLcdSpinSkidActive = true;
   } else {
     leftLcdSpinSkidActive = false;
   }
 
-  // Block right LCD if any wheels on right display are slipping/skidding
-  if (frontRightWheelState == SKID || frontRightWheelState == SLIP || rearRightWheelState == SKID || rearRightWheelState == SLIP) {
+  // Block right LCD if any wheels on right display are spinning/skidding
+  if (frontRightWheelState == SKID || frontRightWheelState == SPIN || rearRightWheelState == SKID || rearRightWheelState == SPIN) {
     rightLcdSpinSkidActive = true;
   } else {
     rightLcdSpinSkidActive = false;
@@ -323,22 +322,22 @@ void checkWheelSpinSkid() {
 
 
   // Front Left Wheel Spinning
-  if (frontLeftWheelstate == SPIN && spinSkidLightOn) {
+  if (frontLeftWheelState == SPIN && spinSkidLightOn) {
     tftL.fillRect(0, 0, 300, 125, TFT_ORANGE);
   }
 
   // Rear Left Wheel Spinning
-  if (rearLeftWheelstate == SPIN && spinSkidLightOn) {
+  if (rearLeftWheelState == SPIN && spinSkidLightOn) {
     tftL.fillRect(0, 125, 300, 125, TFT_ORANGE);
   }
 
   // Front Right Wheel Spinning
-  if (frontRightWheelstate == SPIN && spinSkidLightOn) {
+  if (frontRightWheelState == SPIN && spinSkidLightOn) {
     sprite.fillRect(0, 0, 300, 125, TFT_ORANGE);
   }
 
   // Rear Right Wheel Spinning
-  if (rearRightWheelstate == SPIN && spinSkidLightOn) {
+  if (rearRightWheelState == SPIN && spinSkidLightOn) {
     sprite.fillRect(0, 125, 300, 125, TFT_ORANGE);
   }
 
@@ -347,8 +346,8 @@ void checkWheelSpinSkid() {
 }
 
 void updateStatusLEDs() {
-  DEBUG.print("batteryPercentage: ");
-  DEBUG.println(batteryPercentage);
+  DEBUG_SERIAL.print("batteryPercentage: ");
+  DEBUG_SERIAL.println(batteryPercentage);
 
   // update BAT LED
   if (batteryPercentage < 20) analogWrite(lowBatteryLed, lowBatteryLedBrightness);
@@ -408,8 +407,8 @@ void updateStopwatch() {
     }
     stopwatchString += stopwatchSecond;  // append the seconds
 
-    DEBUG.print("Current Time String is: ");
-    DEBUG.println(stopwatchString);
+    DEBUG_SERIAL.print("Current Time String is: ");
+    DEBUG_SERIAL.println(stopwatchString);
 
     tftL.println(stopwatchString);  // push to the display
   }
@@ -417,15 +416,15 @@ void updateStopwatch() {
 
 void updateTime() {
 
-  DEBUG.print("GPS HH:MM:SS   ");
-  DEBUG.print(gpsTimeHour);
-  DEBUG.print(":");
-  DEBUG.print(gpsTimeMinute);
-  DEBUG.print(":");
-  DEBUG.println(gpsTimeSecond);
+  DEBUG_SERIAL.print("GPS HH:MM:SS   ");
+  DEBUG_SERIAL.print(gpsTimeHour);
+  DEBUG_SERIAL.print(":");
+  DEBUG_SERIAL.print(gpsTimeMinute);
+  DEBUG_SERIAL.print(":");
+  DEBUG_SERIAL.println(gpsTimeSecond);
 
-  DEBUG.print("lastUpdatedSecond: ");
-  DEBUG.println(lastUpdatedSecond);
+  DEBUG_SERIAL.print("lastUpdatedSecond: ");
+  DEBUG_SERIAL.println(lastUpdatedSecond);
 
   if (leftLcdSpinSkidActive) return;  // Do not update left screen while spin/skid is active
 
@@ -461,8 +460,8 @@ void updateTime() {
     }
     timeString += gpsTimeSecond;  // append the seconds
 
-    DEBUG.print("Current Time String is: ");
-    DEBUG.println(timeString);
+    DEBUG_SERIAL.print("Current Time String is: ");
+    DEBUG_SERIAL.println(timeString);
 
     tftL.println(timeString);  // push to the display
   }
