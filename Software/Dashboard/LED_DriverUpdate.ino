@@ -53,15 +53,6 @@ void updateLedDisplays() {
   uint8_t segmentsUnits = segmentPatterns[units];
   uint8_t segmentsLedBar = ledBarPatterns[batteryLevel];
 
-  /*
-  Serial.print(segmentsTens);
-  Serial.print(",");
-  Serial.print(segmentsUnits);
-  Serial.print(",");
-  Serial.println(segmentsLedBar);
-  */
-
-
 
   // Display the speed and the green fuel LEDs using printDirect function
   uint8_t displayData[3] = { segmentsUnits, segmentsTens, segmentsLedBar };

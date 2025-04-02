@@ -12,8 +12,6 @@ TFT_eSprite sprite = TFT_eSprite(&tft);
 
 // Parameters to control the RPM dial
 int rpmAngle = 0;
-const int cvtMinRPM = 0;
-const int cvtMaxRPM = 4000;
 const int angleMin = 0;
 const int angleMax = 240;
 
@@ -56,7 +54,8 @@ void rpmGaugeSetup() {
 
   tft.setRotation(0);
   tft.fillScreen(backColor);
-  sprite.createSprite(235, 235);
+  sprite.setColorDepth(8);
+  sprite.createSprite(240, 240);
   sprite.setSwapBytes(true);
   sprite.loadFont(AA_FONT_SMALL);
   sprite.setTextDatum(4);
@@ -81,9 +80,11 @@ void rpmGaugeSetup() {
 
 
 
-void updateRPMGauge(int primaryRPM, int Oss, int ABSTractionLightOssilator) {
+void updateRPMGauge() {
 
-rpmAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
+  if (rightLcdSpinSkidActive) return;  // Do not update right screen while spin/skid is active
+
+  rpmAngle = map(primaryRPM, engineMinRPM, engineMaxRPM, angleMin, angleMax);
 
   if (rpmAngle < 0) rpmAngle = 0;
 
@@ -126,7 +127,6 @@ rpmAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
   sA = rpmAngle * 1.2;
   sprite.drawWedgeLine(px[(int)sA], py[(int)sA], nx[(int)sA], ny[(int)sA], 4, 4, needleColor);
 
-
   // DRAW TEXT
   sprite.unloadFont();
   sprite.loadFont(AA_FONT_LARGE);
@@ -138,23 +138,7 @@ rpmAngle = map(primaryRPM, cvtMinRPM, cvtMaxRPM, angleMin, angleMax);
   sprite.setTextColor(0x03E0, backColor);
   sprite.drawString("x100", cx, 210);
   sprite.drawString("RPM", cx, 195);
-  //checks for which wheel is losing traction and which is locked when the car still moving
-  if (frontRightWheelRPM == 0 && gpsVelocity > 0 && ABSTractionLightOssilator % Oss == 0) {
-    sprite.fillRect(0, 0, 300, 125, TFT_RED);
-  }
-  if (frontRightWheelRPM > 0 && gpsVelocity == 0 && ABSTractionLightOssilator % Oss == 0) {
-    sprite.fillRect(0, 0, 300, 125, TFT_ORANGE);
-  }
-  if (rearRightWheelRPM == 0 && gpsVelocity > 0 && ABSTractionLightOssilator % Oss == 0) {
-    sprite.fillRect(0, 125, 300, 125, TFT_RED);
-  }
-  if (rearRightWheelRPM > 0 && gpsVelocity == 0 && ABSTractionLightOssilator % Oss == 0) {
-    sprite.fillRect(0, 125, 300, 125, TFT_ORANGE);
-  }
-  // //braakes are locked
-  //sprite.fillRect(0,125,300,125,TFT_ORANGE); //lose traction
-  // PUSH SPRITE TO SCREEN#0x FA51C
-  sprite.pushSprite(0, 10);
-  //fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color); red  is losing traction, orange is brake lock up
-  //
+
+  // PUSH SPRITE TO SCREEN
+  sprite.pushSprite(0, 0);
 }

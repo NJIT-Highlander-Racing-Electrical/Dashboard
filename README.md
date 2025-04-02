@@ -2,7 +2,6 @@
 
 A dashboard for the vehicle including data from:
 * CVT
-* Fuel Level Sensor
 * BajaDAS
 * Wheel Speed Sensors
 
@@ -29,6 +28,9 @@ There are many aspects to improve on from last year's dashboard, as well as seve
      * This year, we are implementing two push buttons on the back of the dashboard that the driver can use
      * One button will enable/diasble data logging
      * The other button will start/stop a stopwatch
+     * Pressing both buttons will send a flag bit to DAS and flash the screen
+          * Acts as a data marker for certain things
+          * Like a vehicle data "screenshot"
 * Other limitations/setbacks are discussed in the [2023-2024 Archive README](https://github.com/NJIT-Highlander-Racing-Electrical/Dashboard/tree/main/2023-2024%20Archive)
 
 ## 2024-2025 Known Issues
@@ -39,9 +41,11 @@ The SPI Clock pin on the ESP32 is 18, but the PCB has it tied to 19. On the fina
 
 ### TLC5917 Chip 3 OE and R-EXT Pins
 
-On the TLC5917 that controls the green fuel LEDs, the R-EXT pin is tied to ground. This causes the TLC to try to push infinite current into the LEDs. We can simply not solder that pin to the pad, and instead bend it up and jump it to a GND pin using the proper resistor
+On the TLC5917 that controls the green fuel LEDs, the R-EXT pin is tied to ground. This causes the TLC to try to push infinite current into the LEDs. We can simply not solder that pin to the pad, and instead bend it up and jump it to a GND pin using the proper resistor.
 
-The OE pin has the resistor that should have been attached to the R-EXT pin. The OE pin needs to be pulled LOW to enable the displays, so we can simply cut off the resistor there and short it to ground.
+The OE pin has the resistor that should have been attached to the R-EXT pin. The OE pin needs to be pulled LOW to enable the displays, so we can simply short the resistor there to ground.
+
+Update: It appears that the green LEDs at their fixed brightness (lack of functional OE pin) are way too bright. I am modifying the resistor value to 47000k, which is far less blinding
 
 ### Fuel LEDs
 
