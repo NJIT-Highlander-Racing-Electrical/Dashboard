@@ -156,6 +156,12 @@ bool sdLoggingActiveBool=false;
 bool stopwatchActiveBool=false;
 bool RightStop=false;
 int PrevscreenSelect=0;
+unsigned long startMillis;
+int BuggedTimeHour;
+int BuggedTimeMinute;
+int BuggedTimeSecond;
+
+
 
 void setup() {
 
@@ -461,6 +467,44 @@ void updateTime() {
       timeString += 0;  // add a leading 0 for formatting purposes
     }
     timeString += gpsTimeSecond;  // append the seconds
+
+    DEBUG_SERIAL.print("Current Time String is: ");
+    DEBUG_SERIAL.println(timeString);
+
+    tftL.println(timeString);  // push to the display
+  }else{
+    unsigned long elapsedMillis = millis() - startMillis;
+    unsigned long totalSeconds = elapsedMillis / 1000 + gpsTimeSecond + gpsTimeMinute * 60 + gpsTimeHour * 3600;
+    BuggedTimeHour=(totalSeconds / 3600) % 24;
+    BuggedTimeMinute= (totalSeconds / 60) % 60;
+    BuggedTimeSecond= totalSeconds % 60;
+    tftL.setFont(&FreeMonoBold18pt7b);
+    tftL.setTextColor(TFT_BLACK);
+    tftL.fillRect(0, timeY, 240, -(cvtRatioTextY - timeY - 95), TFT_WHITE);
+    tftL.setCursor(timeX, timeY);  // Adjust coordinates as needed
+
+
+    String timeString = "";
+
+    if (BuggedTimeHour < 10) {
+      timeString += 0;  // add a leading 0 for formatting purposes
+    }
+
+    timeString += BuggedTimeHour;  // append the hours
+
+    timeString += ":";  // append a colon
+
+    if (BuggedTimeMinute < 10) {
+      timeString += 0;  // add a leading 0 for formatting purposes
+    }
+    timeString += BuggedTimeMinute;  // append the minutes
+
+    timeString += ":";  // append a colon
+
+    if (BuggedTimeSecond < 10) {
+      timeString += 0;  // add a leading 0 for formatting purposes
+    }
+    timeString += BuggedTimeSecond;  // append the seconds
 
     DEBUG_SERIAL.print("Current Time String is: ");
     DEBUG_SERIAL.println(timeString);
