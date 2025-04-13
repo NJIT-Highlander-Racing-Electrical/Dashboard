@@ -221,59 +221,70 @@ void loop() {
 
 
 void checkButtons() {
+  static bool leftButtonPressed = false;
+  static bool rightButtonPressed = false;
+  static bool bothPressedDuringHold = false;
 
-  // Update left button state
-  if (!digitalRead(leftButton) && leftButtonWasReleased) {  // if left button is pressed
-    leftButtonWasReleased = false;                          // to prevent continuous toggling while held down
-    delay(10);                                              // delay for debouncing
-    sdLoggingActive = !sdLoggingActive;                     // Toggle logging active state
-    Serial.print("sdLoggingActive: ");
-    Serial.println(sdLoggingActive);
-  }
-  if (digitalRead(leftButton)) {
-    leftButtonWasReleased = true;  // if the button was released we can set this flag
-    delay(10);                     // delay for debouncing
+  // --- Detect Button Holds ---
+  bool leftHeld = !digitalRead(leftButton);
+  bool rightHeld = !digitalRead(rightButton);
+
+  // Detect both buttons held at the same time
+  if (leftHeld && rightHeld) {
+    bothPressedDuringHold = true;
   }
 
-  // Update right button state
-  if (!digitalRead(rightButton) && rightButtonWasReleased) {  // if right button is pressed
-    rightButtonWasReleased = false;                           // to prevent continuous toggling while held down
-    delay(10);                                                // delay for debouncing
-    stopwatchActive = !stopwatchActive;
-    if (stopwatchActive) {
-      stopwatchStartTime = millis();  // Set the start time to the current millis counter
-    } else {
-      tftL.fillRect(0, stopwatchY, 240, -(cvtRatioTextY - stopwatchY), TFT_WHITE);  // Clear the stopwatch
+  // --- Left Button Logic ---
+  if (leftHeld) {
+    leftButtonPressed = true;
+  } else if (leftButtonPressed) {
+    leftButtonPressed = false;
+    delay(10);  // debounce
+
+    if (!bothPressedDuringHold) {
+      sdLoggingActive = !sdLoggingActive;
+      Serial.print("sdLoggingActive: ");
+      Serial.println(sdLoggingActive);
     }
   }
-  if (digitalRead(rightButton)) {
-    rightButtonWasReleased = true;  // if the button was released we can set this flag
-    delay(10);                      // delay for debouncing
+
+  // --- Right Button Logic ---
+  if (rightHeld) {
+    rightButtonPressed = true;
+  } else if (rightButtonPressed) {
+    rightButtonPressed = false;
+    delay(10);  // debounce
+
+    if (!bothPressedDuringHold) {
+      stopwatchActive = !stopwatchActive;
+      if (stopwatchActive) {
+        stopwatchStartTime = millis();
+      } else {
+        tftL.fillRect(0, stopwatchY, 240, -(cvtRatioTextY - stopwatchY), TFT_WHITE);
+      }
+    }
   }
 
-  // Determine if both buttons were pressed simultaneously
-  if (!digitalRead(leftButton) && !digitalRead(rightButton)) {
-    bothButtonsPressed = true;
-  }
+  // --- Handle Screenshot ---
+  if (!leftHeld && !rightHeld && bothPressedDuringHold) {
+    bothPressedDuringHold = false;
 
-  // Handle button actions
-  if (bothButtonsPressed && (leftButtonWasReleased || rightButtonWasReleased)) {  // if both buttons were pressed before release
-    dataScreenshotFlag = true;                                                    // Set screenshot flag
-    dataScreenshotStart = millis();                                               // Record the current time
-    bothButtonsPressed = false;                                                   // Reset flag
+    dataScreenshotFlag = true;
+    dataScreenshotStart = millis();
 
-    // Not ideally programmed; this can be improved in the future
-    // Fill the screen with WHITE for a second to represent a screenshot
     tftL.fillScreen(GC9A01A_WHITE);
-    delay(1000);
+    delay(1000);  // simulate screenshot
   }
 
-  if (stopwatchActive) updateStopwatch();  // if the stopwatch is active, continue to update the counter and display
+  // --- Stopwatch Update ---
+  if (stopwatchActive) updateStopwatch();
 
+  // --- Screenshot Timeout ---
   if (dataScreenshotFlag && ((millis() - dataScreenshotStart) > dataScreenshotFlagDuration)) {
-    dataScreenshotFlag = false;  // If the flag has been set for a second, reset it
+    dataScreenshotFlag = false;
   }
 }
+
 
 
 void checkWheelSpinSkid() {

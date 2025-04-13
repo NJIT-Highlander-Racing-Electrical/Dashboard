@@ -2,6 +2,12 @@
 //Once the proper segments are set, the displayData is written
 //This also updated the battery LEDs using the global battery level variable
 
+// Store the last battery level
+int lastBatteryLevel = -1;  // Set an invalid initial value
+
+// Define a hysteresis range (e.g., within 5 percentage points) (to eliminate flicker)
+int hysteresisBuffer = 8;
+
 void updateLedDisplays() {
 
   uint8_t tens = gpsVelocity / 10;   // Extract tens digit
@@ -38,15 +44,7 @@ void updateLedDisplays() {
   };
 
   // Update the number of LEDs based on the batteryPercentage
-  if (batteryPercentage < 20) batteryLevel = 1;
-  else if (batteryPercentage < 30) batteryLevel = 2;
-  else if (batteryPercentage < 40) batteryLevel = 3;
-  else if (batteryPercentage < 50) batteryLevel = 4;
-  else if (batteryPercentage < 60) batteryLevel = 5;
-  else if (batteryPercentage < 70) batteryLevel = 6;
-  else if (batteryPercentage < 80) batteryLevel = 7;
-  else if (batteryPercentage < 90) batteryLevel = 8;
-  else batteryLevel = 9;
+  updateBatteryLevel(batteryPercentage);
 
   // Calculate segment patterns for each digit
   uint8_t segmentsTens = segmentPatterns[tens];
@@ -76,5 +74,26 @@ void updateLedDisplays() {
     digitalWrite(redLed, HIGH);
     digitalWrite(yellowLed1, HIGH);
     digitalWrite(yellowLed2, HIGH);
+  }
+}
+
+
+void updateBatteryLevel(int batteryPercentage) {
+  int newBatteryLevel = 0;
+
+  if (batteryPercentage < 20) newBatteryLevel = 1;
+  else if (batteryPercentage < 30) newBatteryLevel = 2;
+  else if (batteryPercentage < 40) newBatteryLevel = 3;
+  else if (batteryPercentage < 50) newBatteryLevel = 4;
+  else if (batteryPercentage < 60) newBatteryLevel = 5;
+  else if (batteryPercentage < 70) newBatteryLevel = 6;
+  else if (batteryPercentage < 80) newBatteryLevel = 7;
+  else if (batteryPercentage < 90) newBatteryLevel = 8;
+  else newBatteryLevel = 9;
+
+  // Only update the battery level if it's sufficiently different from the last level
+  if (newBatteryLevel != lastBatteryLevel) {
+    // Update only if the battery level has changed by a significant amount
+    lastBatteryLevel = newBatteryLevel;
   }
 }
