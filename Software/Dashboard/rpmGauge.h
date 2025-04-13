@@ -27,7 +27,7 @@ extern bool rightLcdSpinSkidActive;
 #define needleColor 0xF811
 
 int cx = 120;
-int cy = 110;
+int cy = 120;
 int r = 115;
 int ir = 113;
 int angle = 0;
@@ -59,7 +59,7 @@ void rpmGaugeSetup() {
   tft.setRotation(0);
   tft.fillScreen(backColor);
   sprite.setColorDepth(8);
-  sprite.createSprite(240, 240);
+  sprite.createSprite(240, 250);
   sprite.setSwapBytes(true);
   sprite.loadFont(AA_FONT_SMALL);
   sprite.setTextDatum(4);

@@ -72,8 +72,8 @@ const int yellowLed1 = 13;
 const int yellowLed2 = 14;
 
 // Pins for rear buttons
-const int rightButton = 34;  // Controls DAQ logging 
-const int leftButton = 19;   // Controls Stopwatch 
+const int rightButton = 19;  // Controls DAQ logging
+const int leftButton = 34;   // Controls Stopwatch
 
 
 
@@ -138,7 +138,7 @@ enum WheelState {  // CAN sends 0, 1, 2 for wheel state; enum is easier to under
 // SCREEN SELECT VARIABLES
 //
 
-int screenSelect = 0;  
+int screenSelect = 0;  //done by modulus. 0 is brightness, 1 is error code, 2 is mark
 bool screenSelectStop = false;
 
 
@@ -152,14 +152,6 @@ int lastUpdatedSecond = 0;               // Allows GPS clock to only update when
 float cvtRatio = 0;                      // Current CVT Ratio
 float lastCvtRatio = 0;                  // Last ratio that we displayed on screen (to prevent flickering)
 const int cvtOffTemp = cvtTempMax - 10;  // Prevents flickering when temp is right around cvtTempMax
-bool sdLoggingActiveBool=false;
-bool stopwatchActiveBool=false;
-bool RightStop=false;
-int PrevscreenSelect=0;
-unsigned long startMillis;
-int BuggedTimeHour;
-int BuggedTimeMinute;
-int BuggedTimeSecond;
 
 
 
@@ -226,61 +218,61 @@ void loop() {
 
 
 void checkButtons() {
-  if(digitalRead(leftButton)==LOW && screenSelectStop==false){
-    screenSelect+=1;
-    screenSelectStop=true;
+
+  // Update left button state
+  if (!digitalRead(leftButton) && leftButtonWasReleased) {  // if left button is pressed
+    leftButtonWasReleased = false;                          // to prevent continuous toggling while held down
+    delay(10);                                              // delay for debouncing
+    sdLoggingActive = !sdLoggingActive;                     // Toggle logging active state
+    Serial.print("sdLoggingActive: ");
+Serial.println(sdLoggingActive);
+
   }
-  if(digitalRead(leftButton)==HIGH && screenSelectStop==true){
-    screenSelectStop=false;
+  if (digitalRead(leftButton)) {
+    leftButtonWasReleased = true;  // if the button was released we can set this flag
+    delay(10);                     // delay for debouncing
   }
-  if(screenSelect!=PrevscreenSelect){
-    tftL.fillRect(0, stopwatchY+10, 240, -(cvtRatioTextY - stopwatchY), TFT_WHITE);
-  }
-  if(screenSelect%3==0){//stop timer
+
+  // Update right button state
+  if (!digitalRead(rightButton) && rightButtonWasReleased) {  // if right button is pressed
+    rightButtonWasReleased = false;                           // to prevent continuous toggling while held down
+    delay(10);                                                // delay for debouncing
+    stopwatchActive = !stopwatchActive;
     if (stopwatchActive) {
       stopwatchStartTime = millis();  // Set the start time to the current millis counter
     } else {
-      //tftL.fillRect(0, stopwatchY, 240, -(cvtRatioTextY - stopwatchY-40), TFT_RED);  // Clear the stopwatch
-      updateStopwatch();
-    }
-  }else if(screenSelect%3==1){//dataScreenshotFlag
-    tftL.setTextColor(TFT_BLACK);
-    tftL.setCursor(cvtRatioTextX-60, cvtRatioTextY-60);  // Adjust coordinates as needed
-    tftL.setFont(&FreeMono12pt7b);
-    tftL.println("Screenshot");
-    if(!digitalRead(rightButton)){
-      dataScreenshotFlag = true;                                                    // Set screenshot flag
-      dataScreenshotStart = millis();                                               // Record the current time
-      bothButtonsPressed = false;                                                   // Reset flag
-
-      // Not ideally programmed; this can be improved in the future
-      // Fill the screen with WHITE for a second to represent a screenshot
-      tftL.fillScreen(GC9A01A_WHITE);
-      delay(1000);
-    }
-  }else if(screenSelect%3==2){//sdLoggingActive
-    tftL.setTextColor(TFT_BLACK);
-    tftL.setCursor(cvtRatioTextX-60, cvtRatioTextY-60);  // Adjust coordinates as needed
-    tftL.setFont(&FreeMono12pt7b);
-    tftL.println("Logging");
-    if(digitalRead(rightButton)==LOW && RightStop==false){
-      RightStop=true;
-      sdLoggingActive = !sdLoggingActive;                              // Toggle logging active state
-    }
-    if(digitalRead(rightButton)==HIGH && RightStop==true){
-      RightStop=false;
+      tftL.fillRect(0, stopwatchY, 240, -(cvtRatioTextY - stopwatchY), TFT_WHITE);  // Clear the stopwatch
     }
   }
-  
+  if (digitalRead(rightButton)) {
+    rightButtonWasReleased = true;  // if the button was released we can set this flag
+    delay(10);                      // delay for debouncing
+  }
+
+  // Determine if both buttons were pressed simultaneously
+  if (!digitalRead(leftButton) && !digitalRead(rightButton)) {
+    bothButtonsPressed = true;
+  }
+
+  // Handle button actions
+  if (bothButtonsPressed && (leftButtonWasReleased || rightButtonWasReleased)) {  // if both buttons were pressed before release
+    dataScreenshotFlag = true;                                                    // Set screenshot flag
+    dataScreenshotStart = millis();                                               // Record the current time
+    bothButtonsPressed = false;                                                   // Reset flag
+
+    // Not ideally programmed; this can be improved in the future
+    // Fill the screen with WHITE for a second to represent a screenshot
+    tftL.fillScreen(GC9A01A_WHITE);
+    delay(1000);
+  }
+
+  if (stopwatchActive) updateStopwatch();  // if the stopwatch is active, continue to update the counter and display
+
   if (dataScreenshotFlag && ((millis() - dataScreenshotStart) > dataScreenshotFlagDuration)) {
     dataScreenshotFlag = false;  // If the flag has been set for a second, reset it
   }
-  PrevscreenSelect=screenSelect;
-  DEBUG_SERIAL.print("dataScreenshotFlag: ");
-  DEBUG_SERIAL.println(dataScreenshotFlag);
-  DEBUG_SERIAL.print("sdLoggingActive: ");
-  DEBUG_SERIAL.println(sdLoggingActive);
 }
+
 
 void checkWheelSpinSkid() {
 
@@ -360,19 +352,19 @@ void updateStatusLEDs() {
 
   // update BAT LED
   if (batteryPercentage < 20) analogWrite(lowBatteryLed, lowBatteryLedBrightness);
-  else digitalWrite(lowBatteryLed, LOW);
+  else analogWrite(lowBatteryLed, 0);
 
 
   // update DAQ LED
   if (sdLoggingActive) {
     analogWrite(dasLed, dasLedBrightness);
   } else {
-    digitalWrite(dasLed, LOW);
+    analogWrite(dasLed, 0);
   }
 
   // update CVT LED
   if (primaryTemperature > cvtTempMax || secondaryTemperature > cvtTempMax) analogWrite(cvtLed, cvtLedBrightness);
-  if (primaryTemperature < cvtOffTemp && secondaryTemperature < cvtOffTemp) digitalWrite(cvtLed, LOW);
+  if (primaryTemperature < cvtOffTemp && secondaryTemperature < cvtOffTemp) analogWrite(cvtLed, 0);
 }
 
 void updateStopwatch() {
@@ -424,6 +416,7 @@ void updateStopwatch() {
 }
 
 void updateTime() {
+  /*
   DEBUG_SERIAL.print("GPS HH:MM:SS   ");
   DEBUG_SERIAL.print(gpsTimeHour);
   DEBUG_SERIAL.print(":");
@@ -433,6 +426,7 @@ void updateTime() {
 
   DEBUG_SERIAL.print("lastUpdatedSecond: ");
   DEBUG_SERIAL.println(lastUpdatedSecond);
+  */
 
   if (leftLcdSpinSkidActive) return;  // Do not update left screen while spin/skid is active
 
@@ -467,44 +461,6 @@ void updateTime() {
       timeString += 0;  // add a leading 0 for formatting purposes
     }
     timeString += gpsTimeSecond;  // append the seconds
-
-    DEBUG_SERIAL.print("Current Time String is: ");
-    DEBUG_SERIAL.println(timeString);
-
-    tftL.println(timeString);  // push to the display
-  }else{
-    unsigned long elapsedMillis = millis() - startMillis;
-    unsigned long totalSeconds = elapsedMillis / 1000 + gpsTimeSecond + gpsTimeMinute * 60 + gpsTimeHour * 3600;
-    BuggedTimeHour=(totalSeconds / 3600) % 24;
-    BuggedTimeMinute= (totalSeconds / 60) % 60;
-    BuggedTimeSecond= totalSeconds % 60;
-    tftL.setFont(&FreeMonoBold18pt7b);
-    tftL.setTextColor(TFT_BLACK);
-    tftL.fillRect(0, timeY, 240, -(cvtRatioTextY - timeY - 95), TFT_WHITE);
-    tftL.setCursor(timeX, timeY);  // Adjust coordinates as needed
-
-
-    String timeString = "";
-
-    if (BuggedTimeHour < 10) {
-      timeString += 0;  // add a leading 0 for formatting purposes
-    }
-
-    timeString += BuggedTimeHour;  // append the hours
-
-    timeString += ":";  // append a colon
-
-    if (BuggedTimeMinute < 10) {
-      timeString += 0;  // add a leading 0 for formatting purposes
-    }
-    timeString += BuggedTimeMinute;  // append the minutes
-
-    timeString += ":";  // append a colon
-
-    if (BuggedTimeSecond < 10) {
-      timeString += 0;  // add a leading 0 for formatting purposes
-    }
-    timeString += BuggedTimeSecond;  // append the seconds
 
     DEBUG_SERIAL.print("Current Time String is: ");
     DEBUG_SERIAL.println(timeString);
