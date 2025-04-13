@@ -53,7 +53,6 @@ float sA;
 
 void rpmGaugeSetup() {
 
-
   tft.init();
 
   tft.setRotation(0);

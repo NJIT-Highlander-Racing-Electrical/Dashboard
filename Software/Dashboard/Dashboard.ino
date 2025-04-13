@@ -163,7 +163,6 @@ void setup() {
   pinMode(cvtLed, OUTPUT);
   pinMode(dasLed, OUTPUT);
   pinMode(lowBatteryLed, OUTPUT);
-  pinMode(redLed, OUTPUT);
   pinMode(yellowLed1, OUTPUT);
   pinMode(yellowLed2, OUTPUT);
   pinMode(rightButton, INPUT_PULLUP);
@@ -177,6 +176,10 @@ void setup() {
   TJpgDec.setCallback(tft_output);
 
   rpmGaugeSetup();
+
+  pinMode(redLed, OUTPUT);  // TFT_eSPI must do something weird with pin 12, so we have to force the output here for it to work AFTER tft.init() executes
+                            // We don't even use pin 12 for anything, like what????
+
 
   //Left display configurations
   tftL.begin();
@@ -225,8 +228,7 @@ void checkButtons() {
     delay(10);                                              // delay for debouncing
     sdLoggingActive = !sdLoggingActive;                     // Toggle logging active state
     Serial.print("sdLoggingActive: ");
-Serial.println(sdLoggingActive);
-
+    Serial.println(sdLoggingActive);
   }
   if (digitalRead(leftButton)) {
     leftButtonWasReleased = true;  // if the button was released we can set this flag
