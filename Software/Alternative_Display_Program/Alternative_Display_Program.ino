@@ -83,7 +83,7 @@ int batteryLevel;
 int lastUpdatedSecond = 0;
 
 // For LED Brightness (seven segments AND led bar or just one?)
-int ledBrightness = 175;  // 0 is max, 255 is min
+int ledBrightness = 0;  // 0 is max, 255 is min
 
 // Definitions for stopwatch
 bool stopwatchActive = false;
@@ -153,7 +153,6 @@ void setup() {
   pinMode(cvtLed, OUTPUT);
   pinMode(dasLed, OUTPUT);
   pinMode(lowBatteryLed, OUTPUT);
-  pinMode(redLed, OUTPUT);
   pinMode(yellowLed1, OUTPUT);
   pinMode(yellowLed2, OUTPUT);
   pinMode(rightButton, INPUT_PULLUP);
@@ -172,6 +171,9 @@ void setup() {
   tftL.setFont(&FreeMonoBold24pt7b);
   tftL.fillScreen(GC9A01A_BLACK);
 
+  pinMode(redLed, OUTPUT);
+
+
   //This should be a few seconds of splash screen displaying Highlander Racing logos/stuff on boot
   bootScreen();
 
@@ -185,9 +187,9 @@ void setup() {
   tftL.fillRect(0, stopwatchY, 240, -(cvtRatioTextY - stopwatchY), TFT_BLACK);
 
 
-  analogWrite(lowBatteryLed, 150);
-  analogWrite(dasLed, 100);
-  analogWrite(cvtLed, 150);
+  analogWrite(lowBatteryLed, 100);
+  analogWrite(dasLed, 60);
+  analogWrite(cvtLed, 100);
 
   // Clear old ratio value
   tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_BLACK);

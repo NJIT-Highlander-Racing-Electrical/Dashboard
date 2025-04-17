@@ -61,19 +61,19 @@ void updateLedDisplays() {
   //Update the other red and yellow fuel leds
 
   if (batteryLevel == 0) {
-    digitalWrite(redLed, LOW);
+    analogWrite(redLed, 0);
     digitalWrite(yellowLed1, LOW);
     digitalWrite(yellowLed2, LOW);
   } else if (batteryLevel == 1) {
-    digitalWrite(redLed, HIGH);
+    analogWrite(redLed, 100);
     digitalWrite(yellowLed1, LOW);
     digitalWrite(yellowLed2, LOW);
   } else if (batteryLevel == 2) {
-    digitalWrite(redLed, HIGH);
+    analogWrite(redLed, 100);
     digitalWrite(yellowLed1, HIGH);
     digitalWrite(yellowLed2, LOW);
   } else {
-    digitalWrite(redLed, HIGH);
+    analogWrite(redLed, 100);
     digitalWrite(yellowLed1, HIGH);
     digitalWrite(yellowLed2, HIGH);
   }
