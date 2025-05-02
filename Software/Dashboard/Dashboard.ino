@@ -87,7 +87,7 @@ const int ledBrightness = 0;                        // Seven segments brightness
 const int cvtTempMax = 150;                         // Threshold which is considered too hot for CVT (F)
 const int engineMinRPM = 0;                         // Minimum RPM reading we should see on primary of CVT (engine RPM)
 const int engineMaxRPM = 4000;                      // Minimum RPM reading we should see on primary of CVT (engine RPM)
-
+const int odometerPollFrequency = 1000;             // Number of milliseconds between speed polling for updating odometer
 
 //
 // BUTTON VARIABLES
@@ -104,16 +104,20 @@ unsigned long dataScreenshotStart = 0;  // Time at which the screenshot flag was
 
 
 //
-// STOPWATCH VARIABLES
+// TRIP VARIABLES
 //
 
-bool stopwatchActive = false;            // Whether or not stopwatch is actively counting up
+bool tripActive = false;  // Whether or not trip is active (stopwatch and odometer)
+
 unsigned long stopwatchStartTime = 0;    // start time (from CPU boot) of stopwatch
 unsigned long stopwatchElapsedTime = 0;  // milliseconds elapsed since start
 int stopwatchHour = 0;
 int stopwatchMinute = 0;
 int stopwatchSecond = 0;
 int lastStopwatchSecond = 0;  // only update the stopwatch when the value of the second changes (to prevent display flicker)
+
+unsigned long lastOdometerPollTime = 0;
+float milesTraveled = 0;
 
 
 
@@ -158,7 +162,6 @@ const int cvtOffTemp = cvtTempMax - 10;  // Prevents flickering when temp is rig
 void setup() {
 
   Serial.begin(460800);
-  setupCAN(DASHBOARD);
 
   pinMode(cvtLed, OUTPUT);
   pinMode(dasLed, OUTPUT);
@@ -180,6 +183,7 @@ void setup() {
   pinMode(redLed, OUTPUT);  // TFT_eSPI must do something weird with pin 12, so we have to force the output here for it to work AFTER tft.init() executes
                             // We don't even use pin 12 for anything, like what????
 
+  setupCAN(DASHBOARD);  // Also putting CAN initialization here. It was intermittently working, and may be due to a library latching onto one of the pins
 
   //Left display configurations
   tftL.begin();
@@ -256,9 +260,10 @@ void checkButtons() {
     delay(10);  // debounce
 
     if (!bothPressedDuringHold) {
-      stopwatchActive = !stopwatchActive;
-      if (stopwatchActive) {
+      tripActive = !tripActive;
+      if (tripActive) {
         stopwatchStartTime = millis();
+        milesTraveled = 0;
       } else {
         tftL.fillRect(0, stopwatchY, 240, -(cvtRatioTextY - stopwatchY), TFT_WHITE);
       }
@@ -276,8 +281,8 @@ void checkButtons() {
     delay(1000);  // simulate screenshot
   }
 
-  // --- Stopwatch Update ---
-  if (stopwatchActive) updateStopwatch();
+  // --- Trip Update ---
+  if (tripActive) updateTrip();
 
   // --- Screenshot Timeout ---
   if (dataScreenshotFlag && ((millis() - dataScreenshotStart) > dataScreenshotFlagDuration)) {
@@ -380,7 +385,7 @@ void updateStatusLEDs() {
   if (primaryTemperature < cvtOffTemp && secondaryTemperature < cvtOffTemp) analogWrite(cvtLed, 0);
 }
 
-void updateStopwatch() {
+void updateTrip() {
 
   if (leftLcdSpinSkidActive) return;  // Do not update left screen while spin/skid is active
 
@@ -389,7 +394,7 @@ void updateStopwatch() {
   stopwatchSecond = (millis() - stopwatchStartTime) / 1000 % 60;
 
 
-  if (stopwatchSecond != lastStopwatchSecond) {  // Only refresh display if stopwatch time has changed
+  if (stopwatchSecond != lastStopwatchSecond) {  // Only refresh stopwatch display if stopwatch time has changed
 
     lastStopwatchSecond = stopwatchSecond;
 
@@ -426,7 +431,29 @@ void updateStopwatch() {
 
     tftL.println(stopwatchString);  // push to the display
   }
+
+
+  if (millis() - lastOdometerPollTime >= odometerPollFrequency) {
+    milesTraveled += gpsVelocity * (float)(odometerPollFrequency) / 3600000.0;  // Get distance traveled using average speed (gpsVelocity) and poll duration
+    lastOdometerPollTime = millis();
+
+
+    // We're writing this where the CVT ratio would  e
+    tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_WHITE);
+
+    // Display "mi Text"
+    tftL.setTextColor(TFT_BLACK);
+    tftL.setCursor(cvtRatioTextX, cvtRatioTextY);  // Adjust coordinates as needed
+    tftL.setFont(&FreeMono12pt7b);
+    tftL.println("mi");
+
+    // Display Ratio Number
+    tftL.setFont(&FreeMonoBold24pt7b);
+    tftL.setCursor(cvtRatioDataX, cvtRatioDataY);  //cvtRatioTextX, cvtRatioTextY
+    tftL.println(milesTraveled, 1);
+  }
 }
+
 
 void updateTime() {
   /*
