@@ -161,10 +161,6 @@ const int cvtOffTemp = cvtTempMax - 10;  // Prevents flickering when temp is rig
 
 void setup() {
 
-delay(500); // Prevent any issues with starting CAN on startup
-    setupCAN(DASHBOARD);  // Also putting CAN initialization here. It was intermittently working, and may be due to a library latching onto one of the pins
-    delay(500); // Just to allow CAN to initialize
-
   Serial.begin(460800);
 
   pinMode(cvtLed, OUTPUT);
@@ -197,6 +193,11 @@ delay(500); // Prevent any issues with starting CAN on startup
 
   updateTime();
   updateCvtRatio();
+
+  delay(500); // Prevent any issues with starting CAN on startup
+    setupCAN(DASHBOARD);  // Also putting CAN initialization here. It was intermittently working, and may be due to a library latching onto one of the pins
+    delay(500); // Just to allow CAN to initialize
+
 }
 
 
