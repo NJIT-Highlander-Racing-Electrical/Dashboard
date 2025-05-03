@@ -161,6 +161,10 @@ const int cvtOffTemp = cvtTempMax - 10;  // Prevents flickering when temp is rig
 
 void setup() {
 
+delay(500); // Prevent any issues with starting CAN on startup
+    setupCAN(DASHBOARD);  // Also putting CAN initialization here. It was intermittently working, and may be due to a library latching onto one of the pins
+    delay(500); // Just to allow CAN to initialize
+
   Serial.begin(460800);
 
   pinMode(cvtLed, OUTPUT);
@@ -182,8 +186,6 @@ void setup() {
 
   pinMode(redLed, OUTPUT);  // TFT_eSPI must do something weird with pin 12, so we have to force the output here for it to work AFTER tft.init() executes
                             // We don't even use pin 12 for anything, like what????
-
-  setupCAN(DASHBOARD);  // Also putting CAN initialization here. It was intermittently working, and may be due to a library latching onto one of the pins
 
   //Left display configurations
   tftL.begin();
@@ -445,12 +447,12 @@ void updateTrip() {
     tftL.setTextColor(TFT_BLACK);
     tftL.setCursor(cvtRatioTextX, cvtRatioTextY);  // Adjust coordinates as needed
     tftL.setFont(&FreeMono12pt7b);
-    tftL.println("mi");
+    tftL.println("Miles:");
 
     // Display Ratio Number
     tftL.setFont(&FreeMonoBold24pt7b);
     tftL.setCursor(cvtRatioDataX, cvtRatioDataY);  //cvtRatioTextX, cvtRatioTextY
-    tftL.println(milesTraveled, 1);
+    tftL.println(milesTraveled, 2);
   }
 }
 
