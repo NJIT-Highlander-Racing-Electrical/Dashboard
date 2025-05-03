@@ -10,8 +10,14 @@ int hysteresisBuffer = 8;
 
 void updateLedDisplays() {
 
-  uint8_t tens = gpsVelocity / 10;   // Extract tens digit
-  uint8_t units = gpsVelocity % 10;  // Extract units digit
+  float slowestWheelSpeed = frontLeftWheelSpeed;
+  if (frontRightWheelSpeed < frontLeftWheelSpeed) slowestWheelSpeed = frontRightWheelSpeed;
+  if (rearLeftWheelSpeed < slowestWheelSpeed) slowestWheelSpeed = rearLeftWheelSpeed;
+  if (rearRightWheelSpeed < slowestWheelSpeed) slowestWheelSpeed = rearRightWheelSpeed;
+
+
+  uint8_t tens = slowestWheelSpeed / 10;   // Extract tens digit
+  uint8_t units = (int)slowestWheelSpeed % 10;  // Extract units digit
 
   // Segment patterns for digits 0-9 on common-cathode displays
   const uint8_t segmentPatterns[] = {
