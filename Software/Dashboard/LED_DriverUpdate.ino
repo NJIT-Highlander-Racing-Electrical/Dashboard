@@ -97,9 +97,9 @@ void updateBatteryLevel(int batteryPercentage) {
   else if (batteryPercentage < 90) newBatteryLevel = 8;
   else newBatteryLevel = 9;
 
-  // Only update the battery level if it's sufficiently different from the last level
+  // Only update if the value has changed enough
   if (newBatteryLevel != lastBatteryLevel) {
-    // Update only if the battery level has changed by a significant amount
+    batteryLevel = newBatteryLevel;         // ✅ Assign it here!
     lastBatteryLevel = newBatteryLevel;
   }
 }
