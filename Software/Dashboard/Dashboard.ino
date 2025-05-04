@@ -302,7 +302,7 @@ void checkButtons() {
 
 
 void checkWheelSpinSkid() {
-
+/*
   // Porsche 911 Color Coding:
   // Front Lockup (skid): Purple
   // Rear Lockup (skid): Yellow
@@ -371,6 +371,7 @@ void checkWheelSpinSkid() {
 
   // Push to right display -- will this affect the rpmGauge if none of the right display states are active?
   sprite.pushSprite(0, 0);
+  */
 }
 
 void updateStatusLEDs() {
