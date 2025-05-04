@@ -43,12 +43,17 @@ bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap) 
 
 const int timeX = 33;
 const int timeY = 60;
-const int stopwatchX = 33;
+const int stopwatchX = 35;
 const int stopwatchY = 120;
 const int cvtRatioTextX = 100;
 const int cvtRatioTextY = 180;
 const int cvtRatioDataX = 80;
 const int cvtRatioDataY = 220;
+const int milesTextX = 108;
+const int milesTextY = 230;
+const int milesDataX = 55;
+const int milesDataY = 205;
+
 
 
 
@@ -268,7 +273,7 @@ void checkButtons() {
         stopwatchStartTime = millis();
         milesTraveled = 0;
       } else {
-        tftL.fillRect(0, stopwatchY, 240, -(cvtRatioTextY - stopwatchY), TFT_WHITE);
+        tftL.fillRect(0, stopwatchY, 240, 240, TFT_WHITE);
       }
     }
   }
@@ -403,7 +408,7 @@ void updateTrip() {
 
     tftL.setFont(&FreeMonoBold18pt7b);
     tftL.setTextColor(TFT_BLACK);
-    tftL.fillRect(0, stopwatchY, 240, -(cvtRatioTextY - stopwatchY), TFT_WHITE);
+    tftL.fillRect(0, stopwatchY, 240, -(milesTextY - stopwatchY), TFT_WHITE);
     tftL.setCursor(stopwatchX, stopwatchY);  // Adjust coordinates as needed
 
 
@@ -441,18 +446,19 @@ void updateTrip() {
     lastOdometerPollTime = millis();
 
 
-    // We're writing this where the CVT ratio would  e
-    tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_WHITE);
+    // We're writing this where the CVT ratio would be
+    tftL.fillRect(0, milesDataY, 240, 50, TFT_WHITE);
 
     // Display "mi Text"
     tftL.setTextColor(TFT_BLACK);
-    tftL.setCursor(cvtRatioTextX, cvtRatioTextY);  // Adjust coordinates as needed
+    tftL.setCursor(milesTextX, milesTextY);  // Adjust coordinates as needed
     tftL.setFont(&FreeMono12pt7b);
-    tftL.println("Miles:");
+    tftL.println("mi");
 
-    // Display Ratio Number
+    // Display number of miles traveled
     tftL.setFont(&FreeMonoBold24pt7b);
-    tftL.setCursor(cvtRatioDataX, cvtRatioDataY);  //cvtRatioTextX, cvtRatioTextY
+    tftL.setCursor(milesDataX, milesDataY);  
+    if (milesTraveled < 10) tftL.print("0");
     tftL.println(milesTraveled, 2);
   }
 }
@@ -519,7 +525,7 @@ void updateCvtRatio() {
 
   cvtRatio = ((float)secondaryRPM / (float)(primaryRPM + 1.0));
 
-  if (abs(cvtRatio - lastCvtRatio) > 0.1) {  // Only refresh display if CVT ratio has changed
+  if (abs(cvtRatio - lastCvtRatio) > 0.1 && !tripActive) {  // Only refresh display if CVT ratio has changed
     lastCvtRatio = cvtRatio;
 
     // Clear old ratio value
