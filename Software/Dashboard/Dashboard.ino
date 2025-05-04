@@ -273,7 +273,7 @@ void checkButtons() {
         stopwatchStartTime = millis();
         milesTraveled = 0;
       } else {
-        tftL.fillRect(0, stopwatchY, 240, 240, TFT_WHITE);
+        tftL.fillRect(0, 0, 240, 240, TFT_WHITE);
       }
     }
   }
@@ -286,6 +286,7 @@ void checkButtons() {
     dataScreenshotStart = millis();
 
     tftL.fillScreen(GC9A01A_WHITE);
+    tft.fillScreen(GC9A01A_WHITE);
     delay(1000);  // simulate screenshot
   }
 
