@@ -318,6 +318,8 @@ void CAN_Task_Code(void* pvParameters) {
 
   for (;;) {
 
+  
+
     // Check if a packet has been received
     // Returns the packet size in bytes or 0 if no packet received
     int packetSize = CAN.parsePacket();
@@ -327,6 +329,8 @@ void CAN_Task_Code(void* pvParameters) {
       // received a packet
       packetId = CAN.packetId();  // Get the packet ID
 
+  Serial.print("Received CAN packet with ID: ");
+  Serial.println(packetId);
 
       // Sort data packet to correct variable based on ID
       switch (packetId) {
