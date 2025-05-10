@@ -167,6 +167,7 @@ const int cvtOffTemp = cvtTempMax - 10;  // Prevents flickering when temp is rig
 void setup() {
 
   Serial.begin(460800);
+  delay(250); // Allow serial to initialize properly. while(!Serial) doesn't appear to work on ESP32
 
   pinMode(cvtLed, OUTPUT);
   pinMode(dasLed, OUTPUT);
@@ -199,9 +200,9 @@ void setup() {
   updateTime();
   updateCvtRatio();
 
-  delay(500); // Prevent any issues with starting CAN on startup
+  delay(250); // Prevent any issues with starting CAN on startup
     setupCAN(DASHBOARD);  // Also putting CAN initialization here. It was intermittently working, and may be due to a library latching onto one of the pins
-    delay(500); // Just to allow CAN to initialize
+    delay(250); // Just to allow CAN to initialize
 
 }
 

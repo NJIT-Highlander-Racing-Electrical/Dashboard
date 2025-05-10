@@ -327,6 +327,8 @@ void CAN_Task_Code(void* pvParameters) {
       // received a packet
       packetId = CAN.packetId();  // Get the packet ID
 
+      Serial.print("packetid: ");
+      Serial.println(packetId);
 
       // Sort data packet to correct variable based on ID
       switch (packetId) {
