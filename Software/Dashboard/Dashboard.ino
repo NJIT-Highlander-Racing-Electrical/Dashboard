@@ -411,7 +411,7 @@ void updateTrip() {
 
     tftL.setFont(&FreeMonoBold18pt7b);
     tftL.setTextColor(TFT_BLACK);
-    tftL.fillRect(0, stopwatchY, 240, -(milesTextY - stopwatchY), TFT_WHITE);
+    tftL.fillRect(0, stopwatchY, 240, (stopwatchY - milesTextY), TFT_WHITE);
     tftL.setCursor(stopwatchX, stopwatchY);  // Adjust coordinates as needed
 
 
