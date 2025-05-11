@@ -320,13 +320,12 @@ void CAN_Task_Code(void *pvParameters)
     int packetSize = CAN.parsePacket();
     int packetId;
 
-    Serial.print("packetid: ");
-    Serial.println(packetId);
 
     if ((packetSize > 0) || (CAN.packetRtr() && CAN.packetId() != -1))
     {
       // received a packet
       packetId = CAN.packetId(); // Get the packet ID
+
 
       // Sort data packet to correct variable based on ID
       switch (packetId)
