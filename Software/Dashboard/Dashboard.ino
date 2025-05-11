@@ -200,9 +200,7 @@ void setup() {
   updateTime();
   updateCvtRatio();
 
-  delay(250); // Prevent any issues with starting CAN on startup
     setupCAN(DASHBOARD);  // Also putting CAN initialization here. It was intermittently working, and may be due to a library latching onto one of the pins
-    delay(250); // Just to allow CAN to initialize
 
 }
 
@@ -411,7 +409,7 @@ void updateTrip() {
 
     tftL.setFont(&FreeMonoBold18pt7b);
     tftL.setTextColor(TFT_BLACK);
-    tftL.fillRect(0, stopwatchY, 240, (stopwatchY - milesTextY), TFT_WHITE);
+    tftL.fillRect(0, stopwatchY, 240, (milesTextY - stopwatchY), TFT_WHITE);
     tftL.setCursor(stopwatchX, stopwatchY);  // Adjust coordinates as needed
 
 
