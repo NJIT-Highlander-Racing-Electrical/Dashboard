@@ -444,8 +444,7 @@ void updateTrip() {
 
 
   if (millis() - lastOdometerPollTime >= odometerPollFrequency) {
-    //milesTraveled += gpsVelocity * (float)(odometerPollFrequency) / 3600000.0;  // Get distance traveled using average speed (gpsVelocity) and poll duration
-    milesTraveled += 0.05;
+    milesTraveled += gpsVelocity * (float)(odometerPollFrequency) / 3600000.0;  // Get distance traveled using average speed (gpsVelocity) and poll duration
     lastOdometerPollTime = millis();
 
 
