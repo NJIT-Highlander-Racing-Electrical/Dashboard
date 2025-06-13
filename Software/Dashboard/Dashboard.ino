@@ -198,7 +198,7 @@ void setup() {
   bootScreen();
 
   updateTime();
-  updateCvtRatio();
+  updateCvtRatio(); 
 
   delay(250);
   setupCAN(DASHBOARD);  // Also putting CAN initialization here. It was intermittently working, and may be due to a library latching onto one of the pins
@@ -531,7 +531,8 @@ void updateCvtRatio() {
     lastCvtRatio = cvtRatio;
 
     // Clear old ratio value
-    tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_WHITE);
+    tftL.fillRect(0, cvtRatioTextY, 240, -100, TFT_WHITE);
+     tftL.fillRect(0, cvtRatioTextY, 240, 50, TFT_WHITE);
 
     // Display "CVT Text"
     tftL.setTextColor(TFT_BLACK);

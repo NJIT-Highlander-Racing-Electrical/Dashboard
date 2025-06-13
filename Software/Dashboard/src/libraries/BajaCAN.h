@@ -291,6 +291,9 @@ void setupCAN(Subsystem name, int sendInterval = canSendInterval, int rxGpio = C
     Serial.println("CAN Initialized");
   }
 
+  // Delay to troubleshoot if there is an issue here causing Dashboard can to only intermittently start
+    delay(250);
+
   // create a task that will be executed in the CAN_Task_Code() function, with priority 1 and executed on core 0
   xTaskCreatePinnedToCore(
       CAN_Task_Code, /* Task function. */
