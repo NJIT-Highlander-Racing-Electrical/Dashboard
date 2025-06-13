@@ -167,7 +167,7 @@ const int cvtOffTemp = cvtTempMax - 10;  // Prevents flickering when temp is rig
 void setup() {
 
   Serial.begin(460800);
-  delay(250); // Allow serial to initialize properly. while(!Serial) doesn't appear to work on ESP32
+  delay(250);  // Allow serial to initialize properly. while(!Serial) doesn't appear to work on ESP32
 
   pinMode(cvtLed, OUTPUT);
   pinMode(dasLed, OUTPUT);
@@ -200,8 +200,9 @@ void setup() {
   updateTime();
   updateCvtRatio();
 
-    setupCAN(DASHBOARD);  // Also putting CAN initialization here. It was intermittently working, and may be due to a library latching onto one of the pins
-
+  delay(250);
+  setupCAN(DASHBOARD);  // Also putting CAN initialization here. It was intermittently working, and may be due to a library latching onto one of the pins
+  delay(250);
 }
 
 
@@ -301,7 +302,7 @@ void checkButtons() {
 
 
 void checkWheelSpinSkid() {
-/*
+  /*
   // Porsche 911 Color Coding:
   // Front Lockup (skid): Purple
   // Rear Lockup (skid): Yellow
@@ -443,12 +444,13 @@ void updateTrip() {
 
 
   if (millis() - lastOdometerPollTime >= odometerPollFrequency) {
-    milesTraveled += gpsVelocity * (float)(odometerPollFrequency) / 3600000.0;  // Get distance traveled using average speed (gpsVelocity) and poll duration
+    //milesTraveled += gpsVelocity * (float)(odometerPollFrequency) / 3600000.0;  // Get distance traveled using average speed (gpsVelocity) and poll duration
+    milesTraveled += 0.05;
     lastOdometerPollTime = millis();
 
 
     // We're writing this where the CVT ratio would be
-    tftL.fillRect(0, milesDataY, 240, 50, TFT_WHITE);
+    tftL.fillRect(0, milesDataY, 240, -50, TFT_WHITE);
 
     // Display "mi Text"
     tftL.setTextColor(TFT_BLACK);
@@ -458,7 +460,7 @@ void updateTrip() {
 
     // Display number of miles traveled
     tftL.setFont(&FreeMonoBold24pt7b);
-    tftL.setCursor(milesDataX, milesDataY);  
+    tftL.setCursor(milesDataX, milesDataY);
     if (milesTraveled < 10) tftL.print("0");
     tftL.println(milesTraveled, 2);
   }
