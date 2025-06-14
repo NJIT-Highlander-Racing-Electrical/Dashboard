@@ -77,8 +77,8 @@ const int yellowLed1 = 13;
 const int yellowLed2 = 14;
 
 // Pins for rear buttons
-const int rightButton = 19;  // Controls DAQ logging
-const int leftButton = 34;   // Controls Stopwatch
+const int rightButton = 34;  // Controls DAQ logging
+const int leftButton = 19;   // Controls Stopwatch
 
 
 
@@ -444,10 +444,8 @@ void updateTrip() {
 
 
   if (millis() - lastOdometerPollTime >= odometerPollFrequency) {
-    if (gpsVelocity > 1) {
       float averageWheelSpeed = (frontLeftWheelSpeed + frontRightWheelSpeed + rearLeftWheelSpeed + rearRightWheelSpeed) / 4;
     milesTraveled += averageWheelSpeed * (float)(odometerPollFrequency) / 3600000.0;  // Get distance traveled using average speed (from all four wheels) and poll duration
-    }
     lastOdometerPollTime = millis();
 
 
