@@ -1,4 +1,4 @@
-#include "src/libraries/BajaCAN.h"  // https://arduino.github.io/arduino-cli/0.35/sketch-specification/#src-subfolder
+#include "BajaCAN.h"
 
 // Set to TRUE for debugging, set to FALSE for final release
 // Disabling Serial on final release allows for better performance
@@ -227,7 +227,6 @@ void loop() {
   Note: Make sure after wheel spin/skid stuff is displayed, it clears and everything else resumes as normal
   */
 
-  checkStatus();  // Checks health of system for Base Station's status requests
 }
 
 
@@ -548,15 +547,6 @@ void updateCvtRatio() {
   }
 }
 
-void checkStatus() {
-
-  // At this point, no significant checks are done to the dashboard to report health
-  // Perhaps in the future, some code can check if it is receiving CVT data, GPS time data, etc
-  // However, for now, a simple "alive" check requested by the Base Station will suffice
-
-  // Set status to something non-zero (1) to show that we are alive
-  statusDashboard = 1;
-}
 
 //This is necessary to get a decimal number for the CVT ratio (standard MAP function will only return an int)
 float mapfloat(long x, long in_min, long in_max, long out_min, long out_max) {
