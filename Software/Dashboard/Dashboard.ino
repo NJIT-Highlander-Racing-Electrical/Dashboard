@@ -2,7 +2,7 @@
 
 // Set to TRUE for debugging, set to FALSE for final release
 // Disabling Serial on final release allows for better performance
-#define DEBUG true
+#define DEBUG false
 #define DEBUG_SERIAL \
   if (DEBUG) Serial
 
